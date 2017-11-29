@@ -51,91 +51,50 @@ Kong es un API Management que facilita la creación, publicación, mantenimiento
     
 - Test
     
-    `$ export KONG_HOST=127.0.0.1`
-    
-    `$ http $KONG_HOST:8000`
-    
-- Registrar endpoint de provincias de Georef API
+    `$ export KONG_URL=http://localhost:8000`
 
-    `$ export GEOREF_API_PROVINCIAS=http://181.209.63.243:5000/api/v1.0/provincias`
-        
-    `$ http $GEOREF_API_PROVINCIAS`
+    `$ http $KONG_URL`
 
-    `$ http POST $KONG_HOST:8001/apis name=provincias uris=/provincias upstream_url=$GEOREF_API_PROVINCIAS`
-       
-    `$ http $KONG_HOST:8000/provincias`
+    `import helpers`
+
+- Registrar API o recurso
+
+    `helpers.register_api('headers', 'https://httpbin.org/headers')`
+
+    `$ http $KONG_URL/headers`
         
 - Activar plugin [JWT](https://getkong.org/plugins/jwt/)
 
-    `$ http POST $KONG_HOST:8001/apis/provincias/plugins name=jwt config.secret_is_base64=true`
+    `jwt = {'name': 'jwt', 'config.secret_is_base64': 'true'}`
 
-    `$ http $KONG_HOST:8000/provincias`
+    `helpers.configure_plugin('headers', jwt)`
+
+    `$ http $KONG_URL/headers`
     
-- Crear usuario
+- Crear usuarios con credenciales para JWT
 
-    `$ http POST $KONG_HOST:8001/consumers username=<user>`
-  
-  
-- Crear credenciales JWT
+    `helpers.create_api_consumers('headers', [user1, user2])`  
 
-    `$ echo '{}' | http POST $KONG_HOST:8001/consumers/<user>/jwt`
+- Listar usuarios o un usuario en particular para ver sus credenciales
 
+    `$ http $KONG_URL/consumers/`
 
-- Listar usuarios o un usuario en particular
+    `$ http $KONG_URL/consumers/<user>/jwt` (Devuelve **consumer_key** y **consumer_secret**.)
 
-    `$ http $KONG_HOST:8001/consumers/`
-
-    `$ http $KONG_HOST:8001/consumers/<user>/jwt`
-
-    
-- Generar Token:
+- Obtener token:
  
-    1. [Debugger](https://jwt.io/)
-
-        - HEADER
-        
-            ```json
-            {
-              "alg": "HS256",
-              "typ": "JWT"
-            }
-            ```
-            
-        - PAYLOAD: 
-        
-            ```json
-            {
-              "iss": "<key>",
-              "name": "<name>"
-            }
-            ```
-        
-        - VERIFY SIGNATURE
-        
-            ```
-            HMACSHA256(
-             base64UrlEncode(header) + "." +
-             base64UrlEncode(payload),
-             <secret>
-            ) [x] secret base64 encoded // check
-            ```
-    2. [PyJwt](https://github.com/jpadilla/pyjwt)
-    
-        ```python
-        import jwt
-        import base64
-        
-        encoded = jwt.encode({'iss': '<key>'}, base64.b64decode(b'<secret>'), algorithm='HS256')
-        print(encoded)
-        ```
+    `jwt_token = helpers.get_token_for(consumer_key, consumer_secret)`
 
 - Consumir APIS
 
-    `$ http $KONG_HOST:8000/provincias 'Authorization:Bearer <token>'`
+    `$ http $KONG_URL/headers 'Authorization:Bearer <jwt_token>'`
   
-- [Rate limits](https://getkong.org/plugins/rate-limiting/)
+- Activar plugin [Rate limits](https://getkong.org/plugins/rate-limiting/)
 
-    `$ http POST $KONG_HOST:8001/apis/provincias/plugins name=rate-limiting consumer_id=<consumer_id> config.minute=10`
+    `rates = {'name': 'rate-limiting', 'config.minute': 10}`
+
+    `helpers.configure_plugin('headers', rates)`
+
 
 ## Contacto
 Te invitamos a [crearnos un issue](https://github.com/datosgobar/api-gateway/issues/new?title=Encontre-un-bug-en-api-gateway)
