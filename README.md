@@ -1,6 +1,6 @@
 # Kong API Gateway
 
-Kong es un API Management que facilita la creación, publicación, mantenimiento, monitoreo y protección de API a cualquier escala.
+Kong es una herramienta para *API Management* que facilita la creación, publicación, mantenimiento, monitoreo y protección de APIs.
 
 ## Índice 
 * [Instalación](#instalación)
