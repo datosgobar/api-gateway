@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-from collections import defaultdict
-from django.db import connections
-from geo_admin.models import Consumer
 import base64
 import jwt
 import os
 import requests
 
 
-KONG_URL = os.environ.get('KONG_URL', 'http://localhost:8000')
+KONG_URL = os.environ.get('KONG_URL', 'http://localhost:8001')
 
 
 def configure_plugin(api, plugin_data):
@@ -21,6 +18,8 @@ def configure_plugin(api, plugin_data):
 
 
 def create_api_consumers(api, usernames):
+    if not isinstance(usernames, list):
+        raise ValueError('El parámetro "usernames" debe ser una lista.')
     KONG_URL = os.environ.get('KONG_URL')
     try:
         consumers_url = KONG_URL + '/consumers'
@@ -39,7 +38,7 @@ def create_api_consumers(api, usernames):
 
 def get_token_for(consumer_key, consumer_secret):
     """Obtiene el token para las credenciales de un usuario."""
-    if consumer is not None:
+    if consumer_key and consumer_secret:
         return jwt.encode({'iss': consumer_key},
                           base64.b64decode(consumer_secret),
                           algorithm='HS256')
