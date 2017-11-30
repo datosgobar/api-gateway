@@ -117,7 +117,7 @@ Kong es una herramienta para *API Management* que facilita la creación, publica
     
 - Crear usuarios con credenciales para JWT
 
-    `>>> helpers.create_api_consumers('headers', [user1, user2])`  
+    `>>> helpers.create_api_consumers([user1, user2])`  
 
 - Listar usuarios o un usuario en particular para ver sus credenciales
 
