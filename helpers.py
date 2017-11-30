@@ -5,30 +5,29 @@ import os
 import requests
 
 
-KONG_URL = os.environ.get('KONG_URL', 'http://localhost:8001')
+KONG_ADMIN = os.environ.get('KONG_ADMIN', 'http://localhost:8001')
 
 
 def configure_plugin(api, plugin_data):
     """Activa un plugin para una API."""
     try:
-        plugins_url = KONG_URL + '/apis/%s/plugins' % api
+        plugins_url = KONG_ADMIN + '/apis/%s/plugins' % api
         requests.post(plugins_url, data=plugin_data)
     except (requests.RequestException) as error:
         print(error)
 
 
-def create_api_consumers(api, usernames):
+def create_api_consumers(usernames):
     if not isinstance(usernames, list):
         raise ValueError('El parámetro "usernames" debe ser una lista.')
-    KONG_URL = os.environ.get('KONG_URL')
     try:
-        consumers_url = KONG_URL + '/consumers'
+        consumers_url = KONG_ADMIN + '/consumers'
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         for name in usernames:
             response = requests.post(consumers_url, data={'username': name})
             if response.status_code == 201:
                 print('Se creó el usuario "%s".' % name)
-            credentials_url = KONG_URL + '/consumers/%s/jwt' % name
+            credentials_url = KONG_ADMIN + '/consumers/%s/jwt' % name
             response = requests.post(credentials_url, headers=headers, data={})
             if response.status_code == 201:
                 print('Se crearon credenciales para el usuario "%s".' % name)
@@ -53,6 +52,6 @@ def register_api(api_name, uri):
             'uris': '/' + api_name,
             'upstream_url': uri
         }
-        requests.post(KONG_URL + '/apis', data=data)
+        requests.post(KONG_ADMIN + '/apis', data=data)
     except (requests.RequestException) as error:
         print(error)
