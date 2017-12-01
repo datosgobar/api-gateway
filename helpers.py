@@ -9,7 +9,12 @@ KONG_ADMIN = os.environ.get('KONG_ADMIN', 'http://localhost:8001')
 
 
 def configure_plugin(api, plugin_data):
-    """Activa un plugin para una API."""
+    """Activa un plugin para una API o recurso.
+
+    Args:
+        api (str): Nombre de la API o recurso donde activar el plugin.
+        plugin_data (dict): Información de configuración del plugin.
+    """
     try:
         plugins_url = KONG_ADMIN + '/apis/%s/plugins' % api
         requests.post(plugins_url, data=plugin_data)
@@ -18,6 +23,11 @@ def configure_plugin(api, plugin_data):
 
 
 def create_api_consumers(usernames):
+    """Crea usuarios consumidores de la API junto con sus credenciales JWT.
+
+    Args:
+        usernames (list): Nombres de usuarios a registrar.
+    """
     if not isinstance(usernames, list):
         raise ValueError('El parámetro "usernames" debe ser una lista.')
     try:
@@ -36,7 +46,15 @@ def create_api_consumers(usernames):
 
 
 def get_token_for(consumer_key, consumer_secret):
-    """Obtiene el token para las credenciales de un usuario."""
+    """Obtiene el token para las credenciales de un usuario.
+
+    Args:
+        consumer_key (str): Clave asociada al usuario.
+        consumer_secret (str): Secreto asociado al usuario.
+
+    Returns:
+        (str): Token de autenticación.
+    """
     if consumer_key and consumer_secret:
         return jwt.encode({'iss': consumer_key},
                           base64.b64decode(consumer_secret),
@@ -45,7 +63,12 @@ def get_token_for(consumer_key, consumer_secret):
 
 
 def register_api(api_name, uri):
-    """Registra un recurso o API a la interfaz de KONG."""
+    """Registra un recurso o API a la interfaz de KONG.
+
+    Args:
+        api_name: Nombre de la API o recurso.
+        uri: URI de la API o recurso.
+    """
     try:
         data = {
             'name': api_name,
