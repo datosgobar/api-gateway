@@ -1,0 +1,8 @@
+env/
+.idea/
+.vagrant/
+*.retry
+*.sublime-*
+.python-version
+vault_password.txt
+vault_pass.txt

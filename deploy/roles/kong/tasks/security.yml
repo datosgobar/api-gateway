@@ -1,0 +1,8 @@
+---
+
+- name: Allow server ports
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items:
+    - "{{ kong_port }}"

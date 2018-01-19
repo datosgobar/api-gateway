@@ -1,0 +1,10 @@
+---
+
+- name: Add rate-limit plugin API
+  uri:
+    url: "http://{{ kong_admin_listen }}/apis/{{ item.name }}/plugins/"
+    method: POST
+    body: "name=rate-limiting&config.second={{ kong_rate_limit_seconds }}&config.hour={{ kong_rate_limit_hour }}"
+    status_code: 201
+  with_items: "{{ kong_api_map }}"
+

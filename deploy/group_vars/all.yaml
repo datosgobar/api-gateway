@@ -1,0 +1,11 @@
+---
+
+## Per application variables
+application_name: api_management
+
+# Application user and group
+application_user: devartis
+application_group: devartis
+
+# Application
+application_user_home: "/home/{{ application_user }}/"

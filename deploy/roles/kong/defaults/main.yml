@@ -1,0 +1,31 @@
+---
+
+kong_download_deb: https://bintray.com/kong/kong-community-edition-deb/download_file?file_path=dists/kong-community-edition-0.11.2.xenial.all.deb
+
+#Database
+kong_database_name: kong
+kong_user: kong
+kong_database_pass:
+
+# Configuration
+
+kong_prefix: /usr/local/kong/
+kong_interface: 0.0.0.0
+kong_port: 80
+kong_proxy_listen: "{{ kong_interface }}:{{ kong_port }}"
+
+kong_admin_interface: 127.0.0.1
+kong_admin_port: 8001
+kong_admin_listen: "{{ kong_admin_interface }}:{{ kong_admin_port }}"
+
+# Sample!
+#kong_api_map:
+#  - {name: "stiempo-vagrant", hosts: "testing.stiempo.com", upstream_url: "http://192.168.35.10"}
+kong_api_map: []
+
+# Rate limit
+use_rate_limit: yes # Enable by default!
+kong_rate_limit_seconds: 5
+kong_rate_limit_hour: 10000
+
+analytics_endpoint: series/analytics/save/

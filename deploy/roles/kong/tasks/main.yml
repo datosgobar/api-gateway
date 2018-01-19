@@ -1,0 +1,44 @@
+---
+
+
+- name: Install PostgreSQL as Kong dependency
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2 # For ansible postgresql module
+
+- name: Install Kong dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openssl
+    - libpcre3
+    - procps
+    - perl
+
+- name: Install kong
+  apt:
+    deb: "{{ kong_download_deb }}"
+
+# Configure psql
+- include_tasks: psql.yml
+- include_tasks: datadog.yml
+  when: kong_datadog_api_key is defined
+
+- include_tasks: configure.yml
+
+- include_tasks: apis/main.yml
+
+- include_tasks: apis/datadog.yml
+  when: kong_datadog_api_key is defined
+
+- include_tasks: apis/rate_limit.yml
+  when: use_rate_limit
+
+- include_tasks: security.yml
+
+- include_tasks: http_log.yml
