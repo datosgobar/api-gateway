@@ -1,0 +1,44 @@
+---
+
+
+- name: Install firewall
+  apt: name=ufw state=present update_cache=yes
+
+- name: Disable firewall
+  ufw:
+    state: disabled
+
+- name: Disallow incomming
+  ufw:
+    direction: incoming
+    policy: deny
+
+- name: allow outgoing
+  ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Allow ssh port
+  ufw:
+    port: ssh
+    rule: limit
+    proto: tcp
+
+- name: Enable firewall
+  ufw:
+    state: enabled
+
+- name: Disable password authentication
+  lineinfile: dest=/etc/ssh/sshd_config
+              regexp="^PasswordAuthentication"
+              line="PasswordAuthentication no"
+              state=present
+  when: disable_ssh_password
+  notify: Restart ssh
+
+- name: Disallow root SSH access
+  lineinfile: dest=/etc/ssh/sshd_config
+              regexp="^PermitRootLogin"
+              line="PermitRootLogin no"
+              state=present
+  notify: Restart ssh

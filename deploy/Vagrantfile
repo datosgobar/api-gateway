@@ -1,0 +1,4 @@
+environment = ENV["ENVIRONMENT_DIR"] || "vagrant"
+
+require_relative "inventories/#{environment}/env.vagrantfile"
+

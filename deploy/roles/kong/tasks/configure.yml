@@ -1,0 +1,52 @@
+---
+
+- name: Copy default configuration
+  copy:
+    src: /etc/kong/kong.conf.default
+    dest: /etc/kong/kong.conf
+    remote_src: yes
+    force: no
+
+- name: Increase ulimit
+  pam_limits:
+    domain: kong
+    limit_type: soft
+    limit_item: nofile
+    value: 4096
+
+- name: Create prefix directory
+  file:
+    path: "{{ kong_prefix }}"
+    state: directory
+    recurse: yes
+
+
+- name: Configure PostgreSQL access
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?#pg_password = .*'
+    line: 'pg_password = {{ kong_database_pass }}'
+
+- name: Configure prefix
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?prefix = .*'
+    line: 'prefix = {{ kong_prefix }}'
+
+- name: Configure kong Port
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?proxy_listen = .*'
+    line: 'proxy_listen = {{ kong_proxy_listen }}'
+
+- name: Configure kong admin listen
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?admin_listen = .*'
+    line: 'admin_listen = {{ kong_admin_listen }}'
+
+- name: Run kong migrations
+  shell: kong migrations up
+
+- name: Run kong
+  shell: kong restart

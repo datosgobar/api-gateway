@@ -1,0 +1,7 @@
+kong0
+
+[kong]
+kong0
+
+[api_cluster:children]
+kong
