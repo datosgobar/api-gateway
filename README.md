@@ -4,6 +4,7 @@ Kong es una herramienta para *API Management* que facilita la creación, publica
 
 ## Índice 
 * [Instalación](#instalación)
+* [Deployment](#deployment)
 * [Contacto](#contacto)
 
 ## Instalación
@@ -168,6 +169,10 @@ Kong es una herramienta para *API Management* que facilita la creación, publica
 
     `>>> helpers.configure_plugin('headers', rates)`
 
+
+## Deployment
+
+Ver la [documentación](deploy/docs/index.md)
 
 ## Contacto
 Te invitamos a [crearnos un issue](https://github.com/datosgobar/api-gateway/issues/new?title=Encontre-un-bug-en-api-gateway)
