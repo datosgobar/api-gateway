@@ -1,0 +1,25 @@
+---
+
+- name: Create temporal directory
+  tempfile:
+    prefix: nodejs
+    state: directory
+  register: nodetemp
+
+- name: Declare download directory
+  set_fact:
+    nodejs_install: "{{ nodetemp.path }}/setup.sh"
+
+- name: Create nodejs download dir
+  get_url:
+    url: https://deb.nodesource.com/setup_{{ nodejs_mayor_version }}.x
+    dest: "{{ nodejs_install }}"
+
+
+- name: Run install scripts
+  shell: "bash {{ nodejs_install }}"
+
+
+- name: Install nodejs
+  apt: name=nodejs
+

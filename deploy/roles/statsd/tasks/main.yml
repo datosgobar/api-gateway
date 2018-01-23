@@ -1,0 +1,10 @@
+---
+
+- name: Check if ndoejs is installed
+  command: dpkg-query -s nodejs
+  ignore_errors: yes
+  changed_when: False
+  register: nodejs_check
+
+- include_tasks: nodejs.yml
+  when: nodejs_check|failed
