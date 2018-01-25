@@ -8,3 +8,19 @@
 
 - include_tasks: nodejs.yml
   when: nodejs_check|failed
+
+- name: Install Graphite dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2 # For ansible postgresql module
+    - apache2
+    - libapache2-mod-wsgi # For graphite wsgi server
+
+- include_tasks: security.yml
+- include_tasks: graphite_psql.yml
+- include_tasks: graphite.yml
+- include_tasks: statsd.yml

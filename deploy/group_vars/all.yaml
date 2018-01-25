@@ -9,3 +9,4 @@ application_group: devartis
 
 # Application
 application_user_home: "/home/{{ application_user }}/"
+application_utils_dir: "{{ application_user_home }}utils/"

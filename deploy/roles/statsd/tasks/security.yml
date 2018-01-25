@@ -1,0 +1,25 @@
+---
+
+
+- name: Allow StatsD UDP ports
+  ufw:
+    port: "8125"
+    rule: allow
+    src: "{{ item }}"
+    proto: udp # StastD expects UDP
+  with_items:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 127.0.0.1/24
+
+- name: Allow graphina ports
+  ufw:
+    rule: allow
+    port: 80
+    src: "{{ item }}"
+  with_items:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 127.0.0.1/24
