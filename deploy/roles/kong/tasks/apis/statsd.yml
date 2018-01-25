@@ -1,0 +1,12 @@
+---
+
+- name: Enable Statsd metrics
+  uri:
+    url: "http://{{ kong_admin_listen }}/apis/{{ item.name }}/plugins/"
+    method: POST
+    body: "name=statsd&config.host={{ item.statsd_host }}&config.port={{ item.statsd_port | default(8125) }}"
+    status_code: 201
+  with_items: "{{ kong_api_map }}"
+  when: item.statsd_host | default(false)
+
+
