@@ -45,6 +45,12 @@
     regexp: '^(#)?admin_listen = .*'
     line: 'admin_listen = {{ kong_admin_listen }}'
 
+- name: Configure kong worker user / group
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?nginx_user = .*'
+    line: 'nginx_user = {{ application_user }} {{ application_group }}'
+
 - name: Run kong migrations
   shell: kong migrations up
 

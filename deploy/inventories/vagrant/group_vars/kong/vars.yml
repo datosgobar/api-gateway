@@ -5,3 +5,5 @@ kong_database_pass: "{{ kong_database_pass_vault }}"
 #kong_datadog_api_key:
 kong_api_map:
   - {name: "stiempo-vagrant", hosts: "www.apis.datos.gob.ar", upstream_url: "http://192.168.35.10"}
+
+tseries_api: "http://192.168.35.10"

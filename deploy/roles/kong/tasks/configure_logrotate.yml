@@ -1,0 +1,17 @@
+---
+
+- name: setup bins_dir
+  file:
+    path: "{{ bins_dir }}"
+    state: directory
+
+- name: setup postrotate script
+  template:
+    src: "postrotate.py.j2"
+    dest: "{{ postrotate_script_path }}"
+    owner: "{{ application_user }}"
+
+- name: configure logrotate for file-log
+  template:
+    src: "api_logrotate.j2"
+    dest: "/etc/logrotate.d/kong"

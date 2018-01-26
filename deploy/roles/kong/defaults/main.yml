@@ -28,4 +28,10 @@ use_rate_limit: yes # Enable by default!
 kong_rate_limit_seconds: 5
 kong_rate_limit_hour: 10000
 
+kong_file_log_dir: /dev/shm/kong/
+kong_file_log_path: "{{ kong_file_log_dir}}kong.log"
+
 analytics_endpoint: series/analytics/save/
+
+bins_dir: "{{ application_user_home }}bins/"
+postrotate_script_path: "{{ bins_dir }}postrotate.py"
