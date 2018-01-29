@@ -90,16 +90,19 @@ end --]]
 function plugin:log(plugin_conf)
 
   local querystring = ngx.encode_args(ngx.req.get_uri_args())
-  local request = {
-    querystring = querystring
-  }
   local host = ngx.var.host
   local remote_addr = ngx.var.remote_addr
+  local uri = ngx.var.uri
+  local start_time = ngx.req.start_time()
+  local request_time = ngx.now() - start_time
 
   local JSONRequestArray = {
-    request = request,
-    host = host,
     ip = remote_addr
+    host = host,
+    uri = uri,
+    querystring = querystring,
+    start_time = start_time,
+    request_time = request_time
   }
 
 
