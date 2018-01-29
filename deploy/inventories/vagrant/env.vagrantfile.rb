@@ -13,13 +13,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "bento/ubuntu-16.04"
   config.ssh.forward_agent = true
 
+  config.vm.define "stasd0" do |web|
+    web.vm.provider :virtualbox do |vb|
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+    web.vm.network "private_network", ip: "192.168.35.65"
+  end
+
   config.vm.define "kong0" do |web|
       web.vm.provider :virtualbox do |vb|
         vb.memory = 1024
         vb.cpus = 1
       end
       web.vm.network "private_network", ip: "192.168.35.60"
-        web.vm.provision "ansible" do |ansible|
+      web.vm.provision "ansible" do |ansible|
         ansible.compatibility_mode = "2.0"
         ansible.playbook = "site.yml"
         ansible.inventory_path = "inventories/vagrant/hosts"

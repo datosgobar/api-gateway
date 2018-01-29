@@ -32,6 +32,8 @@
 - include_tasks: configure.yml
 
 - include_tasks: apis/main.yml
+- include_tasks: apis/statsd.yml
+- include_tasks: apis/cors.yml
 
 - include_tasks: apis/datadog.yml
   when: kong_datadog_api_key is defined

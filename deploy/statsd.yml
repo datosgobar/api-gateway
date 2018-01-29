@@ -1,0 +1,7 @@
+---
+
+- hosts: statsd
+  become: yes
+  become_method: sudo
+  roles:
+    - statsd

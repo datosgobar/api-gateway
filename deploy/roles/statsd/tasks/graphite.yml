@@ -1,0 +1,167 @@
+---
+
+- name: Check graphite variables
+  fail:
+    msg: "'graphite_database_password' must be defined"
+  when: graphite_database_password == ""
+
+
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: 0660
+  with_items:
+    - "{{ graphite_dir }}"
+    - "{{ graphite_secrets_dir }}"
+
+- name: Install Graphite
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - graphite-web
+    - graphite-carbon
+
+
+# Django secret key generation
+
+- name: Add django secret key generator script
+  copy:
+    src: django_secret_key.py
+    dest: "{{ application_secret_key_bin }}"
+    mode: 0770
+    owner: "{{ application_user }}"
+    group: "{{ application_user }}"
+
+# Just python?
+- name: Ensure django secret key
+  shell: "python {{ application_secret_key_bin }} {{ graphite_secret_key_file }}"
+  args:
+    creates: "{{ graphite_secret_key_file }}"
+  when: graphite_generate_django_secret_key
+
+- name: Write django secret key from variable
+  template:
+    src: graphite/django_secret_key
+    dest: "{{ graphite_secret_key_file }}"
+  when: not graphite_generate_django_secret_key
+
+- name: Get secret key
+  slurp:
+    src: "{{ graphite_secret_key_file }}"
+  register: secret_key
+
+- name: Set secret key as fact
+  set_fact:
+    django_secret_key: "{{ secret_key['content'] | b64decode  }}"
+
+
+# Configure graphite
+
+- name: Add Django secret key
+  lineinfile:
+    dest: /etc/graphite/local_settings.py
+    regexp: "(#)?SECRET_KEY.*"
+    line: "SECRET_KEY={{ django_secret_key }}"
+    state: present
+
+- name: Add Django secret key
+  lineinfile:
+    dest: /etc/graphite/local_settings.py
+    regexp: "(#)?USE_REMOTE_USER_AUTHENTICATION.*"
+    line: "USE_REMOTE_USER_AUTHENTICATION = True"
+    state: present
+
+- name: Add default variables to .env
+  blockinfile:
+    dest: /etc/graphite/local_settings.py
+    insertafter: EOF
+    owner: "{{ graphite_process_user }}"
+    group: "{{ graphite_process_group }}"
+    mode: 0770
+    content: |
+      # Change to true, to enable carbon-cache on boot
+      DATABASES = {
+        'default': {
+          'NAME': 'graphite',
+          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'USER': 'graphite',
+          'PASSWORD': '{{ graphite_database_password }}',
+          'HOST': '127.0.0.1',
+          'PORT': ''
+        }
+      }
+
+- name: Force local_settings.py mode
+  file:
+    path: /etc/graphite/local_settings.py
+    mode: 0660
+    owner: "{{ graphite_process_user }}"
+    group: "{{ graphite_process_group }}"
+
+# Carbon
+
+- name: Enable Carbon cache
+  lineinfile:
+    dest: /etc/default/graphite-carbon
+    regexp: "(#)?CARBON_CACHE_ENABLED.*"
+    line: "CARBON_CACHE_ENABLED=true"
+    state: present
+
+- name: Enable Carbon logrotation
+  lineinfile:
+    dest: /etc/default/graphite-carbon
+    regexp: "(#)?ENABLE_LOGROTATION.*"
+    line: "ENABLE_LOGROTATION = True"
+    state: present
+
+- name: Add storage schemas
+  blockinfile:
+    dest: /etc/carbon/storage-schemas.conf
+    insertafter: EOF
+    block: |
+      [test] pattern = ^test\.
+      retentions = 5s:5m,1m:1h,5m:1d
+
+      [statsd]
+      pattern = ^stats.*
+      retentions = 10s:1d,1m:7d,10m:1y
+
+      [kong]
+      pattern = ^kong.*
+      retentions = 10s:1d,1m:7d,10m:1y
+
+- name: Copy agregations
+  copy:
+    src: /usr/share/doc/graphite-carbon/examples/storage-aggregation.conf.example
+    dest: /etc/carbon/storage-aggregation.conf
+    remote_src: yes
+
+- name: Start carbon-cache
+  systemd:
+    name: carbon-cache
+    state: started
+
+- name: Migrate graphite auth
+  shell: graphite-manage migrate auth
+
+- name: Syncdb graphite
+  shell: graphite-manage syncdb --noinput
+
+- name: Copy apache file
+  copy:
+    src: /usr/share/graphite-web/apache2-graphite.conf
+    dest: /etc/apache2/sites-available
+    remote_src: yes
+
+- name: Disable apache default site
+  shell: a2dissite 000-default
+
+- name: Enable graphine site
+  shell: a2ensite apache2-graphite
+
+- name: Reload apache
+  systemd:
+    name: apache2
+    state: reloaded

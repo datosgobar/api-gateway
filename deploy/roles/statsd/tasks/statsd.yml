@@ -1,0 +1,37 @@
+---
+
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+  with_items:
+    - "{{ statsd_dir }}"
+    - "{{ statsd_config_dir }}"
+
+- name: Clone repository
+  git:
+    repo: "{{ statsd_clone_url }}"
+    dest: "{{ statsd_clone_dir }}"
+    update: no # just ensuring the repo checkout exists
+  become_user: "{{ application_user }}"
+
+- name: Add configuration
+  template:
+    src: config.js
+    dest: "{{ statsd_config }}"
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+
+- name: Add systemd unit
+  template:
+    src: units/statsd.service
+    dest: "{{ statsd_service }}"
+
+- name: Restart statsd service
+  systemd:
+    name: statsd.service
+    daemon_reload: yes
+    enabled: yes
+    state: started

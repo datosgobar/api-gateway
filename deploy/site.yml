@@ -2,3 +2,4 @@
 
 - import_playbook: api_cluster.yml
 - import_playbook: kong.yml
+- import_playbook: statsd.yml

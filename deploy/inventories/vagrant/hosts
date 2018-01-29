@@ -1,7 +1,12 @@
 kong0
+statsd0
 
 [kong]
 kong0
 
+[statsd]
+statsd0
+
 [api_cluster:children]
 kong
+statsd

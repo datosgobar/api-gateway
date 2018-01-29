@@ -1,0 +1,29 @@
+---
+
+nodejs_mayor_version: 8
+
+statsd_clone_url: https://github.com/etsy/statsd.git
+
+statsd_dir: "{{ application_user_home }}statsd/"
+statsd_clone_dir: "{{ statsd_dir }}repo/"
+
+statsd_bin: "{{ statsd_clone_dir }}stats.js"
+
+statsd_config_dir: "{{ statsd_dir }}config/"
+statsd_config: "{{ statsd_config_dir }}config.js"
+
+statsd_service: /etc/systemd/system/statsd.service
+
+# Graphite
+application_secret_key_bin: "{{ application_utils_dir }}secret_key.py"
+
+graphite_dir: "{{ application_user_home }}graphite/"
+graphite_secrets_dir: "{{ graphite_dir }}secrets/"
+graphite_secret_key_file: "{{ graphite_secrets_dir }}secret_key"
+graphite_generate_django_secret_key: yes
+
+graphite_process_user: _graphite
+graphite_process_group: _graphite
+graphite_database_name: graphite
+graphite_database_user: graphite
+graphite_database_password: ""

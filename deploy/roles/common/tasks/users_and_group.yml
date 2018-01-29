@@ -12,3 +12,12 @@
     append: yes
     groups: "{{ application_group }}"
     home: "{{ application_user_home }}"
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+  with_items:
+    - "{{ application_utils_dir }}"

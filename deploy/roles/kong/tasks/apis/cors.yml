@@ -1,0 +1,12 @@
+---
+
+- name: Enable CORS
+  uri:
+    url: "http://{{ kong_admin_listen }}/apis/{{ item.name }}/plugins/"
+    method: POST
+    body: "name=cors&config.origins=*"
+    status_code: 201
+  with_items: "{{ kong_api_map }}"
+  when: item.use_cors | default(false)
+
+
