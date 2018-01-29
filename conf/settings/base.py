@@ -54,7 +54,7 @@ VENDOR_APPS = [
 ]
 
 LOCAL_APPS = [
-    'project.apps.common',
+    'api_management.apps.common',
 ]
 
 INSTALLED_APPS += VENDOR_APPS + LOCAL_APPS

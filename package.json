@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "jscpd": "jscpd",
-    "eslint": "eslint project/**/*.js"
+    "eslint": "eslint api_management/**/*.js"
   },
   "author": "",
   "license": "ISC",

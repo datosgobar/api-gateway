@@ -4,7 +4,7 @@ DIR=$(dirname "$0")
 cd ${DIR}/..
 
 echo "Running pylint"
-pylint project/
+pylint api_management/
 echo "pylint OK :)"
 
 

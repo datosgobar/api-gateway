@@ -26,7 +26,7 @@ RUN python -m venv $PYTHON_VENV_DIR && \
     pip install --no-cache -r $requirements
 
 COPY conf conf/
-COPY project project/
+COPY api_management api_management/
 
 EXPOSE 8000
 

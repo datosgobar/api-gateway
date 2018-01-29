@@ -1,4 +1,4 @@
-from project.apps.common.utils import same
+from api_management.apps.common.utils import same
 
 
 def test_returns_the_same(a_random_string):

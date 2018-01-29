@@ -1,6 +1,6 @@
 languages:
   - python
 files:
-  - "project/**/*"
+  - "api_management/**/*"
 exclude:
   - "**/migrations/*"
