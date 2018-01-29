@@ -1,0 +1,6 @@
+[flake8]
+
+exclude = .git,__pycache__,docs/,requirements/,conf/settings/, .env/
+show-source = True
+statistics = True
+count = True

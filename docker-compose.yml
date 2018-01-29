@@ -1,0 +1,22 @@
+version: "3.4"
+
+services:
+  django:
+    build:
+      context: .
+      args:
+        requirements: requirements/local.txt # Use local requirements!
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://development:development@db/development_db
+    depends_on:
+      - db
+    volumes:
+      - ./:/app/code/
+  db:
+    image: postgres:9.6-alpine
+    environment:
+      POSTGRES_PASSWORD: development
+      POSTGRES_USER: development
+      POSTGRES_DB: development_db

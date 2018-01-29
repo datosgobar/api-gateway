@@ -1,0 +1,6 @@
+languages:
+  - python
+files:
+  - "project/**/*"
+exclude:
+  - "**/migrations/*"
