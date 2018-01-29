@@ -12,3 +12,10 @@
     append: yes
     groups: "{{ application_group }}"
     home: "{{ application_user_home }}"
+
+- name: Create utils directory
+  file:
+    path: "{{ application_utils_dir }}"
+    mode: 0770
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"

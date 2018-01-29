@@ -89,18 +89,17 @@ end --]]
 -- runs in the 'log_by_lua_block'
 function plugin:log(plugin_conf)
 
-
-  local querystring = {
-    ids="143.3_NO_PR_2004_A_21,143.3_NO_PR_2004_A_21:percent_change_a_year_ago",
-    start_date = "2017",
-    client_ip = ngx.var.remote_addr
-  }
+  local querystring = ngx.encode_args(ngx.req.get_uri_args())
   local request = {
     querystring = querystring
   }
+  local host = ngx.var.host
+  local remote_addr = ngx.var.remote_addr
 
   local JSONRequestArray = {
-    request = request
+    request = request,
+    host = host,
+    ip = remote_addr
   }
 
 
@@ -116,7 +115,7 @@ function plugin:log(plugin_conf)
       source = ltn12.source.string(jsonRequest)
   }
   --print(result)
-  print(tostring(respcode) .. " [ Response ]")
+  print("[ HTTPLOG2 ]" .. tostring(respcode) .. " response code")
   --print(respheaders)
   --print(respstatus)
 

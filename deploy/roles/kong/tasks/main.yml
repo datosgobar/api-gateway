@@ -36,6 +36,7 @@
 - include_tasks: datadog.yml
   when: kong_datadog_api_key is defined
 
+- include_tasks: install_http_log2.yml
 - include_tasks: configure.yml
 
 - include_tasks: apis/main.yml

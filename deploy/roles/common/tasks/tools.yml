@@ -5,4 +5,7 @@
   with_items:
     - htop
     - vim
+    - socat # UDP connection debugging
+    - jq
+    - unzip
     - acl # required for running ansible unprivileged user tasks

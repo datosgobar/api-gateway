@@ -29,3 +29,7 @@ kong_rate_limit_seconds: 5
 kong_rate_limit_hour: 10000
 
 analytics_endpoint: series/analytics/save/
+
+
+# HTTPlog2 plugin
+httplog2_plugin_dir: "{{ application_utils_dir }}httplog2-kong/"
