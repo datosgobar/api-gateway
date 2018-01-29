@@ -1,0 +1,6 @@
+languages:
+  - python
+files:
+  - "api_management/**/*"
+exclude:
+  - "**/migrations/*"
