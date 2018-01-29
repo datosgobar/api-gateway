@@ -55,6 +55,7 @@ VENDOR_APPS = [
 
 LOCAL_APPS = [
     'api_management.apps.common',
+    'api_management.apps.analytics',
 ]
 
 INSTALLED_APPS += VENDOR_APPS + LOCAL_APPS
