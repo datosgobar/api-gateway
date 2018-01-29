@@ -20,6 +20,13 @@
     - procps
     - perl
 
+- name: Configure ulimit file
+  pam_limits:
+    domain: "*"
+    limit_type: soft
+    limit_item: nofile
+    value: 4096
+
 - name: Install kong
   apt:
     deb: "{{ kong_download_deb }}"
