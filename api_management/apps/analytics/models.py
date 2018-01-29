@@ -11,7 +11,7 @@ class Query(models.Model):
     start_time = models.DateTimeField()
     request_time = models.DurationField()
 
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         verbose_name = _("query")
         verbose_name_plural = _("queries")
 

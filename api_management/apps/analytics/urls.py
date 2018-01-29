@@ -1,2 +1,2 @@
-urlpatterns = [
+urlpatterns = [  # pylint: disable=invalid-name
 ]
