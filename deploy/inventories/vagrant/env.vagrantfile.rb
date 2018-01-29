@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.inventory_path = "inventories/vagrant/hosts"
         ansible.vault_password_file = "inventories/vagrant/vault_password.txt"
 
-        ansible.verbose = "vvv"
+        ansible.verbose = "vv"
         # ansible.tags = ["elastic"]
         ansible.limit = ansible_limit
         ansible.extra_vars = extra_vars
