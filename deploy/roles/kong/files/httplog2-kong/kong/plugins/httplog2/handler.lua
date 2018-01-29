@@ -97,7 +97,7 @@ function plugin:log(plugin_conf)
   local request_time = ngx.now() - start_time
 
   local JSONRequestArray = {
-    ip = remote_addr
+    ip = remote_addr,
     host = host,
     uri = uri,
     querystring = querystring,
