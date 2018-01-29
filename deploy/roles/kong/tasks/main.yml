@@ -50,3 +50,4 @@
 - include_tasks: security.yml
 
 - include_tasks: http_log.yml
+- include_tasks: http_log2.yml
