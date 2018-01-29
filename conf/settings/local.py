@@ -9,3 +9,9 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': env.db()
 }
+
+INSTALLED_APPS += [
+    'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
+]
