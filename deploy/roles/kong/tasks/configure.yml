@@ -24,7 +24,7 @@
 - name: Configure PostgreSQL access
   lineinfile:
     path: /etc/kong/kong.conf
-    regexp: '^(#)?#pg_password = .*'
+    regexp: '^(#)?pg_password = .*'
     line: 'pg_password = {{ kong_database_pass }}'
 
 - name: Configure prefix
