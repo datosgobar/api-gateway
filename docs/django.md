@@ -46,13 +46,15 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 
 ## Tips:
 
-## Server par desarrollo
+## Server para desarrollo
 
 * `./manage.py runserver`
 
 ## Consola de django
 
 * `./manage.py shell`
+
+* Con Docker: `docker-compose run django /app/venv/bin/python manage.py migrate`
 
 ## Tests
 

@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 VENDOR_APPS = [
@@ -55,6 +58,7 @@ VENDOR_APPS = [
 
 LOCAL_APPS = [
     'api_management.apps.common',
+    'api_management.apps.analytics',
 ]
 
 INSTALLED_APPS += VENDOR_APPS + LOCAL_APPS
