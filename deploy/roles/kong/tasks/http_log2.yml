@@ -1,0 +1,11 @@
+---
+
+
+- name: Setup http-log2
+  uri:
+    url: "http://{{ kong_admin_listen }}/apis/{{ item.name }}/plugins/"
+    method: PUT
+    body: "name=httplog2&config.endpoint={{ item.httplog2_endpoint }}"
+    status_code: 200,201
+  with_items: "{{ kong_api_map }}"
+  when: "item.httplog2_endpoint | default(false)"

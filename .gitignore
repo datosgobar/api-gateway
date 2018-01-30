@@ -6,6 +6,7 @@ env/
 .python-version
 vault_password.txt
 vault_pass.txt
+wks.*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
