@@ -1,10 +1,17 @@
 ---
 
 
-- name: Setup http-log
+- name: Create file-log dir
+  file:
+    path: "{{ kong_file_log_dir }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+
+- name: Setup file-log
   uri:
     url: "http://{{ kong_admin_listen }}/apis/{{ item.name }}/plugins/"
     method: PUT
-    body: "name=http-log&config.method=POST&config.http_endpoint={{ item.upstream_url }}/{{ analytics_endpoint }}"
+    body: "name=file-log&config.path={{ kong_file_log_path }}"
     status_code: 200,201
   with_items: "{{ kong_api_map }}"

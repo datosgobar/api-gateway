@@ -1,28 +1,6 @@
 ---
 
-
-- name: Install PostgreSQL as Kong dependency
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - postgresql
-    - postgresql-contrib
-    - python-psycopg2 # For ansible postgresql module
-
-- name: Install Kong dependencies
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - openssl
-    - libpcre3
-    - procps
-    - perl
-
-- name: Install kong
-  apt:
-    deb: "{{ kong_download_deb }}"
+- include_tasks: dependencies.yml
 
 # Configure psql
 - include_tasks: psql.yml
@@ -42,3 +20,5 @@
 - include_tasks: security.yml
 
 - include_tasks: http_log.yml
+
+- include_tasks: configure_logrotate.yml

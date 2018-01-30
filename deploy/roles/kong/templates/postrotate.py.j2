@@ -1,0 +1,11 @@
+#!/env/bin/python
+#! coding: utf-8
+
+import requests
+
+with open('{{ kong_file_log_path }}.1') as f:
+    try:
+        json = f.readline()
+        requests.post(url='{{ tseries_api }}/{{ analytics_endpoint }}', data=json)
+    except EOFError:
+        print('end')

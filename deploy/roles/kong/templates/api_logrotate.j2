@@ -1,0 +1,15 @@
+{{ kong_file_log_path }} {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 0640 {{ application_user }} {{ application_group }}
+        prerotate
+                kong stop
+        postrotate
+                kong start
+                /bin/sh {{ postrotate_script_path }}
+        endscript
+}

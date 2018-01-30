@@ -1,0 +1,39 @@
+---
+
+- name: Install PostgreSQL as Kong dependency
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - python-psycopg2 # For ansible postgresql module
+
+- name: Install Kong dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openssl
+    - libpcre3
+    - procps
+    - perl
+
+- name: Install kong
+  apt:
+    deb: "{{ kong_download_deb }}"
+
+- name: Install pip
+  apt:
+    name: python-pip
+
+# Somehow required by ansible pip module
+- name: Install virtualenv
+  pip:
+    name: virtualenv
+    executable: pip
+    virtualenv_python: python
+
+- name: Install python libs
+  pip:
+    name: requests
