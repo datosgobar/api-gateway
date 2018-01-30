@@ -4,3 +4,4 @@ exclude = .git,__pycache__,docs/,requirements/,conf/settings/, .env/, **/migrati
 show-source = True
 statistics = True
 count = True
+max-line-length = 100
