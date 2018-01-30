@@ -3,6 +3,8 @@ from .base import *
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+environ.Env.read_env(SETTINGS_DIR('.env'))
+
 ADMINS = (
     (env("ADMIN_NAME", default="Admin name"), env("ADMIN_EMAIL", default='admin_name@devartis.com')),
 )
