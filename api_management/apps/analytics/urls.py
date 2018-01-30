@@ -7,7 +7,5 @@ from .views import create_query
 
 urlpatterns = [  # pylint: disable=invalid-name
     path('queries/', create_query),
-    url(r'^auth/', include('djoser.urls')),
-    url(r'^auth/', include('djoser.urls.authtoken')),
-    url(r'^token/', authtoken_views.obtain_auth_token)
+    path('token/', authtoken_views.obtain_auth_token)
 ]
