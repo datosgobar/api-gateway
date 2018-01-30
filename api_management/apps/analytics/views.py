@@ -30,6 +30,6 @@ def create_query(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     content = {
-        'query': query,
+        'query': QuerySerializer(query).data,
     }
     return Response(content, status=status.HTTP_201_CREATED)
