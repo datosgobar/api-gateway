@@ -3,5 +3,4 @@ flake8==3.5.0 # This covers pycodestyle
 pylint==1.8.1
 pytest==3.3.2
 pytest-django==3.1.2
-djangorestframework==3.7.7
-djoser==1.1.5
+
