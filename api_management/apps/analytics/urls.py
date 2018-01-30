@@ -1,9 +1,8 @@
-from django.urls import path
-from rest_framework.authtoken import views as authtoken_views
+from rest_framework import routers
 
-from .views import create_query
+from .views import QueryViewSet
 
-urlpatterns = [  # pylint: disable=invalid-name
-    path('queries/', create_query),
-    path('token/', authtoken_views.obtain_auth_token)
-]
+router = routers.SimpleRouter()
+router.register(r'queries', QueryViewSet)
+
+urlpatterns = router.urls

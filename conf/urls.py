@@ -16,8 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from rest_framework.authtoken import views as authtoken_views
+
 api_urlpatterns = [
     path("analytics/", include("api_management.apps.analytics.urls")),
+    path('token/', authtoken_views.obtain_auth_token)
 ]
 
 urlpatterns = [
