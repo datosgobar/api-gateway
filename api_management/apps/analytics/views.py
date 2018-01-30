@@ -1,12 +1,20 @@
 import json
 
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from rest_framework import status
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 
 
-@csrf_exempt
-@require_POST
+@api_view(['POST'])
+@permission_classes((IsAdminUser,))
 def create_query(request):
-    json.loads(request.body)
-    return HttpResponse(status=201)
+    try:
+        json.loads(request.body)
+    except json.JSONDecodeError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    content = {
+        'status': 'request was permitted'
+    }
+    return Response(content, status=status.HTTP_200_OK)
