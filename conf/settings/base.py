@@ -50,6 +50,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
+
+    "django_rq",
 ]
 
 VENDOR_APPS = [
@@ -147,3 +149,19 @@ STATIC_ROOT = BASE_DIR('static')
 STATIC_URL = '/static/'
 
 SITE_ID = 1
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+
+    'create_model': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+}

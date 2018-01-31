@@ -3,3 +3,4 @@ django-environ==0.4.4
 django-extensions==1.9.9
 https://github.com/devartis/django-devartis-admin/archive/0.1.7.zip
 djangorestframework==3.7.7
+django-rq==1.0.1
