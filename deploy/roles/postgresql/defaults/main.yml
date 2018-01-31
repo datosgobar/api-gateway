@@ -1,12 +1,16 @@
 ---
 
 
-# Postgresql conection credentials
+# Postgresql connection credentials
 postgresql_user: ""
 postgresql_database_name: ""
-postgresql_host: 127.0.0.1
 postgresql_port: 5432
 postgresql_password: ""
+
+# Postgresql kong connection credentials
+kong_database_name: ""
+kong_user: ""
+kong_database_pass:
 
 
 postgresql_dir: "{{ application_dir }}postgresql/"
@@ -15,7 +19,7 @@ postgresql_bins: "{{ postgresql_dir }}bins/"
 
 # Postgresql configuration
 
-postgresql_listen_address: "{{ postgresql_host }}"
+postgresql_listen_address: "127.0.0.1"
 
 # Backups
 postgresql_backup_bin: "{{ postgresql_bins }}postgresql_backup.sh"

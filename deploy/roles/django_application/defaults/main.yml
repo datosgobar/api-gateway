@@ -24,9 +24,6 @@ application_temp_dir: "{{ application_dir }}temp/"
 application_settings_module: conf.settings.production
 checkout_branch: master
 
-# PSQL default same server
-postgresql_host: "127.0.0.1"
-
 #Django
 django_settings:
   MEDIA_ROOT: "{{ application_media_dir }}"

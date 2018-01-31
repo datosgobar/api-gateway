@@ -1,3 +1,4 @@
 ---
 
 disable_ssh_password: yes
+common_generate_ssh_key: yes

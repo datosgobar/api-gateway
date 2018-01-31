@@ -4,8 +4,8 @@
 nginx_http_port: 80
 nginx_https_port: 443
 
-nginx_media_dir: ""
-nginx_static_dir: ""
+nginx_media_dir: "{{ application_dir }}media/"
+nginx_static_dir: "{{ application_dir }}static/"
 
 
 nginx_dir: "{{ application_dir }}nginx/"

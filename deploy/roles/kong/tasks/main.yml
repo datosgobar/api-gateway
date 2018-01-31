@@ -1,14 +1,10 @@
 ---
 
-
-- name: Install PostgreSQL as Kong dependency
-  apt:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - postgresql
-    - postgresql-contrib
-    - python-psycopg2 # For ansible postgresql module
+- name: Check if kong-community-edition is installed
+  command: dpkg-query -s kong-community-edition
+  ignore_errors: yes
+  changed_when: False
+  register: kong_check
 
 - name: Install Kong dependencies
   apt:
@@ -19,17 +15,12 @@
     - libpcre3
     - procps
     - perl
-
-- name: Configure ulimit file
-  pam_limits:
-    domain: "*"
-    limit_type: soft
-    limit_item: nofile
-    value: 4096
+  when: kong_check|failed
 
 - name: Install kong
   apt:
     deb: "{{ kong_download_deb }}"
+  when: kong_check|failed
 
 - name: Copy default configuration
   copy:
@@ -39,7 +30,6 @@
     force: no
 
 # Configure psql
-- include_tasks: psql.yml
 - include_tasks: datadog.yml
   when: kong_datadog_api_key is defined
 

@@ -15,6 +15,22 @@
     msg: "Missing 'postgresql_password' credential variable"
   when: postgresql_password == ""
 
+- name: Check credentials
+  fail:
+    msg: "Missing 'kong_database_name' credential variable"
+  when: kong_database_name == ""
+
+- name: Check credentials
+  fail:
+    msg: "Missing 'kong_user' credential variable"
+  when: kong_user == ""
+
+- name: Check credentials
+  fail:
+    msg: "Missing 'kong_database_pass' credential variable"
+  when: kong_database_pass == ""
+
+
 - include_tasks: dependencies.yml
 - include_tasks: configure.yml
 - include_tasks: security.yml
@@ -33,7 +49,8 @@
     - "{{ postgresql_bins }}"
 
 - include_tasks: backups.yml
-- include_tasks: create_database.yml
+- include_tasks: create_app_database.yml
+- include_tasks: create_kong_database.yml
 
 - name: Backup database
   shell: "{{ postgresql_backup_bin }}"
