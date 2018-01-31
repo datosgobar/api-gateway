@@ -1,11 +1,12 @@
 kong0
+psql0
 web0
 
 [web]
 web0
 
 [postgresql]
-web0
+psql0
 
 [kong]
 kong0

@@ -1,0 +1,5 @@
+---
+
+ansible_host: 192.168.35.7
+ansible_port: 22
+postgresql_listen_address: "{{ ansible_host }}"
