@@ -31,6 +31,13 @@
   apt:
     deb: "{{ kong_download_deb }}"
 
+- name: Copy default configuration
+  copy:
+    src: /etc/kong/kong.conf.default
+    dest: /etc/kong/kong.conf
+    remote_src: yes
+    force: no
+
 # Configure psql
 - include_tasks: psql.yml
 - include_tasks: datadog.yml

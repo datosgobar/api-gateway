@@ -9,8 +9,7 @@
   user:
     name: "{{ application_user }}"
     comment: "Devartis Application user"
-    append: yes
-    groups: "{{ application_group }}"
+    group: "{{ application_group }}"
     home: "{{ application_user_home }}"
 
 - name: Create utils directory
@@ -19,3 +18,4 @@
     mode: 0770
     owner: "{{ application_user }}"
     group: "{{ application_group }}"
+    state: directory

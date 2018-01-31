@@ -1,0 +1,7 @@
+---
+
+- name: Enable postgresql backup timer
+  service:
+    state: restarted
+    name: postgresql_backup.timer
+    enabled: yes

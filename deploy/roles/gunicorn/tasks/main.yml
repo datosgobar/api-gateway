@@ -1,0 +1,20 @@
+---
+
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ application_user }}"
+    group: "{{ application_user }}"
+    state: directory
+  with_items:
+    - "{{ gunicorn_dir }}"
+    - "{{ gunicorn_socket_dir }}"
+    - "{{ gunicorn_log_dir }}"
+    - "{{ gunicorn_conf_dir }}"
+    - "{{ gunicorn_bins_dir }}"
+
+- include_tasks: config_gunicorn.yml
+  become_user: "{{ application_user }}"
+
+- include_tasks: create_systemd_files.yml
+- include_tasks: configure_logrotate.yml

@@ -1,0 +1,11 @@
+---
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and restart web server
+  service:
+    state: restarted
+    name: gunicorn.socket
+    enabled: yes
+  tags: quickly

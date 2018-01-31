@@ -7,6 +7,7 @@ application_name: api_management
 application_user: devartis
 application_group: devartis
 
-# Application
 application_user_home: "/home/{{ application_user }}/"
+application_dir: "{{ application_user_home }}webapp/"
+application_repo_dir: "{{ application_dir }}app/"
 application_utils_dir: "{{ application_user_home }}utils/"

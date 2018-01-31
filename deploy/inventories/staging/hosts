@@ -1,7 +1,16 @@
 kong0
+web0
+
+[web]
+web0
+
+[postgresql]
+web0
 
 [kong]
 kong0
 
 [api_cluster:children]
 kong
+web
+postgresql
