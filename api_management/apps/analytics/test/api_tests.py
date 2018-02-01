@@ -11,7 +11,7 @@ def test_analytics_api_valid_query(staff_user, well_formed_query):
     client = APIClient()
     client.force_authenticate(user=staff_user)
     response = client.post('/api/analytics/queries/', well_formed_query, format='json')
-    assert response.status_code == 201
+    assert response.status_code == 204
 
 
 def test_analytics_api_invalid_query(staff_user):  # pylint: disable=invalid-name
