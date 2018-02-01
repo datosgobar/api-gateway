@@ -20,6 +20,11 @@
     msg: "'allowed_host' must be set"
   when: allowed_host == ""
 
+- name: Check 'allowed_host_ip'
+  fail:
+    msg: "'allowed_host_ip' must be set"
+  when: allowed_host_ip == ""
+
 - include_tasks: create_file_structures.yml
   become_user: "{{ application_user }}"
 

@@ -5,10 +5,12 @@ application_deploy_ssh_key_required: yes
 application_deploy_ssh_key: ""
 database_url: ""
 allowed_host: ""
+allowed_host_ip: ""
 
 application_bins_dir: "{{ application_dir }}bins/"
 application_conf_dir: "{{ application_dir }}conf/"
 application_virtualenv_dir: "{{ application_dir }}venv/"
+application_virtualenv_activate: "{{ application_virtualenv_dir }}bin/activate"
 application_media_dir: "{{ application_dir }}media/"
 application_static_dir: "{{ application_dir }}static/"
 
