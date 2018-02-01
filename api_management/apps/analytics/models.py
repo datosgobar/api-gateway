@@ -7,7 +7,7 @@ class Query(models.Model):
     ip_address = models.CharField(max_length=200, null=True)
     host = models.TextField()
     uri = models.TextField()
-    querystring = models.TextField()
+    querystring = models.TextField(default="", blank=True)
     start_time = models.DateTimeField()
     request_time = models.DecimalField(max_digits=20, decimal_places=15)
 
