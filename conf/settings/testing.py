@@ -18,3 +18,6 @@ PASSWORD_HASHERS = (
 DEBUG = False
 TEMPLATE_DEBUG = False
 TESTS_IN_PROGRESS = True
+
+for queueConfig in RQ_QUEUES.values():
+    queueConfig['ASYNC'] = False
