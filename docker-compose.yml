@@ -6,8 +6,6 @@ services:
       context: .
       args:
         requirements: requirements/local.txt # Use local requirements!
-    ports:
-      - "8000:8000"
     environment:
       DATABASE_URL: postgres://development:development@db/development_db
       REDIS_HOST: redis
@@ -15,6 +13,21 @@ services:
       - db
     volumes:
       - ./:/app/code/
+    ports:
+      - "8000:8000"
+  rq_worker: # This is a copy of django service
+    build:
+      context: .
+      args:
+        requirements: requirements/local.txt # Use local requirements!
+    environment:
+      DATABASE_URL: postgres://development:development@db/development_db
+      REDIS_HOST: redis
+    depends_on:
+      - db
+    volumes:
+      - ./:/app/code/
+    command: /app/venv/bin/python manage.py rqworker default create_model
   db:
     image: postgres:9.6-alpine
     environment:
