@@ -37,3 +37,11 @@
     dest: "{{ application_repo_dir }}"
     version: "{{ checkout_branch }}"
   tags: quickly
+
+- name: Setup .bashrc
+  blockinfile:
+    path: "{{ application_user_home }}.bashrc"
+    insertafter: EOF
+    block: |
+      export DJANGO_SETTINGS_MODULE={{ application_settings_module }}
+      source {{ application_virtualenv_activate }}
