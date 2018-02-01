@@ -1,3 +1,4 @@
+from faker import Faker
 import pytest
 
 
@@ -23,9 +24,10 @@ def staff_user(user):  # pylint: disable=unused-argument, redefined-outer-name, 
 
 @pytest.fixture
 def well_formed_query():
-    return {"ip_address": "127.0.0.1",
-            "host": "ramon",
-            "uri": "/home/",
-            "querystring": "SHOW TABLES",
-            "start_time": "2019-11-21T05:04",
-            "request_time": "00:30:00"}
+    faker = Faker()
+    return {"ip_address": faker.ipv4(),
+            "host": faker.domain_name(),
+            "uri": faker.uri_path(),
+            "querystring": faker.text(),
+            "start_time": faker.iso8601(),
+            "request_time": faker.time()}
