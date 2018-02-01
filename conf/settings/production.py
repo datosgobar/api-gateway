@@ -24,7 +24,10 @@ SECRET_KEY = env('DJANGO_SECRET_KEY')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
-ALLOWED_HOSTS = [env("ALLOWED_HOST"), ]
+ALLOWED_HOSTS = [
+    env("ALLOWED_HOST"),
+    env("ALLOWED_HOST_IP"),
+]
 
 RAVEN_CONFIG = {
     'dsn': env('RAVEN_DSN', default=""),
