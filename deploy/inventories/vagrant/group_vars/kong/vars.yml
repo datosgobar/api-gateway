@@ -6,5 +6,11 @@ kong_database_host: "192.168.35.7"
 use_rate_limit: false
 #kong_datadog_api_key:
 kong_api_map:
-  - {name: "api-mgmt-vagrant", hosts: "dev.apis.datos.gob.ar", upstream_url: "http://192.168.35.5"}
+  - {
+    name: "api-mgmt-vagrant", hosts: "dev.apis.datos.gob.ar",
+    upstream_url: "http://192.168.35.5",
+    httplog2_endpoint: "http://192.168.35.5/api/analytics/queries/",
+    httplog2_token: "bd7eb5fff6c0aee41eb0864a125e3b43678c36ae",
+    httplog2_host: "dev.apis.datos.gob.ar"
+    }
 #  - {name: "stiempo-vagrant", hosts: "www.apis.datos.gob.ar", upstream_url: "http://192.168.35.10", httplog2_endpoint: "http://192.168.35.10/series/analytics/save/"}
