@@ -11,7 +11,7 @@
   uri:
     url: "http://{{ kong_admin_listen }}/apis/"
     method: PUT
-    body: "name={{ item.name }}&hosts={{ item.hosts }}&upstream_url={{ item.upstream_url }}&upstream_connect_timeout=10000&upstream_send_timeout=10000&upstream_read_timeout=10000"
+    body: "name={{ item.name }}&hosts={{ item.hosts }}&upstream_url={{ item.upstream_url }}&upstream_connect_timeout=10000&upstream_send_timeout=10000&upstream_read_timeout=10000&preserve_host={{ item.preserve_host|default(true) }}"
     status_code: 201,200
   with_items: "{{ kong_api_map }}"
 
