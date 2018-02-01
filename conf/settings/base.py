@@ -152,14 +152,14 @@ SITE_ID = 1
 
 RQ_QUEUES = {
     'default': {
-        'HOST': 'localhost',
+        'HOST': env('REDIS_HOST', default='localhost'),
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     },
 
     'create_model': {
-        'HOST': 'localhost',
+        'HOST': env('REDIS_HOST', default='localhost'),
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
