@@ -1,0 +1,10 @@
+---
+
+postgresql_user: "database_user"
+postgresql_database_name: "database_name"
+postgresql_password: "database_password"
+
+kong_database_name: "kong"
+kong_user: "kong"
+kong_database_host: "192.168.35.7"
+kong_database_pass: "kong_pass"

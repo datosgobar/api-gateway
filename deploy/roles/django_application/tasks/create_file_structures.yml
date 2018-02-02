@@ -1,0 +1,47 @@
+---
+
+- name: Create required dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: 0770
+  with_items:
+    - "{{ application_bins_dir }}"
+    - "{{ application_conf_dir }}"
+    - "{{ application_repo_dir }}"
+
+- name: Add django secret key generator script
+  copy:
+    src: django_secret_key.py
+    dest: "{{ application_secret_key_bin }}"
+    mode: 0770
+
+- name: Create media and static dirs
+  file: 
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}" # Should this be "www-data"?
+    mode: 0770
+  with_items:
+    - "{{ application_media_dir }}"
+    - "{{ application_static_dir }}"
+
+
+- name: Get application code
+  git:
+    accept_hostkey: yes
+    repo: "{{ application_clone_url }}"
+    dest: "{{ application_repo_dir }}"
+    version: "{{ checkout_branch }}"
+  tags: quickly
+
+- name: Setup .bashrc
+  blockinfile:
+    path: "{{ application_user_home }}.bashrc"
+    insertafter: EOF
+    block: |
+      export DJANGO_SETTINGS_MODULE={{ application_settings_module }}
+      source {{ application_virtualenv_activate }}

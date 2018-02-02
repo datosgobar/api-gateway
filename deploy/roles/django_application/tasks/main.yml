@@ -1,0 +1,35 @@
+---
+
+- name: Check 'application_clone_url'
+  fail:
+    msg: "'application_clone_url' must be set"
+  when: application_clone_url == ""
+
+- name: Check 'deploy_ssh_key'
+  fail:
+    msg: "'deploy_ssh_key' is required for cloning the project"
+  when: application_deploy_ssh_key == "" and application_deploy_ssh_key_required
+
+- name: Check 'database_url'
+  fail:
+    msg: "'database_url' must be set"
+  when: database_url == ""
+
+- name: Check 'allowed_host'
+  fail:
+    msg: "'allowed_host' must be set"
+  when: allowed_host == ""
+
+- name: Check 'allowed_host_ip'
+  fail:
+    msg: "'allowed_host_ip' must be set"
+  when: allowed_host_ip == ""
+
+- include_tasks: create_file_structures.yml
+  become_user: "{{ application_user }}"
+
+- include_tasks: setup_python_env.yml
+  become_user: "{{ application_user }}"
+
+- include_tasks: post_install.yml
+  become_user: "{{ application_user }}"

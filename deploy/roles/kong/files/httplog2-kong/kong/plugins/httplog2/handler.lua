@@ -93,9 +93,10 @@ function plugin:log(plugin_conf)
   local host = ngx.var.host
   local remote_addr = ngx.var.remote_addr
   local uri = ngx.var.uri
-  local start_time = ngx.req.start_time()
-  local request_time = ngx.now() - start_time
+  local start_time_nginx = ngx.req.start_time()
+  local request_time = ngx.now() - start_time_nginx
 
+  local start_time = os.date("!%Y-%m-%dT%TZ", start_time_nginx)
   local JSONRequestArray = {
     ip = remote_addr,
     host = host,
@@ -105,20 +106,33 @@ function plugin:log(plugin_conf)
     request_time = request_time
   }
 
-
   local jsonRequest = JSON:encode(JSONRequestArray)
+
+  local headers = {
+    ['content-type'] = "application/json",
+    ['content-length'] = string.len(jsonRequest),
+    Authorization = "Token " .. plugin_conf.token
+  }
+  if plugin_conf.host then
+    headers['Host'] = plugin_conf.host
+  end
 
 
   --print(plugin_conf.endpoint)
-  --print(ngx.var.remote_addr)
+  print(JSON:encode(headers))
   local result, respcode, respheaders, respstatus = http.request {
-      url = plugin_conf.endpoint,
-      method = "POST",
-      headers = { ['content-type']="application/json", ['content-length']=string.len(jsonRequest) },
-      source = ltn12.source.string(jsonRequest)
+    url = plugin_conf.endpoint,
+    method = "POST",
+    headers = headers,
+    source = ltn12.source.string(jsonRequest)
   }
-  --print(result)
-  print("[ HTTPLOG2 ]" .. tostring(respcode) .. " response code")
+  print(jsonRequest)
+  -- print(result)
+  -- print(respcode)
+  -- print(respheaders)
+  -- print(respstatus)
+  print("[ HTTPLOG2 ] " .. result)
+  print("[ HTTPLOG2 ] Got a " .. tostring(respcode) .. " response code from API Management application.")
   --print(respheaders)
   --print(respstatus)
 

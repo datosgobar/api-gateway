@@ -1,0 +1,47 @@
+---
+
+application_clone_url: ""
+application_deploy_ssh_key_required: yes
+application_deploy_ssh_key: ""
+database_url: ""
+allowed_host: ""
+allowed_host_ip: ""
+
+application_bins_dir: "{{ application_dir }}bins/"
+application_conf_dir: "{{ application_dir }}conf/"
+application_virtualenv_dir: "{{ application_dir }}venv/"
+application_virtualenv_activate: "{{ application_virtualenv_dir }}bin/activate"
+application_media_dir: "{{ application_dir }}media/"
+application_static_dir: "{{ application_dir }}static/"
+
+application_secret_key_bin: "{{ application_bins_dir }}django_secret_key.py"
+application_python_bin: "{{ application_virtualenv_dir }}bin/python"
+
+application_env_file: "{{ application_conf_dir }}env"
+application_env_file_link: "{{ application_repo_dir }}conf/settings/.env"
+application_secret_key_file: "{{ application_conf_dir }}secret_key"
+
+application_temp_dir: "{{ application_dir }}temp/"
+
+application_settings_module: conf.settings.production
+checkout_branch: master
+
+#Django
+django_settings:
+  MEDIA_ROOT: "{{ application_media_dir }}"
+  STATIC_ROOT: "{{ application_static_dir }}"
+
+django_environment:
+  DJANGO_SETTINGS_MODULE: "{{ application_settings_module }}"
+
+application_requirements: "{{ application_repo_dir }}requirements.txt"
+
+run_migrations: yes
+
+# Set "django_secret_key" value if this changes!
+generate_django_secret_key: yes
+django_secret_key:
+
+# Sentry
+sentry_dsn:
+sentry_environment: testing

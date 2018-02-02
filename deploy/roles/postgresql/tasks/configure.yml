@@ -1,0 +1,33 @@
+---
+
+- name: Allow md5 for local connections
+  replace:
+    path: /etc/postgresql/9.5/main/pg_hba.conf
+    regexp: '^local(.+)all(.+)all(.+)peer$'
+    replace: 'local   all             all                                     md5'
+    backup: yes
+
+
+- name: Allow md5 for connections
+  blockinfile:
+    path: /etc/postgresql/9.5/main/pg_hba.conf
+    insertafter: '^# IPv4 local connections:'
+    block: |
+      host    {{ postgresql_database_name }}             {{ postgresql_user }}             {{ postgresql_listen_address }}/16                 md5
+      host    {{ kong_database_name }}                   {{ kong_user }}                   {{ postgresql_listen_address }}/16                 md5
+
+- name: Allow connections from local network
+  lineinfile:
+    path: /etc/postgresql/9.5/main/postgresql.conf
+    insertafter: '^#listen_addresses = .*'
+    line: "listen_addresses = '{{ postgresql_listen_address }}'"
+    backup: yes
+
+- name: Create .pgpass file in app user home
+  template:
+    src: conf/pgpass
+    dest: ~/.pgpass
+    mode: 0600
+  become_user: "{{ application_user }}"
+  vars:
+    ansible_ssh_pipelining: true

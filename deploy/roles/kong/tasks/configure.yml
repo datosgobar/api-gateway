@@ -1,5 +1,20 @@
 ---
 
+- name: Check credentials
+  fail:
+    msg: "Missing 'kong_database_name' credential variable"
+  when: kong_database_name == ""
+
+- name: Check credentials
+  fail:
+    msg: "Missing 'kong_user' credential variable"
+  when: kong_user == ""
+
+- name: Check credentials
+  fail:
+    msg: "Missing 'kong_database_pass' credential variable"
+  when: kong_database_pass == ""
+
 - name: Copy default configuration
   copy:
     src: /etc/kong/kong.conf.default
@@ -14,18 +29,43 @@
     limit_item: nofile
     value: 4096
 
+- name: Configure ulimit file
+  pam_limits:
+    domain: "*"
+    limit_type: soft
+    limit_item: nofile
+    value: 4096
+
 - name: Create prefix directory
   file:
     path: "{{ kong_prefix }}"
     state: directory
     recurse: yes
 
+- name: Configure PostgreSQL access host
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?pg_host = .*'
+    line: 'pg_host = {{ kong_database_host }}'
 
-- name: Configure PostgreSQL access
+- name: Configure PostgreSQL access user
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?pg_user = .*'
+    line: 'pg_user = {{ kong_user }}'
+
+- name: Configure PostgreSQL access password
   lineinfile:
     path: /etc/kong/kong.conf
     regexp: '^(#)?pg_password = .*'
     line: 'pg_password = {{ kong_database_pass }}'
+
+- name: Configure PostgreSQL access database name
+  lineinfile:
+    path: /etc/kong/kong.conf
+    regexp: '^(#)?pg_database = .*'
+    line: 'pg_database = {{ kong_database_name }}'
+
 
 - name: Configure prefix
   lineinfile:

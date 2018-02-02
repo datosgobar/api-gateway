@@ -20,5 +20,5 @@
 - name: Configure httplog2 plugin
   lineinfile:
     path: /etc/kong/kong.conf
-    regexp: '^(#)?#custom_plugins = .*'
+    regexp: '^(#)?custom_plugins = .*'
     line: 'custom_plugins = httplog2'

@@ -1,0 +1,44 @@
+---
+
+- name: Check 'nginx_media_dir'
+  fail:
+    msg: "'nginx_media_dir' must be set"
+  when: nginx_media_dir == ""
+
+- name: Check 'nginx_static_dir'
+  fail:
+    msg: "'nginx_static_dir' must be set"
+  when: nginx_static_dir == ""
+
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ application_user }}"
+    group: "{{ application_user }}"
+    state: directory
+  with_items:
+    - "{{ nginx_dir }}"
+    - "{{ nginx_conf_dir }}"
+    - "{{ nginx_log_dir }}"
+
+- name: Install requirements
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - apache2-utils
+    - nginx
+
+- name: Add nginx to devartis group
+  user:
+    name: www-data
+    groups: "{{ application_group }}"
+    append: yes
+
+- include_tasks: nginx_configuration.yml
+- include_tasks: nginx_site.yml
+- include_tasks: configure_logrotate.yml
+- include_tasks: security.yml
+
+-  name: trigger nginx-restart
+   command: /bin/true
+   notify:
+     - Enable and restart nginx

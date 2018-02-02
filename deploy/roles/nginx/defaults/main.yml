@@ -1,0 +1,36 @@
+---
+
+# NGINX
+nginx_http_port: 80
+nginx_https_port: 443
+
+nginx_media_dir: "{{ application_dir }}media/"
+nginx_static_dir: "{{ application_dir }}static/"
+
+
+nginx_dir: "{{ application_dir }}nginx/"
+nginx_conf_dir: "{{ nginx_dir }}config/"
+nginx_log_dir: "{{ nginx_dir }}nginx/"
+
+
+nginx_conf_file: "{{ nginx_conf_dir }}default.conf"
+
+nginx_access_log: "{{ nginx_log_dir }}access.log"
+nginx_error_log: "{{ nginx_log_dir }}error.log"
+
+nginx_ssl_key_path: "{{ nginx_conf_dir }}site.key"
+nginx_ssl_crt_path: "{{ nginx_conf_dir }}site.crt"
+nginx_domain_file_path: "{{ nginx_conf_dir }}site.domain"
+
+nginx_http_auth_mark: "## HTTP_AUTH_MARK"
+nginx_http_auth_file: "{{ nginx_conf_dir }}.htpasswd"
+
+nginx_worker_connections: 20000
+nginx_worker_rlimit_nofile: 30000
+
+nginx_enabled_site: /etc/nginx/sites-enabled/000-default
+
+# System conf
+
+fsize_hard_ulimit: 10000
+fsize_soft_ulimit: 30000

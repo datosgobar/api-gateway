@@ -1,0 +1,17 @@
+---
+
+- hosts: web
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  roles:
+    - python_project
+    - django_application
+    - gunicorn
+
+- hosts: web
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  roles:
+    - nginx

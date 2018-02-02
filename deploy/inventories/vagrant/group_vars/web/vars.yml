@@ -1,0 +1,8 @@
+---
+
+application_clone_url: git@github.com:datosgobar/api-gateway.git
+application_deploy_ssh_key_required: no # Usar 'application_deploy_ssh_key' con el valor de la api key privada!
+database_url: psql://database_user:database_password@192.168.35.7:5432/database_name
+allowed_host: dev.apis.datos.gob.ar
+allowed_host_ip: 192.168.35.5
+common_generate_ssh_key: no

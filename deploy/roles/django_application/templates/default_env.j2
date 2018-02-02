@@ -1,0 +1,11 @@
+{% for variable_name, value in django_settings.items() %}
+{{ variable_name }}="{{ value }}"
+{% endfor %}
+DJANGO_SECRET_KEY="{{ django_secret_key }}"
+{% if sentry_dsn %}
+RAVEN_DSN="{{ sentry_dsn }}"
+SENTRY_ENVIRONMENT="{{ sentry_environment }}"
+{% endif %}
+DATABASE_URL="{{ database_url }}"
+ALLOWED_HOST="{{ allowed_host }}"
+ALLOWED_HOST_IP="{{ allowed_host_ip }}"

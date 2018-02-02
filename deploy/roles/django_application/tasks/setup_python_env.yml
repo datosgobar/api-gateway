@@ -1,0 +1,46 @@
+---
+
+- name: Init virtualenv
+  pip:
+    virtualenv: "{{ application_virtualenv_dir }}"
+    virtualenv_python: python3
+    requirements: "{{ application_requirements }}"
+  tags: quickly
+
+- name: Ensure django secret key
+  shell: "{{ application_python_bin }} {{ application_secret_key_bin }} {{ application_secret_key_file }}"
+  args:
+    creates: "{{ application_secret_key_file }}"
+  when: generate_django_secret_key
+
+- name: Write django secret key from var
+  template:
+    src: django_secret_key
+    dest: "{{ application_secret_key_file }}"
+  when: not generate_django_secret_key
+
+- name: Get secret key
+  slurp:
+    src: "{{ application_secret_key_file }}"
+  register: secret_key
+
+- name: Set secret key as fact
+  set_fact:
+    django_secret_key: "{{ secret_key['content'] | b64decode  }}"
+
+
+- name: Create the .env file
+  template:
+    src: default_env.j2
+    dest: "{{ application_env_file }}"
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
+    mode: 0770
+    backup: yes
+
+- name: Ensure env file link
+  file:
+    src: "{{ application_env_file }}"
+    dest: "{{ application_env_file_link }}"
+    state: link
+  tags: quickly
