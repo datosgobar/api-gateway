@@ -30,4 +30,10 @@ def well_formed_query():
             "uri": faker.uri_path(),
             "querystring": faker.text(),
             "start_time": faker.iso8601(),
-            "request_time": faker.time()}
+            "request_time": 0.5}
+
+
+def random_request_time(faker):
+    return float("".join([str(faker.random_int(0, 99999)),
+                          ".",
+                          str(faker.random_int(1, 999999999999999))]))
