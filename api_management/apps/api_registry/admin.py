@@ -5,14 +5,14 @@ from .models import Api
 
 @admin.register(Api)
 class ApiAdmin(admin.ModelAdmin):
-    fieldsets = ('name', 'upstream_url', 'uri', 'enabled', 'kong_id')
+
     fieldsets = (
         (None, {
             'fields': ('name', 'upstream_url', 'uri', 'enabled')
         }),
         ('Advanced', {
             'classes': ('collapse',),
-            'fields': ('kong_id',),
+            'fields': ('strip_uri', 'kong_id',),
         }),
     )
 

@@ -26,7 +26,7 @@ class ApiManager:
         client = ApiManager._kong_client()
         fields = {"name": api_instance.name,
                   "uris": api_instance.uri,
-                  }
+                  "strip_uri": str(api_instance.strip_uri)}
         client.update(api_instance.kong_id, api_instance.upstream_url, **fields)
 
     @classmethod
@@ -35,7 +35,7 @@ class ApiManager:
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
                                  request_path=api_instance.uri,
-                                 strip_request_path=True)
+                                 strip_request_path=api_instance.strip_uri)
         api_instance.kong_id = response['id']
 
     @classmethod
@@ -49,6 +49,7 @@ class Api(models.Model):
     name = models.CharField(unique=True, max_length=200)
     upstream_url = models.URLField()
     uri = models.CharField(max_length=200)
+    strip_uri = models.BooleanField(default=True)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
 
