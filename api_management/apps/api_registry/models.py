@@ -1,6 +1,6 @@
 from django.db import models
 
-import kong.client
+import api_management.libs.kong.client as kong
 
 KONG_ADMIN_URL = 'http://localhost:8001/'
 
@@ -9,7 +9,7 @@ class ApiManager:
 
     @staticmethod
     def _kong_client():
-        return kong.client.APIAdminClient(KONG_ADMIN_URL)
+        return kong.APIAdminClient(KONG_ADMIN_URL)
 
     @classmethod
     def manage(cls, api_instance):
@@ -26,16 +26,17 @@ class ApiManager:
         client = ApiManager._kong_client()
         fields = {"name": api_instance.name,
                   "uris": api_instance.uri,
+                  "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri)}
-        client.update(api_instance.kong_id, api_instance.upstream_url, **fields)
+        client.update(api_instance.kong_id, **fields)
 
     @classmethod
     def create(cls, api_instance):
         client = ApiManager._kong_client()
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
-                                 request_path=api_instance.uri,
-                                 strip_request_path=api_instance.strip_uri)
+                                 uris=api_instance.uri,
+                                 strip_uri=api_instance.strip_uri)
         api_instance.kong_id = response['id']
 
     @classmethod
