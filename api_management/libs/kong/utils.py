@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
 from json import dumps
+from collections import OrderedDict
+from urllib.parse import urlparse, urlencode, \
+        unquote, parse_qs, parse_qsl, ParseResult
 
 import six
-
-from .compat import urlparse, urlencode, unquote, \
-    parse_qs, parse_qsl, ParseResult, OrderedDict, utf8_or_str
 
 
 def sorted_ordered_dict(dictionary, key=None):
@@ -28,7 +26,7 @@ def add_url_params(url, params):
     Source: http://stackoverflow.com/a/25580545/591217
     """
     # Unquoting URL first so we don't loose existing args
-    url = unquote(utf8_or_str(url))  # ``unquote`` operates on BYTES, not unicode strings...
+    url = unquote(url)  # ``unquote`` operates on BYTES, not unicode strings...
 
     # Extracting url info
     parsed_url = urlparse(url)
@@ -56,7 +54,7 @@ def add_url_params(url, params):
     # because he is clearly not able to do it correctly.
     # (See the comments inside the function for the ins and outs)
     parsed_get_args_encoded = OrderedDict(
-        (k, utf8_or_str(v) if isinstance(v, six.text_type) else v)
+        (k, v.encode('utf-8') if isinstance(v, six.text_type) else v)
         for k, v in parsed_get_args.items()
     )
 

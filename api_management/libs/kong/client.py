@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
 import os
-
-import requests
-import backoff
+from urllib.parse import urljoin
+# pylint: disable=no-name-in-module
+from http.client import OK, CREATED, CONFLICT, NO_CONTENT, \
+        NOT_FOUND, INTERNAL_SERVER_ERROR
 
 import six
+import requests
 
 from .utils import add_url_params, assert_dict_keys_in, ensure_trailing_slash
-from .compat import OK, CREATED, NO_CONTENT, NOT_FOUND, CONFLICT,\
-    INTERNAL_SERVER_ERROR, urljoin, utf8_or_str
 from .exceptions import ConflictError, ServerError
 
 # Minimum interval between requests (measured in seconds)
@@ -106,7 +104,7 @@ class APIAdminClient(RestClient):
             INVALID_FIELD_ERROR_TEMPLATE)
 
         # Explicitly encode on beforehand before passing to requests!
-        fields = dict((k, utf8_or_str(v)) if isinstance(v, six.text_type)
+        fields = dict((k, v.encode('utf-8')) if isinstance(v, six.text_type)
                       else v for k, v in fields.items())
 
         response = self.session.patch(self.get_url('apis', name_or_id),
@@ -119,7 +117,6 @@ class APIAdminClient(RestClient):
 
         return response.json()
 
-    @backoff.on_exception(backoff.expo, ValueError, max_tries=3)
     def delete(self, name_or_id):
         response = self.session.delete(self.get_url('apis', name_or_id), headers=self.get_headers())
 

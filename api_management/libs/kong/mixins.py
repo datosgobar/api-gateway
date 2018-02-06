@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
 from abc import ABCMeta
 
 from six import with_metaclass
