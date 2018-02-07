@@ -1,7 +1,18 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import pre_delete, pre_save
+from django.dispatch import receiver
 
 import api_management.libs.kong.client as kong
+
+
+class ApiData(models.Model):
+    name = models.CharField(unique=True, max_length=200)
+    upstream_url = models.URLField()
+    uri = models.CharField(max_length=200)
+    strip_uri = models.BooleanField(default=True)
+    enabled = models.BooleanField()
+    kong_id = models.CharField(max_length=100, null=True)
 
 
 class ApiManager:
@@ -39,25 +50,18 @@ class ApiManager:
         api_instance.kong_id = response['id']
 
     @classmethod
-    def __delete(cls, api_instance, client):
+    def _delete(cls, api_instance, client=None):
+        if client is None:
+            client = cls.kong_client()
         client.delete(api_instance.kong_id)
         api_instance.kong_id = None
 
+    @staticmethod
+    @receiver(pre_save, sender=ApiData)
+    def __api_saved(sender, instance, **kwargs):  # pylint: disable=unused-argument
+        ApiManager.manage(instance)
 
-class ApiData(ApiManager, models.Model):
-    name = models.CharField(unique=True, max_length=200)
-    upstream_url = models.URLField()
-    uri = models.CharField(max_length=200)
-    strip_uri = models.BooleanField(default=True)
-    enabled = models.BooleanField()
-    kong_id = models.CharField(max_length=100, null=True)
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.manage(self)
-        return super(ApiData, self).save(force_insert, force_update, using, update_fields)
-
-    def delete(self, using=None, keep_parents=False):
-        self.enabled = False
-        self.manage(self)
-        return super(ApiData, self).delete(using, keep_parents)
+    @staticmethod
+    @receiver(pre_delete, sender=ApiData)
+    def __api_deleted(sender, instance, **kwargs):  # pylint: disable=unused-argument
+        ApiManager._delete(instance)
