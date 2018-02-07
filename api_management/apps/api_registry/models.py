@@ -7,22 +7,23 @@ import api_management.libs.kong.client as kong
 class ApiManager:
 
     @staticmethod
-    def _kong_client():
+    def kong_client():
         return kong.APIAdminClient(settings.KONG_ADMIN_URL)
 
     @classmethod
-    def manage(cls, api_instance):
+    def manage(cls, api_instance, kong_client=None):
+        if kong_client is None:
+            kong_client = cls.kong_client()
         if api_instance.enabled:
             if api_instance.kong_id:
-                cls.update(api_instance)
+                cls.__update(api_instance, kong_client)
             else:
-                cls.create(api_instance)
+                cls.__create(api_instance, kong_client)
         elif api_instance.kong_id:
-            cls.delete(api_instance)
+            cls.__delete(api_instance, kong_client)
 
     @classmethod
-    def update(cls, api_instance):
-        client = ApiManager._kong_client()
+    def __update(cls, api_instance, client):
         fields = {"name": api_instance.name,
                   "uris": api_instance.uri,
                   "upstream_url": api_instance.upstream_url,
@@ -30,8 +31,7 @@ class ApiManager:
         client.update(api_instance.kong_id, **fields)
 
     @classmethod
-    def create(cls, api_instance):
-        client = ApiManager._kong_client()
+    def __create(cls, api_instance, client):
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
                                  uris=api_instance.uri,
@@ -39,13 +39,12 @@ class ApiManager:
         api_instance.kong_id = response['id']
 
     @classmethod
-    def delete(cls, api_instance):
-        client = ApiManager._kong_client()
+    def __delete(cls, api_instance, client):
         client.delete(api_instance.kong_id)
         api_instance.kong_id = None
 
 
-class Api(models.Model):
+class ApiData(ApiManager, models.Model):
     name = models.CharField(unique=True, max_length=200)
     upstream_url = models.URLField()
     uri = models.CharField(max_length=200)
@@ -55,9 +54,10 @@ class Api(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
-        ApiManager.manage(self)
-        return super(Api, self).save(force_insert, force_update, using, update_fields)
+        self.manage(self)
+        return super(ApiData, self).save(force_insert, force_update, using, update_fields)
 
     def delete(self, using=None, keep_parents=False):
-        ApiManager.delete(self)
-        return super(Api, self).delete(using, keep_parents)
+        self.enabled = False
+        self.manage(self)
+        return super(ApiData, self).delete(using, keep_parents)

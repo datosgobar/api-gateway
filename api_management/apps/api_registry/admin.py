@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import Api
+from .models import ApiData
 
 
-@admin.register(Api)
+@admin.register(ApiData)
 class ApiAdmin(admin.ModelAdmin):
 
     fieldsets = (
