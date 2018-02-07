@@ -1,15 +1,14 @@
 from django.db import models
+from django.conf import settings
 
 import api_management.libs.kong.client as kong
-
-KONG_ADMIN_URL = 'http://localhost:8001/'
 
 
 class ApiManager:
 
     @staticmethod
     def _kong_client():
-        return kong.APIAdminClient(KONG_ADMIN_URL)
+        return kong.APIAdminClient(settings.KONG_ADMIN_URL)
 
     @classmethod
     def manage(cls, api_instance):

@@ -9,3 +9,5 @@ ALLOWED_HOSTS = ['*']
 DATABASES = {
     'default': env.db()
 }
+
+KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")

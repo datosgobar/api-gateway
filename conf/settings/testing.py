@@ -21,3 +21,5 @@ TESTS_IN_PROGRESS = True
 
 for queueConfig in RQ_QUEUES.values():
     queueConfig['ASYNC'] = False
+
+KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")

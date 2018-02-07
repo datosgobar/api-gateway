@@ -4,11 +4,13 @@ from faker import Factory
 from faker.providers import BaseProvider
 import pytest
 
+from django.conf import settings
+
 from ..client import APIAdminClient
 
 
 A_FAKE = Factory.create()
-API_URL = 'http://localhost:8001'
+API_URL = settings.KONG_ADMIN_URL
 
 
 # Custom fake provider

@@ -166,3 +166,5 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 360,
     },
 }
+
+KONG_ADMIN_URL = ""

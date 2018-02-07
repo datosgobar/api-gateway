@@ -40,3 +40,5 @@ EMAIL_HOST = env('EMAIL_HOST', default="")
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', default="")
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default="")
 EMAIL_USE_TLS = True
+
+KONG_ADMIN_URL = env("KONG_ADMIN_URL")
