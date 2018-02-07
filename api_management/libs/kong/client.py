@@ -123,3 +123,35 @@ class APIAdminClient(RestClient):
         if response.status_code not in (NO_CONTENT, NOT_FOUND):
             raise ValueError('Could not delete API (status: %s): %s'
                              % (response.status_code, name_or_id))
+
+    def list(self, size=100, offset=None, **filter_fields):
+        assert_dict_keys_in(filter_fields, ['id', 'name',
+                                            'upstream_url',
+                                            'retries'], INVALID_FIELD_ERROR_TEMPLATE)
+
+        query_params = filter_fields
+        query_params['size'] = size
+
+        if offset:
+            query_params['offset'] = offset
+
+        url = self.get_url('apis', **query_params)
+        response = self.session.get(url, headers=self.get_headers())
+
+        if response.status_code == INTERNAL_SERVER_ERROR:
+            raise_response_error(response, ServerError)
+        elif response.status_code != OK:
+            raise_response_error(response, ValueError)
+
+        return response.json()
+
+    def count(self):
+        response = self.session.get(self.get_url('apis'), headers=self.get_headers())
+
+        if response.status_code == INTERNAL_SERVER_ERROR:
+            raise_response_error(response, ServerError)
+
+        result = response.json()
+        amount = result.get('total', len(result.get('data')))
+
+        return amount
