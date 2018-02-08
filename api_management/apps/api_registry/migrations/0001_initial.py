@@ -12,13 +12,15 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Api',
+            name='ApiData',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200, unique=True)),
                 ('upstream_url', models.URLField()),
                 ('uri', models.CharField(max_length=200)),
                 ('enabled', models.BooleanField()),
+                ('kong_id', models.CharField(max_length=100, null=True)),
+                ('strip_uri', models.BooleanField(default=True)),
             ],
         ),
     ]
