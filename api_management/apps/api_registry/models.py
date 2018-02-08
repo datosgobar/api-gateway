@@ -31,7 +31,7 @@ class ApiManager:
             else:
                 cls.__create(api_instance, kong_client)
         elif api_instance.kong_id:
-            cls.__delete(api_instance, kong_client)
+            cls._delete(api_instance, kong_client)
 
     @classmethod
     def __update(cls, api_instance, client):
