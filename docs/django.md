@@ -36,7 +36,9 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 ### Development with Docker
 
 1. Build: `docker-compose build`
-1. Iniciar los servicios: `docker-compose up`
+1. Iniciar los servicios: `docker-compose up -d`
+1. Migrar la base de datos de kong: `docker-compose run kong kong migrations up`
+1. Reiniciar kong: `docker-compose up -d kong`
 1. Migrar la base de datos: `docker-compose run django /app/venv/bin/python manage.py migrate`
 1. Crear un super usuario: `docker-compose run django /app/venv/bin/python manage.py createsuperuser`
 
