@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import RegexValidator
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 
@@ -7,9 +8,15 @@ import api_management.libs.kong.client as kong
 
 
 class ApiData(models.Model):
-    name = models.CharField(unique=True, max_length=200)
+    alphanumeric = RegexValidator(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
+                                  'Only alphanumeric and . - _ ~ characters are allowed.')
+    uris = RegexValidator(r'^([/]{1}[\w\d]+)*\/?$',
+                          'Only alphanumeric and _ characters are allowed. \n'
+                          'Must be prefixed with slash (/)')
+
+    name = models.CharField(unique=True, max_length=200, validators=[alphanumeric])
     upstream_url = models.URLField()
-    uri = models.CharField(max_length=200)
+    uri = models.CharField(max_length=200, validators=[uris])
     strip_uri = models.BooleanField(default=True)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
