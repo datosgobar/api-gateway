@@ -9,8 +9,10 @@ services:
     environment:
       DATABASE_URL: postgres://development:development@db/development_db
       REDIS_HOST: redis
+      KONG_ADMIN_URL: http://kong:8001/
     depends_on:
       - db
+      - redis
     volumes:
       - ./:/app/code/
     ports:
@@ -25,6 +27,7 @@ services:
       REDIS_HOST: redis
     depends_on:
       - db
+      - redis
     volumes:
       - ./:/app/code/
     command: /app/venv/bin/python manage.py rqworker default create_model
