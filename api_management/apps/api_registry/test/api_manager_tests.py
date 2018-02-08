@@ -1,7 +1,10 @@
 from ..models import ApiManager
 
 
-def test_disabling_an_api_deletes_it_in_kong_server(api_data, kong_client, faker):
+# pylint: disable=invalid-name
+def test_disabling_an_api_removes_it_from_the_kong_server(api_data,
+                                                          kong_client,
+                                                          faker):
     """
         al desactivar una api que tiene kong_id
         se elimina del server de kong
@@ -18,7 +21,9 @@ def test_disabling_an_api_deletes_it_in_kong_server(api_data, kong_client, faker
     kong_client.delete.assert_called_once_with(kong_id)
 
 
-def test_enabling_an_api_creates_it_in_kong_server(api_data, kong_client):
+# pylint: disable=invalid-name
+def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
+                                                         kong_client):
     """
         al activar una api que no tiene kong_id
         se crea en el server de kong
@@ -36,7 +41,9 @@ def test_enabling_an_api_creates_it_in_kong_server(api_data, kong_client):
                                                uris=api_data.uri)
 
 
-def test_creating_api_in_kong_server_sets_kong_id_in_api_data(api_data, kong_client):
+# pylint: disable=invalid-name
+def test_creating_api_in_kong_server_sets_kong_id_in_api_data(api_data,
+                                                              kong_client):
     """
         al crear una api en el server de kong
         se setea su kong_id en ApiData
@@ -52,7 +59,10 @@ def test_creating_api_in_kong_server_sets_kong_id_in_api_data(api_data, kong_cli
     assert api_data.kong_id is not None
 
 
-def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker, api_data, kong_client):
+# pylint: disable=invalid-name
+def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
+                                                                  api_data,
+                                                                  kong_client):
     """
         al cambiar la data de una api ya creada
         se manda un update de la api al server kong
@@ -76,7 +86,9 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker, api_dat
                                                uris=api_data.uri)
 
 
-def test_updating_disabled_api_data_does_not_send_update_to_kong_server(faker, api_data, kong_client):
+# pylint: disable=invalid-name
+def test_updating_disabled_api_data_does_not_send_update_to_kong_server(api_data,
+                                                                        kong_client):
     """
         actualizar data de una api desactivada
         no dispara comunicacion con el server kong
