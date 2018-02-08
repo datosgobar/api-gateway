@@ -65,10 +65,10 @@ class ApiManager:
 
     @staticmethod
     @receiver(pre_save, sender=ApiData)
-    def __api_saved(sender, instance, **kwargs):  # pylint: disable=unused-argument
-        ApiManager.manage(instance)
+    def __api_saved(**kwargs):
+        ApiManager.manage(kwargs['instance'])
 
     @staticmethod
     @receiver(pre_delete, sender=ApiData)
-    def __api_deleted(sender, instance, **kwargs):  # pylint: disable=unused-argument
-        ApiManager._delete(instance)
+    def __api_deleted(**kwargs):
+        ApiManager._delete(kwargs['instance'])
