@@ -34,7 +34,8 @@ INVALID_FIELD_ERROR_TEMPLATE = '%r is not a valid field. Allowed fields: %r'
 
 
 class RestClient(object):
-    def __init__(self, api_url, headers=None):
+    def __init__(self, api_url, headers=None, requests_module=requests):
+        self.requests_module = requests_module
         self.api_url = api_url
         self.headers = headers
         self._session = None
@@ -50,7 +51,7 @@ class RestClient(object):
     @property
     def session(self):
         if self._session is None:
-            self._session = requests.session()
+            self._session = self.requests_module.session()
             if KONG_MINIMUM_REQUEST_INTERVAL > 0:
                 self._session.mount(self.api_url, None)
         elif not KONG_REUSE_CONNECTIONS:
@@ -66,7 +67,7 @@ class RestClient(object):
         return result
 
     def get_url(self, *path, **query_params):
-        # WTF: Never use str, unless in some very specific cases,
+        # Never use str, unless in some very specific cases,
         # like in compatibility layers! Fixed for you.
         path = [six.text_type(p) for p in path]
         url = ensure_trailing_slash(urljoin(self.api_url, '/'.join(path)))
@@ -74,8 +75,10 @@ class RestClient(object):
 
 
 class APIAdminClient(RestClient):
-    def __init__(self, api_url):
-        super(APIAdminClient, self).__init__(api_url, headers=get_default_kong_headers())
+    def __init__(self, api_url, requests_module=requests):
+        super(APIAdminClient, self).__init__(api_url,
+                                             headers=get_default_kong_headers(),
+                                             requests_module=requests_module)
 
     # pylint: disable=too-many-arguments
     def create(self, upstream_url, name=None, hosts=None, uris=None, strip_uri=None,
