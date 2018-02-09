@@ -1,28 +1,10 @@
 import pytest
 
 from ..exceptions import ConflictError
+from ..utils import add_url_params
 
 
-def test_create(fake, kong):
-    # Setup
-    url = fake.url()
-    name = fake.api_name()
-    host = fake.domain_name()
-
-    # Exercise
-    result = kong.create(upstream_url=url, name=name, hosts=host)
-
-    # Verify
-    assert kong.count() == 1
-    assert result['upstream_url'] == url
-    assert result['name'] == name
-    assert host in result['hosts']
-    assert result['id'] is not None
-    assert result['created_at'] is not None
-    assert 'uris' not in result
-
-
-def test_create_conflict_name(fake, kong):
+def test_create(fake, kong, kong_admin_url, session_stub):
     # Setup
     url = fake.url()
     name = fake.api_name()
@@ -30,115 +12,171 @@ def test_create_conflict_name(fake, kong):
 
     # Exercise
     kong.create(upstream_url=url, name=name, hosts=host)
-    assert kong.count() == 1
+
+    # Verify
+    session_stub.post.assert_called_once_with(kong_admin_url + 'apis/',
+                                              headers={},
+                                              data={'name': name,
+                                                    'hosts': host,
+                                                    'uris': None,
+                                                    'strip_uri': None,
+                                                    'preserve_host': None,
+                                                    'upstream_url': url})
+
+
+def test_create_conflict_name(fake, kong, session_stub, kong_admin_url):
+    # Setup
+    url = fake.url()
+    name = fake.api_name()
+    host = fake.domain_name()
+
+    new_url = fake.url()
+    new_host = fake.domain_name()
+
+    # Exercise
+    kong.create(upstream_url=url, name=name, hosts=host)
 
     with pytest.raises(ConflictError):
-        kong.create(upstream_url=fake.url(), name=name, hosts=fake.domain_name())
+        kong.create(upstream_url=new_url, name=name, hosts=new_host)
 
     # Verify
-    assert kong.count() == 1
+    session_stub.post.assert_called_with(kong_admin_url + 'apis/',
+                                         headers={},
+                                         data={'name': name,
+                                               'hosts': new_host,
+                                               'uris': None,
+                                               'strip_uri': None,
+                                               'preserve_host': None,
+                                               'upstream_url': new_url})
 
 
-def test_create_same_public_host(fake, kong):
+def test_create_same_public_host(fake, kong, session_stub, kong_admin_url):
     # Setup
     url = fake.url()
     name = fake.api_name()
     host = fake.domain_name()
 
+    new_name = fake.api_name()
+    new_url = fake.url()
+
     # Exercise
     kong.create(upstream_url=url, name=name, hosts=host)
-    assert kong.count() == 1
 
-    kong.create(upstream_url=fake.url(), name=fake.api_name(), hosts=host)
+    kong.create(upstream_url=new_url, name=new_name, hosts=host)
 
     # Verify
-    assert kong.count() == 2
+    session_stub.post.assert_any_call(kong_admin_url + 'apis/',
+                                      headers={},
+                                      data={'name': name,
+                                            'hosts': host,
+                                            'uris': None,
+                                            'strip_uri': None,
+                                            'preserve_host': None,
+                                            'upstream_url': url})
+    session_stub.post.assert_called_with(kong_admin_url + 'apis/',
+                                         headers={},
+                                         data={'name': new_name,
+                                               'hosts': host,
+                                               'uris': None,
+                                               'strip_uri': None,
+                                               'preserve_host': None,
+                                               'upstream_url': new_url})
 
 
 # pylint: disable=invalid-name
 def test_create_missing_hosts_and_uris(fake, kong):
-    # Setup
-    result = None
-
     # Exercise
     with pytest.raises(ValueError):
-        result = kong.create(name=fake.api_name(),
-                             upstream_url=fake.url())
-
-    # Verify
-    assert result is None
-    assert kong.count() == 0
+        kong.create(name=fake.api_name(), upstream_url=fake.url())
 
 
-def test_create_missing_hosts(fake, kong):
+def test_create_missing_hosts(fake, kong, session_stub, kong_admin_url):
+    # Setup
+    name = fake.api_name()
+    uri = fake.api_path()
+    url = fake.url()
+
     # Exercise
-    kong.create(name=fake.api_name(),
-                upstream_url=fake.url(),
-                uris=fake.api_path())
+    kong.create(name=name, upstream_url=url, uris=uri)
 
     # Verify
-    assert kong.count() == 1
+    session_stub.post.assert_called_with(kong_admin_url + 'apis/',
+                                         headers={},
+                                         data={'name': name,
+                                               'hosts': None,
+                                               'uris': uri,
+                                               'strip_uri': None,
+                                               'preserve_host': None,
+                                               'upstream_url': url})
 
 
-def test_create_missing_uris(fake, kong):
+def test_create_missing_uris(fake, kong, session_stub, kong_admin_url):
+    # Setup
+    name = fake.api_name()
+    url = fake.url()
+    host = fake.domain_name()
+
     # Exercise
-    kong.create(name=fake.api_name(),
-                upstream_url=fake.url(),
-                hosts=fake.domain_name())
+    kong.create(name=name, upstream_url=url, hosts=host)
 
     # Verify
-    assert kong.count() == 1
+    session_stub.post.assert_called_with(kong_admin_url + 'apis/',
+                                         headers={},
+                                         data={'name': name,
+                                               'hosts': host,
+                                               'uris': None,
+                                               'strip_uri': None,
+                                               'preserve_host': None,
+                                               'upstream_url': url})
 
 
-def test_update_by_id(fake, kong):
+def test_update_by_id(fake, kong, session_stub, kong_admin_url):
     # Setup
     url = fake.url()
     name = fake.api_name()
-    dns = fake.domain_name()
+    host = fake.domain_name()
 
     new_path = fake.api_path()
     new_url = fake.url()
-    new_dns = fake.domain_name()
+    new_host = fake.domain_name()
 
     # Exercise
-    result = kong.create(upstream_url=url, name=name, hosts=dns)
+    result = kong.create(upstream_url=url, name=name, hosts=host)
 
-    result3 = kong.update(result['id'], upstream_url=new_url, uris=new_path, hosts=new_dns)
+    kong.update(result['id'], upstream_url=new_url, uris=new_path, hosts=new_host)
 
     # Verify
-    assert result3['id'] == result['id']
-    assert result3['upstream_url'] == new_url
-    assert new_path in result3['uris']
-    assert len(result3['uris']) == 1
-    assert new_dns in result3['hosts']
-    assert len(result3['hosts']) == 1
+    session_stub.patch.assert_called_with(kong_admin_url + 'apis/' + result['id'] + '/',
+                                          headers={},
+                                          data={'upstream_url': new_url,
+                                                'uris': new_path,
+                                                'hosts': new_host})
 
 
-def test_update_by_name(fake, kong):
+def test_update_by_name(fake, kong, session_stub, kong_admin_url):
     # Setup
     url = fake.url()
     name = fake.api_name()
-    dns = fake.domain_name()
+    host = fake.domain_name()
 
     new_path = fake.api_path()
     new_url = fake.url()
-    new_dns = fake.domain_name()
+    new_host = fake.domain_name()
 
     # Exercise
-    result = kong.create(upstream_url=url, name=name, hosts=dns)
+    kong.create(upstream_url=url, name=name, hosts=host)
 
-    result3 = kong.update(name, upstream_url=new_url, uris=new_path, hosts=new_dns)
+    kong.update(name, upstream_url=new_url, uris=new_path, hosts=new_host)
 
     # Verify
-    assert result3['id'] == result['id']
-    assert result3['upstream_url'] == new_url
-    assert new_path in result3['uris']
-    assert len(result3['uris']) == 1
-    assert new_dns in result3['hosts']
-    assert len(result3['hosts']) == 1
+    session_stub.patch.assert_called_with(kong_admin_url + 'apis/' + name + '/',
+                                          headers={},
+                                          data={'upstream_url': new_url,
+                                                'uris': new_path,
+                                                'hosts': new_host})
 
 
-def test_list(fake, kong):
+def test_list(fake, kong, session_stub, kong_admin_url):
     # Setup
     amount = 5
 
@@ -146,25 +184,20 @@ def test_list(fake, kong):
     for host in host_list:
         kong.create(upstream_url=fake.url(), name=fake.api_name(), hosts=host)
 
-    assert kong.count() == len(host_list)
-
     # Exercise
     api_list = kong.list()['data']
 
     # Verify
-    api_hosts_list = []
-    for api in api_list:
-        for host in api['hosts']:
-            api_hosts_list.append(host)
+    query_params = {'size': 100}
+    url = add_url_params(kong_admin_url + 'apis/', query_params)
 
-    assert len(api_list) == amount
-    assert len(api_hosts_list) == amount
-    for host in host_list:
-        assert host in api_hosts_list
+    session_stub.get.assert_called_with(url,
+                                        headers={})
+    assert len(api_list) == len(host_list)
 
 
 # pylint: disable=invalid-name
-def test_list_filter_by_upstream_url(fake, kong):
+def test_list_filter_by_upstream_url(fake, kong, session_stub, kong_admin_url):
     # Setup
     amount = 5
 
@@ -172,16 +205,17 @@ def test_list_filter_by_upstream_url(fake, kong):
     for upstream_url in upstream_url_list:
         kong.create(upstream_url=upstream_url, name=fake.api_name(), hosts=fake.domain_name())
 
-    assert kong.count() == len(upstream_url_list)
-
     # Exercise
-    api_list = kong.list(upstream_url=upstream_url_list[4])['data']
+    kong.list(upstream_url=upstream_url_list[4])
 
     # Verify
-    assert len(api_list) == 1
+    query_params = {'size': 100, 'upstream_url': upstream_url_list[4]}
+    url = add_url_params(kong_admin_url + 'apis/', query_params)
+
+    session_stub.get.assert_called_with(url, headers={})
 
 
-def test_list_filter_with_size(fake, kong):
+def test_list_filter_with_size(fake, kong, session_stub, kong_admin_url):
     # Setup
     amount = 5
 
@@ -192,12 +226,16 @@ def test_list_filter_with_size(fake, kong):
     assert kong.count() == len(upstream_url_list)
 
     # Exercise
-    result = kong.list(size=3)
-    assert result['next'] is not None
-    assert len(result['data']) == 3
+    kong.list(size=3)
+
+    # Verify
+    query_params = {'size': 3}
+    url = add_url_params(kong_admin_url + 'apis/', query_params)
+
+    session_stub.get.assert_called_with(url, headers={})
 
 
-def test_delete_by_id(fake, kong):
+def test_delete_by_id(fake, kong, session_stub, kong_admin_url):
     # Setup
     url1 = fake.url()
 
@@ -207,17 +245,20 @@ def test_delete_by_id(fake, kong):
     kong.delete(result1['id'])
 
     # Verify
-    assert kong.list(id=result1['id'])['total'] == 0
+    url = kong_admin_url + 'apis/' + result1['id'] + '/'
+    session_stub.delete.assert_called_with(url, headers={})
 
 
-def test_delete_by_name(fake, kong):
+def test_delete_by_name(fake, kong, session_stub, kong_admin_url):
     # Setup
     url1 = fake.url()
+    name = fake.api_name()
 
-    result1 = kong.create(upstream_url=url1, name=fake.api_name(), hosts=fake.domain_name())
+    kong.create(upstream_url=url1, name=name, hosts=fake.domain_name())
 
     # Exercise
-    kong.delete(result1['name'])
+    kong.delete(name)
 
     # Verify
-    assert kong.list(name=result1['name'])['total'] == 0
+    url = kong_admin_url + 'apis/' + name + '/'
+    session_stub.delete.assert_called_with(url, headers={})
