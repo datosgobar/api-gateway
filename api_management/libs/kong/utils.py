@@ -1,7 +1,7 @@
 from json import dumps
 from collections import OrderedDict
 from urllib.parse import urlparse, urlencode, \
-        unquote, parse_qs, parse_qsl, ParseResult
+        unquote, parse_qsl, ParseResult
 
 import six
 
@@ -81,7 +81,3 @@ def ensure_trailing_slash(url):
     if not url.endswith('/'):
         url = '%s/' % url
     return url
-
-
-def parse_query_parameters(url):
-    return parse_qs(urlparse(url).query)
