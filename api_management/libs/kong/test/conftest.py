@@ -1,41 +1,14 @@
-import string
+# pylint: disable=no-name-in-module
 from http.client import OK, CREATED, CONFLICT, NO_CONTENT
 from faker import Faker
-from faker.providers import BaseProvider
 import pytest
 
 from django.conf import settings
 
+from api_management.libs.providers.providers import CustomInfoProvider
 from ..client import APIAdminClient
 
-
 API_URL = settings.KONG_ADMIN_URL
-
-
-class CustomInfoProvider(BaseProvider):
-
-    def api_name(self):
-        return self.generator.name().replace(' ', '')
-
-    def api_path(self):
-        path = self.generator.uri_path()
-        if not path.startswith('/'):
-            path = '/%s' % path
-        return path
-
-    def kong_id(self, grouping=(8, 4, 4, 4, 12),
-                valid_elements=tuple(string.ascii_lowercase + string.digits)):
-        """
-            Generates a random kong_id
-            Example: "14656344-9e38-4315-8ae2-c23551ea3b9d"
-        :return:
-        """
-        chars = []
-        for group in grouping:
-            chars += self.random_sample(elements=valid_elements, length=group)
-            chars += "-"
-        chars.pop()
-        return "".join(chars)
 
 
 @pytest.fixture()
@@ -45,12 +18,12 @@ def fake():
     return a_faker
 
 
-names = []
+NAMES = []
 
 
 @pytest.fixture
 def created_names():
-    return names
+    return NAMES
 
 
 @pytest.fixture
@@ -78,8 +51,9 @@ def valid_fields(dictionary):
 
 
 @pytest.fixture
+# pylint: disable=redefined-outer-name
 def session_stub(mocker, fake, created_names, already_exists_response, missing_fields_response):
-    def post_side_effect(url, **kwargs):
+    def post_side_effect(_, **kwargs):
         if kwargs['data']['name'] in created_names:
             return already_exists_response
 
@@ -94,13 +68,13 @@ def session_stub(mocker, fake, created_names, already_exists_response, missing_f
         response.json = lambda: {**id_dict, **kwargs['data']}
         return response
 
-    def patch_side_effect(url, **kwargs):
+    def patch_side_effect(_, **kwargs):
         response = mocker.stub(name='response_stub')
         response.status_code = OK
         response.json = lambda: kwargs['data']
         return response
 
-    def get_side_effect(url, **kwargs):
+    def get_side_effect(_, **kwargs):  # pylint: disable=unused-argument
         response = mocker.stub(name='response_stub')
         response.status_code = OK
         apis = []
@@ -109,7 +83,7 @@ def session_stub(mocker, fake, created_names, already_exists_response, missing_f
         response.json = lambda: {'data': apis}
         return response
 
-    def delete_side_effect(url, **kwargs):
+    def delete_side_effect(_, **kwargs):  # pylint: disable=unused-argument
         response = mocker.stub(name='response_stub')
         response.status_code = NO_CONTENT
         return response
@@ -127,6 +101,7 @@ def session_stub(mocker, fake, created_names, already_exists_response, missing_f
 
 
 @pytest.fixture
+# pylint: disable=redefined-outer-name
 def requests_stub(mocker, session_stub):
     stub = mocker.stub(name='requests_stub')
     stub.session = mocker.stub(name='requests_session_stub')
@@ -135,8 +110,9 @@ def requests_stub(mocker, session_stub):
 
 
 @pytest.fixture
+# pylint: disable=redefined-outer-name
 def kong(requests_stub):
-    names.clear()
+    NAMES.clear()
     return APIAdminClient(API_URL, requests_module=requests_stub)
 
 
