@@ -30,4 +30,4 @@ def well_formed_query():
             "uri": faker.uri_path(),
             "querystring": faker.text(),
             "start_time": faker.iso8601(),
-            "request_time": faker.time()}
+            "request_time": 0.5}

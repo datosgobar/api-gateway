@@ -28,6 +28,6 @@ RUN python -m venv $PYTHON_VENV_DIR && \
 COPY conf conf/
 COPY api_management api_management/
 
-EXPOSE 8000
+EXPOSE 8080
 
-CMD ${PYTHON_VENV_DIR}bin/python manage.py runserver 0.0.0.0:8000
+CMD ${PYTHON_VENV_DIR}bin/python manage.py runserver 0.0.0.0:8080
