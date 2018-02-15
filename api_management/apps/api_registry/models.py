@@ -10,13 +10,13 @@ import api_management.libs.kong.client as kong
 class ApiData(models.Model):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
                                   'Only alphanumeric and . - _ ~ characters are allowed.')
-    uris = RegexValidator(r'^([/]{1}[\w\d]+)*\/?$',
-                          'Only alphanumeric and _ characters are allowed. \n'
-                          'Must be prefixed with slash (/)')
+    uris_validator = RegexValidator(r'^\s*([/]{1}[\w\d]+)*\/?(,\s*([/]{1}[\w\d]+)+\/?)*\s*$',
+                                    'Only alphanumeric and _ characters are allowed. \n'
+                                    'Must be prefixed with slash (/)')
 
     name = models.CharField(unique=True, max_length=200, validators=[alphanumeric])
     upstream_url = models.URLField()
-    uri = models.CharField(max_length=200, validators=[uris])
+    uris = models.CharField(max_length=200, validators=[uris_validator])
     strip_uri = models.BooleanField(default=True)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
@@ -43,7 +43,7 @@ class ApiManager:
     @classmethod
     def __update(cls, api_instance, client):
         fields = {"name": api_instance.name,
-                  "uris": api_instance.uri,
+                  "uris": api_instance.uris,
                   "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri)}
         client.update(api_instance.kong_id, **fields)
@@ -52,7 +52,7 @@ class ApiManager:
     def __create(cls, api_instance, client):
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
-                                 uris=api_instance.uri,
+                                 uris=api_instance.uris,
                                  strip_uri=api_instance.strip_uri)
         api_instance.kong_id = response['id']
 

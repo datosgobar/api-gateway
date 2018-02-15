@@ -8,7 +8,7 @@ class ApiAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('name', 'upstream_url', 'uri', 'enabled')
+            'fields': ('name', 'upstream_url', 'uris', 'enabled')
         }),
         ('Advanced', {
             'classes': ('collapse',),
