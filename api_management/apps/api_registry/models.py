@@ -1,11 +1,13 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 
 import api_management.libs.kong.client as kong
 import api_management.apps.api_registry.helpers as helpers
+
 
 class ApiData(models.Model):
     alphanumeric = RegexValidator(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
@@ -31,6 +33,10 @@ class ApiData(models.Model):
     strip_uri = models.BooleanField(default=True)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
+
+    def clean(self):
+        if not (self.uris or self.hosts):
+            raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
 
 
 class ApiManager:

@@ -129,4 +129,3 @@ def test_update_api_w_multiple_uris(faker, api_data, kong_client):
                                                strip_uri=str(api_data.strip_uri),
                                                hosts=api_data.hosts,
                                                uris=", ".join(uris))
-

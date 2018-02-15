@@ -133,12 +133,12 @@ def test_create_missing_uris(fake, kong, session_stub, kong_admin_url):
 def test_update_by_id(fake, kong, session_stub, kong_admin_url):
     # Setup
     url = fake.url()
-    name = fake.api_name()
     host = fake.domain_name()
+    name = fake.api_name()
 
     new_path = fake.api_path()
-    new_url = fake.url()
     new_host = fake.domain_name()
+    new_url = fake.url()
 
     # Exercise
     result = kong.create(upstream_url=url, name=name, hosts=host)
@@ -199,9 +199,7 @@ def test_list(fake, kong, session_stub, kong_admin_url):
 # pylint: disable=invalid-name
 def test_list_filter_by_upstream_url(fake, kong, session_stub, kong_admin_url):
     # Setup
-    amount = 5
-
-    upstream_url_list = [fake.url() for _ in range(amount)]
+    upstream_url_list = [fake.url() for _ in range(5)]
     for upstream_url in upstream_url_list:
         kong.create(upstream_url=upstream_url, name=fake.api_name(), hosts=fake.domain_name())
 
@@ -222,8 +220,6 @@ def test_list_filter_with_size(fake, kong, session_stub, kong_admin_url):
     upstream_url_list = [fake.url() for _ in range(amount)]
     for upstream_url in upstream_url_list:
         kong.create(upstream_url=upstream_url, name=fake.api_name(), hosts=fake.domain_name())
-
-    assert kong.count() == len(upstream_url_list)
 
     # Exercise
     kong.list(size=3)
