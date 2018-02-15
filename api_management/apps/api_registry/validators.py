@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 import api_management.apps.api_registry.helpers as helpers
 
 
-class HostsValidator(RegexValidator):
+class HostsValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 
     def __init__(self):
         host_regex = r'(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?'
@@ -13,7 +13,7 @@ class HostsValidator(RegexValidator):
                                              'Only domain names are allowed')
 
 
-class UrisValidator(RegexValidator):
+class UrisValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 
     def __init__(self):
         uri_regex = r'([/]{1}[\w\d]+)+\/?'
@@ -24,8 +24,9 @@ class UrisValidator(RegexValidator):
                                             'Must be prefixed with slash (/)')
 
 
-class AlphanumericValidator(RegexValidator):
+class AlphanumericValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 
     def __init__(self):
-        super(AlphanumericValidator, self).__init__(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
-                                                    'Only alphanumeric and . - _ ~ characters are allowed.')
+        super(AlphanumericValidator, self)\
+            .__init__(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
+                      'Only alphanumeric and . - _ ~ characters are allowed.')

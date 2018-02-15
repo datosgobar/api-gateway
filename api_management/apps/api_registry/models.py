@@ -5,7 +5,9 @@ from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 
 import api_management.libs.kong.client as kong
-from api_management.apps.api_registry.validators import HostsValidator, UrisValidator, AlphanumericValidator
+from api_management.apps.api_registry.validators import HostsValidator,\
+                                                        UrisValidator,\
+                                                        AlphanumericValidator
 
 
 class ApiData(models.Model):
