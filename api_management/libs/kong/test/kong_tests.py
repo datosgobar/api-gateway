@@ -130,15 +130,20 @@ def test_create_missing_uris(fake, kong, session_stub, kong_admin_url):
                                                'upstream_url': url})
 
 
+def setup_test_update(fake):
+    url = fake.url()
+    name = fake.api_name()
+    host = fake.domain_name()
+
+    new_url = fake.url()
+    new_host = fake.domain_name()
+    new_path = fake.api_path()
+    return url, name, host, new_url, new_host, new_path
+
+
 def test_update_by_id(fake, kong, session_stub, kong_admin_url):
     # Setup
-    url = fake.url()
-    host = fake.domain_name()
-    name = fake.api_name()
-
-    new_path = fake.api_path()
-    new_host = fake.domain_name()
-    new_url = fake.url()
+    url, name, host, new_url, new_host, new_path = setup_test_update(fake)
 
     # Exercise
     result = kong.create(upstream_url=url, name=name, hosts=host)
@@ -155,13 +160,7 @@ def test_update_by_id(fake, kong, session_stub, kong_admin_url):
 
 def test_update_by_name(fake, kong, session_stub, kong_admin_url):
     # Setup
-    url = fake.url()
-    name = fake.api_name()
-    host = fake.domain_name()
-
-    new_path = fake.api_path()
-    new_url = fake.url()
-    new_host = fake.domain_name()
+    url, name, host, new_url, new_host, new_path = setup_test_update(fake)
 
     # Exercise
     kong.create(upstream_url=url, name=name, hosts=host)
@@ -196,18 +195,24 @@ def test_list(fake, kong, session_stub, kong_admin_url):
     assert len(api_list) == len(host_list)
 
 
+def setup_kong_with_apis(kong, fake):
+    upstream_url_list = [fake.url() for _ in range(fake.random_int(2, 20))]
+    for upstream_url in upstream_url_list:
+        kong.create(upstream_url=upstream_url, name=fake.api_name(), hosts=fake.domain_name())
+    return upstream_url_list
+
+
 # pylint: disable=invalid-name
 def test_list_filter_by_upstream_url(fake, kong, session_stub, kong_admin_url):
     # Setup
-    upstream_url_list = [fake.url() for _ in range(5)]
-    for upstream_url in upstream_url_list:
-        kong.create(upstream_url=upstream_url, name=fake.api_name(), hosts=fake.domain_name())
+    upstream_url_list = setup_kong_with_apis(kong, fake)
+    index = fake.random_int(0, len(upstream_url_list)-1)
 
     # Exercise
-    kong.list(upstream_url=upstream_url_list[4])
+    kong.list(upstream_url=upstream_url_list[index])
 
     # Verify
-    query_params = {'size': 100, 'upstream_url': upstream_url_list[4]}
+    query_params = {'size': 100, 'upstream_url': upstream_url_list[index]}
     url = add_url_params(kong_admin_url + 'apis/', query_params)
 
     session_stub.get.assert_called_with(url, headers={})
@@ -215,17 +220,14 @@ def test_list_filter_by_upstream_url(fake, kong, session_stub, kong_admin_url):
 
 def test_list_filter_with_size(fake, kong, session_stub, kong_admin_url):
     # Setup
-    amount = 5
-
-    upstream_url_list = [fake.url() for _ in range(amount)]
-    for upstream_url in upstream_url_list:
-        kong.create(upstream_url=upstream_url, name=fake.api_name(), hosts=fake.domain_name())
+    upstream_url_list = setup_kong_with_apis(kong, fake)
+    size = fake.random_int(1, len(upstream_url_list)-1)
 
     # Exercise
-    kong.list(size=3)
+    kong.list(size=size)
 
     # Verify
-    query_params = {'size': 3}
+    query_params = {'size': size}
     url = add_url_params(kong_admin_url + 'apis/', query_params)
 
     session_stub.get.assert_called_with(url, headers={})
