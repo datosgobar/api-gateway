@@ -85,8 +85,8 @@ class APIAdminClient(RestClient):
                preserve_host=None):
         response = self.session.post(self.get_url('apis'), data={
             'name': name,
-            'hosts': hosts,
-            'uris': uris,
+            'hosts': hosts or None,  # do not send empty strings
+            'uris': uris or None,  # do not send empty strings
             'strip_uri': strip_uri,
             'preserve_host': preserve_host,
             'upstream_url': upstream_url
