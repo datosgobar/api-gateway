@@ -98,7 +98,7 @@ function plugin:log(plugin_conf)
 
   local start_time = os.date("!%Y-%m-%dT%TZ", start_time_nginx)
   local JSONRequestArray = {
-    ip = remote_addr,
+    ip_address = remote_addr,
     host = host,
     uri = uri,
     querystring = querystring,
