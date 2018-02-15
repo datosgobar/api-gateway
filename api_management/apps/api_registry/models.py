@@ -1,35 +1,19 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 
 import api_management.libs.kong.client as kong
-import api_management.apps.api_registry.helpers as helpers
+from api_management.apps.api_registry.validators import HostsValidator, UrisValidator, AlphanumericValidator
 
 
 class ApiData(models.Model):
-    alphanumeric = RegexValidator(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
-                                  'Only alphanumeric and . - _ ~ characters are allowed.')
 
-    uri_regex = r'([/]{1}[\w\d]+)+\/?'
-    uris_validator_regex = helpers.coma_separated_list_of_regex(uri_regex)
-
-    uris_validator = RegexValidator(uris_validator_regex,
-                                    'Only alphanumeric and _ characters are allowed. \n'
-                                    'Must be prefixed with slash (/)')
-
-    host_regex = r'(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]+\.[a-zA-Z]{2,11}?'
-    hosts_validator_regex = helpers.coma_separated_list_of_regex(host_regex)
-
-    hosts_validator = RegexValidator(hosts_validator_regex,
-                                     'Only domain names are allowed')
-
-    name = models.CharField(unique=True, max_length=200, validators=[alphanumeric])
+    name = models.CharField(unique=True, max_length=200, validators=[AlphanumericValidator()])
     upstream_url = models.URLField()
-    hosts = models.CharField(max_length=200, validators=[hosts_validator], blank=True, default='')
-    uris = models.CharField(max_length=200, validators=[uris_validator], blank=True, default='')
+    hosts = models.CharField(max_length=200, validators=[HostsValidator()], blank=True, default='')
+    uris = models.CharField(max_length=200, validators=[UrisValidator()], blank=True, default='')
     strip_uri = models.BooleanField(default=True)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
