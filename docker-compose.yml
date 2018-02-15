@@ -42,7 +42,9 @@ services:
     ports:
       - "6379:6379"
   kong:
-    image: kong:0.11
+    build:
+      dockerfile: kong.dockerfile
+      context: .
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong_db

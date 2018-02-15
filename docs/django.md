@@ -42,6 +42,26 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 1. Migrar la base de datos: `docker-compose run django /app/venv/bin/python manage.py migrate`
 1. Crear un super usuario: `docker-compose run django /app/venv/bin/python manage.py createsuperuser`
 
+### Activar el plugin de httplog2 en Docker
+
+El plugin se agrega a la imagen de kong modificada, para permitir simular el comportamiento del kong de producción.
+
+Para agregar este plugin a una API, primero debemos generar un token de acceso.
+
+```
+docker-compose run django /app/venv/bin/python manage.py drf_create_token admin
+==> Generated token ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718 for user admin
+```
+
+Finalmente debemos hacer la siguiente llamada a la API admin de Kong.
+Debemos conocer previamente el ID de la API (A.K.A. kong_id).
+
+```
+API_ID=f9211efa-404f-4e4b-9024-91f58d1041e6
+API_TOKEN=ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718
+curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=http://django:8080/api/analytics/queries/ -d config.token=$API_TOKEN
+```
+
 ## Git hooks
 
 * Instalar [git-hooks](https://github.com/git-hooks/git-hooks/).
