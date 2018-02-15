@@ -38,7 +38,8 @@ def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
     kong_client.create.assert_called_once_with(api_data.upstream_url,
                                                name=api_data.name,
                                                strip_uri=api_data.strip_uri,
-                                               uris=api_data.uri)
+                                               hosts=api_data.hosts,
+                                               uris=api_data.uris)
 
 
 # pylint: disable=invalid-name
@@ -73,7 +74,7 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
     ApiManager.manage(api_data, kong_client)
 
     # Exercise
-    api_data.uri = faker.api_path()
+    api_data.uris = faker.api_path()
     api_data.upstream_url = faker.url()
 
     ApiManager.manage(api_data, kong_client)
@@ -83,7 +84,8 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
                                                upstream_url=api_data.upstream_url,
                                                name=api_data.name,
                                                strip_uri=str(api_data.strip_uri),
-                                               uris=api_data.uri)
+                                               hosts=api_data.hosts,
+                                               uris=api_data.uris)
 
 
 # pylint: disable=invalid-name
@@ -104,3 +106,26 @@ def test_updating_disabled_api_data_does_not_send_update_to_kong_server(api_data
     kong_client.create.assert_not_called()
     kong_client.update.assert_not_called()
     kong_client.delete.assert_not_called()
+
+
+def test_update_api_w_multiple_uris(faker, api_data, kong_client):
+    # Setup
+    api_data.enabled = True
+    api_data.kong_id = faker.kong_id()
+
+    uris = []
+    for _ in range(faker.random_int(1, 20)):
+        uris.append(faker.api_path())
+
+    api_data.uris = ", ".join(uris)
+
+    # Exercise
+    ApiManager.manage(api_data, kong_client)
+
+    # Verify
+    kong_client.update.assert_called_once_with(api_data.kong_id,
+                                               upstream_url=api_data.upstream_url,
+                                               name=api_data.name,
+                                               strip_uri=str(api_data.strip_uri),
+                                               hosts=api_data.hosts,
+                                               uris=", ".join(uris))

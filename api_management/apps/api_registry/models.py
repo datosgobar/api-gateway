@@ -1,25 +1,28 @@
 from django.db import models
 from django.conf import settings
-from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 
 import api_management.libs.kong.client as kong
+from api_management.apps.api_registry.validators import HostsValidator,\
+                                                        UrisValidator,\
+                                                        AlphanumericValidator
 
 
 class ApiData(models.Model):
-    alphanumeric = RegexValidator(r'^[0-9a-zA-Z\.\_\~\\\-]+$',
-                                  'Only alphanumeric and . - _ ~ characters are allowed.')
-    uris = RegexValidator(r'^([/]{1}[\w\d]+)*\/?$',
-                          'Only alphanumeric and _ characters are allowed. \n'
-                          'Must be prefixed with slash (/)')
 
-    name = models.CharField(unique=True, max_length=200, validators=[alphanumeric])
+    name = models.CharField(unique=True, max_length=200, validators=[AlphanumericValidator()])
     upstream_url = models.URLField()
-    uri = models.CharField(max_length=200, validators=[uris])
+    hosts = models.CharField(max_length=200, validators=[HostsValidator()], blank=True, default='')
+    uris = models.CharField(max_length=200, validators=[UrisValidator()], blank=True, default='')
     strip_uri = models.BooleanField(default=True)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
+
+    def clean(self):
+        if not (self.uris or self.hosts):
+            raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
 
 
 class ApiManager:
@@ -43,7 +46,8 @@ class ApiManager:
     @classmethod
     def __update(cls, api_instance, client):
         fields = {"name": api_instance.name,
-                  "uris": api_instance.uri,
+                  "hosts": api_instance.hosts,
+                  "uris": api_instance.uris,
                   "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri)}
         client.update(api_instance.kong_id, **fields)
@@ -52,7 +56,8 @@ class ApiManager:
     def __create(cls, api_instance, client):
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
-                                 uris=api_instance.uri,
+                                 hosts=api_instance.hosts,
+                                 uris=api_instance.uris,
                                  strip_uri=api_instance.strip_uri)
         api_instance.kong_id = response['id']
 

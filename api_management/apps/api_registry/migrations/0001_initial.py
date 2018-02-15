@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                                               django.core.validators.RegexValidator('^[0-9a-zA-Z\\.\\_\\~\\\\\\-]+$',
                                                                                     'Only alphanumeric and . - _ ~ characters are allowed.')])),
                 ('upstream_url', models.URLField()),
-                ('uri', models.CharField(max_length=200,
+                ('uris', models.CharField(max_length=200,
                                          validators=[
                                              django.core.validators.RegexValidator('^([/]{1}[\\w\\d]+)*\\/?$',
                                                                                    'Only alphanumeric and _ characters are allowed. \nMust be prefixed with slash (/)')])),
