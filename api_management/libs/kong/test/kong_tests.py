@@ -130,6 +130,27 @@ def test_create_missing_uris(fake, kong, session_stub, kong_admin_url):
                                                'upstream_url': url})
 
 
+def test_invalid_preserve_host(fake, kong, session_stub, kong_admin_url, invalid_value):
+    # Setup
+    name = fake.api_name()
+    uri = fake.api_path()
+    url = fake.url()
+
+    # Exercise
+    with pytest.raises(ValueError):
+        kong.create(name=name, upstream_url=url, uris=uri, preserve_host=invalid_value)
+
+    # Verify
+    session_stub.post.assert_called_with(kong_admin_url + 'apis/',
+                                         headers={},
+                                         data={'name': name,
+                                               'hosts': None,
+                                               'uris': uri,
+                                               'strip_uri': None,
+                                               'preserve_host': invalid_value,
+                                               'upstream_url': url})
+
+
 def setup_test_update(fake):
     url = fake.url()
     name = fake.api_name()

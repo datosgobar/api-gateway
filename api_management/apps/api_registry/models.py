@@ -17,6 +17,7 @@ class ApiData(models.Model):
     hosts = models.CharField(max_length=200, validators=[HostsValidator()], blank=True, default='')
     uris = models.CharField(max_length=200, validators=[UrisValidator()], blank=True, default='')
     strip_uri = models.BooleanField(default=True)
+    preserve_host = models.BooleanField(default=False)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
 
@@ -49,7 +50,8 @@ class ApiManager:
                   "hosts": api_instance.hosts,
                   "uris": api_instance.uris,
                   "upstream_url": api_instance.upstream_url,
-                  "strip_uri": str(api_instance.strip_uri)}
+                  "strip_uri": str(api_instance.strip_uri),
+                  "preserve_host": str(api_instance.preserve_host)}
         client.update(api_instance.kong_id, **fields)
 
     @classmethod
@@ -58,7 +60,8 @@ class ApiManager:
                                  name=api_instance.name,
                                  hosts=api_instance.hosts,
                                  uris=api_instance.uris,
-                                 strip_uri=api_instance.strip_uri)
+                                 strip_uri=api_instance.strip_uri,
+                                 preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
 
     @classmethod

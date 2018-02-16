@@ -12,7 +12,7 @@ class ApiAdmin(admin.ModelAdmin):
         }),
         ('Advanced', {
             'classes': ('collapse',),
-            'fields': ('strip_uri', 'kong_id',),
+            'fields': ('strip_uri', 'preserve_host', 'kong_id',),
         }),
     )
 

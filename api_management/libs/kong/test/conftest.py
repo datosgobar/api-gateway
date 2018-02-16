@@ -42,7 +42,15 @@ def missing_fields_response(mocker):
     return response
 
 
-def valid_fields(dictionary):
+@pytest.fixture
+def invalid_value_response(mocker):
+    response = mocker.stub(name='response_stub')
+    response.status_code = 400
+    response.content = "invalid parameter"
+    return response
+
+
+def satisfy_required_fields(dictionary):
     required_fields = ['uris', 'hosts']
     valid = False
     for key in dictionary:
@@ -50,15 +58,47 @@ def valid_fields(dictionary):
     return valid
 
 
+def valid_value_type(value):
+    return isinstance(value, (bool, str)) \
+           or value is None
+
+
+def preserve_host_validator(value):
+    valid_str = ['true', 'false']
+    return value is None \
+        or isinstance(value, bool) \
+        or (isinstance(value, str)
+            and value.lower() in valid_str)
+
+
+def satisfy_valid_values(dictionary):
+    valid_keys = {'name': valid_value_type,
+                  'hosts': valid_value_type,
+                  'uris': valid_value_type,
+                  'methods': valid_value_type,
+                  'upstream_url': valid_value_type,
+                  'strip_uri': valid_value_type,
+                  'preserve_host': preserve_host_validator}
+    for k, val in dictionary.items():
+        if not (k in valid_keys and valid_keys[k](val)):
+            return False
+    return True
+
+
 @pytest.fixture
-# pylint: disable=redefined-outer-name
-def session_stub(mocker, fake, created_names, already_exists_response, missing_fields_response):
+# pylint: disable=redefined-outer-name, too-many-arguments
+def session_stub(mocker, fake, created_names,
+                 already_exists_response, missing_fields_response,
+                 invalid_value_response):
     def post_side_effect(_, **kwargs):
         if kwargs['data']['name'] in created_names:
             return already_exists_response
 
-        if not valid_fields(kwargs['data']):
+        if not satisfy_required_fields(kwargs['data']):
             return missing_fields_response
+
+        if not satisfy_valid_values(kwargs['data']):
+            return invalid_value_response
 
         created_names.append(kwargs['data']['name'])
         response = mocker.stub(name='response_stub')
@@ -119,3 +159,8 @@ def kong(requests_stub):
 @pytest.fixture
 def kong_admin_url():
     return API_URL
+
+
+@pytest.fixture
+def invalid_value(fake):  # pylint: disable=redefined-outer-name
+    return fake.word()
