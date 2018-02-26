@@ -20,6 +20,9 @@ class DocsViewTests(APITestCase):
                                 documentation_url=self.faker.url())
         self.api_data.save()
 
+    def tearDown(self):
+        self.api_data.delete()
+
     @requests_mock.mock()
     def test_doc_view(self, mock):
         # Setup
