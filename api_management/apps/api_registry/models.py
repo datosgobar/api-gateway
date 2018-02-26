@@ -30,6 +30,10 @@ class ApiData(models.Model):
 class ApiManager:
 
     @staticmethod
+    def doc_post_fix():
+        return '-doc'
+
+    @staticmethod
     def kong_client():
         return kong.APIAdminClient(settings.KONG_ADMIN_URL)
 
@@ -56,7 +60,7 @@ class ApiManager:
         if not api_instance.id:  # if just created
             kong_client.create(settings.DOCS_URL + api_instance.name,
                                uris='/' + api_instance.name + '/?$',
-                               name=api_instance.name + '-doc')
+                               name=api_instance.name + cls.doc_post_fix())
 
     @classmethod
     def __update(cls, api_instance, client):
@@ -85,6 +89,12 @@ class ApiManager:
         client.delete(api_instance.kong_id)
         api_instance.kong_id = None
 
+    @classmethod
+    def _delete_docs_api(cls, api_instance, client=None):
+        if client is None:
+            client = cls.kong_client()
+        client.delete(api_instance.name + cls.doc_post_fix())
+
     @staticmethod
     @receiver(pre_save, sender=ApiData)
     def __api_saved(**kwargs):
@@ -93,4 +103,5 @@ class ApiManager:
     @staticmethod
     @receiver(pre_delete, sender=ApiData)
     def __api_deleted(**kwargs):
+        ApiManager._delete_docs_api(kwargs['instance'])
         ApiManager._delete(kwargs['instance'])
