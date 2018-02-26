@@ -15,10 +15,12 @@ def faker():
 
 @pytest.fixture()
 def api_data(faker):  # pylint: disable=redefined-outer-name
-    return ApiData(name=faker.api_name(),
-                   upstream_url=faker.url(),
-                   uris=faker.api_path(),
-                   kong_id=None)
+    api = ApiData(name=faker.api_name(),
+                  upstream_url=faker.url(),
+                  uris=faker.api_path(),
+                  kong_id=None)
+    api.id = faker.random_int()
+    return api
 
 
 @pytest.fixture()

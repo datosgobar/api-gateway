@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from ..models import ApiManager
 
 
@@ -151,3 +153,21 @@ def test_api_w_preserve_host(faker, api_data, kong_client):
                                                hosts=api_data.hosts,
                                                uris=api_data.uris,
                                                preserve_host=preserve_host)
+
+
+def test_creating_an_api_also_creates_a_route_to_documentation(api_data, kong_client):
+    """
+    Test: al crear una api en el modelo, tambien se crea una api en kong que
+    direcciona hacia la documentacion.
+    """
+    # Setup
+    api_data.id = None
+
+    # Exercise
+    ApiManager.manage(api_data, kong_client)
+
+    # Verify
+    kong_client.create.assert_called_once_with(settings.DOCS_URL + api_data.name,
+                                               name=api_data.name + '-doc',
+                                               uris='/' + api_data.name + '/?$')
+
