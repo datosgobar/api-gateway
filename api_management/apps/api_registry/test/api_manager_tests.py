@@ -171,3 +171,10 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data, kong_cl
                                                name=api_data.name + '-doc',
                                                uris='/' + api_data.name + '/?$')
 
+
+def test_deleting_and_api_deletes_its_route_to_documentation(api_data, kong_client):
+    # Exercise
+    ApiManager._delete_docs_api(api_data, kong_client)
+
+    # Verify
+    kong_client.delete.assert_called_once_with(api_data.name + '-doc')
