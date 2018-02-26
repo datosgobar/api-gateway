@@ -20,6 +20,7 @@ class ApiData(models.Model):
     preserve_host = models.BooleanField(default=False)
     enabled = models.BooleanField()
     kong_id = models.CharField(max_length=100, null=True)
+    documentation_url = models.URLField(blank=True)
 
     def clean(self):
         if not (self.uris or self.hosts):
