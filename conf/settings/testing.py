@@ -23,4 +23,4 @@ for queueConfig in RQ_QUEUES.values():
     queueConfig['ASYNC'] = False
 
 KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")
-DOCS_URL = env("DOCS_URL", default="http://localhost:8080/docs/")
+DOCS_URL = env("DOCS_URL", default="http://localhost:8080/api/registry/docs/")
