@@ -37,6 +37,12 @@ class ApiManager:
     def manage(cls, api_instance, kong_client=None):
         if kong_client is None:
             kong_client = cls.kong_client()
+
+        cls._manage_doc_api(api_instance, kong_client)
+        cls._manage_main_api(api_instance, kong_client)
+
+    @classmethod
+    def _manage_main_api(cls, api_instance, kong_client):
         if api_instance.enabled:
             if api_instance.kong_id:
                 cls.__update(api_instance, kong_client)
@@ -44,6 +50,13 @@ class ApiManager:
                 cls.__create(api_instance, kong_client)
         elif api_instance.kong_id:
             cls._delete(api_instance, kong_client)
+
+    @classmethod
+    def _manage_doc_api(cls, api_instance, kong_client):
+        if not api_instance.id:  # if just created
+            kong_client.create(settings.DOCS_URL + api_instance.name,
+                               uris='/' + api_instance.name + '/?$',
+                               name=api_instance.name + '-doc')
 
     @classmethod
     def __update(cls, api_instance, client):
