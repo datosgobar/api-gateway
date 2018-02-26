@@ -168,3 +168,4 @@ RQ_QUEUES = {
 }
 
 KONG_ADMIN_URL = ""
+DOCS_URL = ""
