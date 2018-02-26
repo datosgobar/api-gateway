@@ -16,7 +16,7 @@ class HostsValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 class UrisValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 
     def __init__(self):
-        uri_regex = r'([/]{1}[\w\d]+)+\/?'
+        uri_regex = r'([/]{1}[\S]+)+\/?'
         uris_validator_regex = helpers.coma_separated_list_of_regex(uri_regex)
 
         super(UrisValidator, self).__init__(uris_validator_regex,
