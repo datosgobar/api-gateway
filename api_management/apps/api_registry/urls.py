@@ -1,8 +1,8 @@
-from rest_framework import routers
+from rest_framework.urls import url
 
-from .views import DocsViewSet
+from .views import DocsView
 
-router = routers.SimpleRouter()  # pylint: disable=invalid-name
-router.register(r'docs', DocsViewSet)
 
-urlpatterns = router.urls  # pylint: disable=invalid-name
+urlpatterns = [
+    url(r'^docs/(?P<name>.+)/$', DocsView.as_view(), name='item-detail'),
+]
