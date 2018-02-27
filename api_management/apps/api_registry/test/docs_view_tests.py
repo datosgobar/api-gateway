@@ -1,3 +1,4 @@
+import requests
 import requests_mock
 import faker
 
@@ -20,6 +21,8 @@ class DocsViewTests(APITestCase):
                                 documentation_url=self.faker.url())
         self.api_data.save()
 
+        self.api_doc_url = '/api/registry/docs/%s/' % self.api_data.name
+
     def tearDown(self):
         self.api_data.delete()
 
@@ -29,9 +32,42 @@ class DocsViewTests(APITestCase):
         mock.get(self.api_data.documentation_url, json={'data': 'value'})
 
         # Exercise
-        url = '/api/registry/docs/%s/' % self.api_data.name
-        response = self.client.get(url)
+        response = self.client.get(self.api_doc_url)
 
         # Verify
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), {'data': 'value'})
+
+    # pylint: disable=invalid-name
+    def test_doc_view_wo_documentation_url_returns_404(self):
+        # Setup
+        self.api_data.documentation_url = ""
+        self.api_data.save()
+
+        # Exercise
+        response = self.client.get(self.api_doc_url)
+
+        # Verify
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    @requests_mock.mock()
+    def test_doc_view_w_doc_server_down(self, mock):
+        # Setup
+        mock.get(self.api_data.documentation_url, exc=requests.exceptions.ConnectionError)
+
+        # Exercise
+        response = self.client.get(self.api_doc_url)
+
+        # Verify
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @requests_mock.mock()
+    # pylint: disable=invalid-name
+    def test_doc_view_w_doc_server_returning_invalid_values(self, mock):
+        # Setup
+        mock.get(self.api_data.documentation_url, status_code=status.HTTP_204_NO_CONTENT)
+
+        # Exercise
+        response = self.client.get(self.api_doc_url)
+
+        # Verify
+        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
