@@ -29,41 +29,47 @@ class ApiData(models.Model):
 
 class ApiManager:
 
+    @classmethod
+    def using_settings(cls):
+        return cls(settings.DOCS_URL,
+                   kong.APIAdminClient(settings.KONG_ADMIN_URL))
+
+    def __init__(self, docs_url, kong_client):
+        self.docs_url = docs_url
+        self.kong_client = kong_client
+
+    def __setattr__(self, key, value):
+        if key == 'docs_url' and isinstance(value, str) and not value.endswith('/'):
+            value += '/'
+        return super(ApiManager, self).__setattr__(key, value)
+
     @staticmethod
-    def doc_post_fix():
+    def doc_suffix():
         return '-doc'
 
-    @staticmethod
-    def kong_client():
-        return kong.APIAdminClient(settings.KONG_ADMIN_URL)
+    def manage(self, api_instance, kong_client=None):
+        kong_client = kong_client or self.kong_client
 
-    @classmethod
-    def manage(cls, api_instance, kong_client=None):
-        if kong_client is None:
-            kong_client = cls.kong_client()
+        self._manage_doc_api(api_instance, kong_client)
+        self._manage_main_api(api_instance, kong_client)
 
-        cls._manage_doc_api(api_instance, kong_client)
-        cls._manage_main_api(api_instance, kong_client)
-
-    @classmethod
-    def _manage_main_api(cls, api_instance, kong_client):
+    def _manage_main_api(self, api_instance, kong_client):
         if api_instance.enabled:
             if api_instance.kong_id:
-                cls.__update(api_instance, kong_client)
+                self.__update(api_instance, kong_client)
             else:
-                cls.__create(api_instance, kong_client)
+                self.__create(api_instance, kong_client)
         elif api_instance.kong_id:
-            cls._delete(api_instance, kong_client)
+            self.delete_main_api(api_instance, kong_client)
 
-    @classmethod
-    def _manage_doc_api(cls, api_instance, kong_client):
+    def _manage_doc_api(self, api_instance, kong_client):
         if not api_instance.id:  # if just created
-            kong_client.create(settings.DOCS_URL + api_instance.name,
+            kong_client.create(self.docs_url + api_instance.name,
                                uris='/' + api_instance.name + '/?$',
-                               name=api_instance.name + cls.doc_post_fix())
+                               name=api_instance.name + self.doc_suffix())
 
-    @classmethod
-    def __update(cls, api_instance, client):
+    @staticmethod
+    def __update(api_instance, client):
         fields = {"name": api_instance.name,
                   "hosts": api_instance.hosts,
                   "uris": api_instance.uris,
@@ -72,8 +78,8 @@ class ApiManager:
                   "preserve_host": str(api_instance.preserve_host)}
         client.update(api_instance.kong_id, **fields)
 
-    @classmethod
-    def __create(cls, api_instance, client):
+    @staticmethod
+    def __create(api_instance, client):
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
                                  hosts=api_instance.hosts,
@@ -82,26 +88,25 @@ class ApiManager:
                                  preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
 
-    @classmethod
-    def _delete(cls, api_instance, client=None):
-        if client is None:
-            client = cls.kong_client()
-        client.delete(api_instance.kong_id)
+    def delete_main_api(self, api_instance, kong_client=None):
+        kong_client = kong_client or self.kong_client
+
+        kong_client.delete(api_instance.kong_id)
         api_instance.kong_id = None
 
-    @classmethod
-    def _delete_docs_api(cls, api_instance, client=None):
-        if client is None:
-            client = cls.kong_client()
-        client.delete(api_instance.name + cls.doc_post_fix())
+    def delete_docs_api(self, api_instance, kong_client=None):
+        kong_client = kong_client or self.kong_client
 
-    @staticmethod
-    @receiver(pre_save, sender=ApiData)
-    def __api_saved(**kwargs):
-        ApiManager.manage(kwargs['instance'])
+        kong_client.delete(api_instance.name + self.doc_suffix())
 
-    @staticmethod
-    @receiver(pre_delete, sender=ApiData)
-    def __api_deleted(**kwargs):
-        ApiManager._delete_docs_api(kwargs['instance'])
-        ApiManager._delete(kwargs['instance'])
+
+@receiver(pre_save, sender=ApiData)
+def api_saved(**kwargs):
+    ApiManager.using_settings().manage(kwargs['instance'])
+
+
+@receiver(pre_delete, sender=ApiData)
+def api_deleted(**kwargs):
+    manager = ApiManager.using_settings()
+    manager.delete_docs_api(kwargs['instance'])
+    manager.delete_main_api(kwargs['instance'])
