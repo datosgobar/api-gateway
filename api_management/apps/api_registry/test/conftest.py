@@ -3,7 +3,7 @@ from faker import Faker
 
 from api_management.libs.providers.providers import CustomInfoProvider
 
-from ..models import ApiData
+from ..models import ApiData, ApiManager
 
 
 @pytest.fixture()
@@ -33,3 +33,13 @@ def kong_client(faker, mocker):  # pylint: disable=redefined-outer-name
     stub.update = mocker.stub(name='kong_client_update_stub')
     stub.delete = mocker.stub(name='kong_client_delete_stub')
     return stub
+
+
+@pytest.fixture()
+def docs_url(faker):  # pylint: disable=redefined-outer-name
+    return faker.url()
+
+
+@pytest.fixture()
+def api_manager(docs_url, kong_client):  # pylint: disable=redefined-outer-name
+    return ApiManager(docs_url, kong_client)
