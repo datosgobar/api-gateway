@@ -36,12 +36,12 @@ def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.create.assert_called_once_with(api_data.upstream_url,
-                                               name=api_data.name,
-                                               strip_uri=api_data.strip_uri,
-                                               hosts=api_data.hosts,
-                                               uris=api_data.uris,
-                                               preserve_host=api_data.preserve_host)
+    kong_client.create.assert_called_with(api_data.upstream_url,
+                                          name=api_data.name,
+                                          strip_uri=api_data.strip_uri,
+                                          hosts=api_data.hosts,
+                                          uris=api_data.uris,
+                                          preserve_host=api_data.preserve_host)
 
 
 # pylint: disable=invalid-name
@@ -149,12 +149,12 @@ def test_api_w_preserve_host(faker, api_data, api_manager, kong_client):
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.create.assert_called_once_with(api_data.upstream_url,
-                                               name=api_data.name,
-                                               strip_uri=api_data.strip_uri,
-                                               hosts=api_data.hosts,
-                                               uris=api_data.uris,
-                                               preserve_host=preserve_host)
+    kong_client.create.assert_called_with(api_data.upstream_url,
+                                          name=api_data.name,
+                                          strip_uri=api_data.strip_uri,
+                                          hosts=api_data.hosts,
+                                          uris=api_data.uris,
+                                          preserve_host=preserve_host)
 
 
 def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
@@ -174,7 +174,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
     # Verify
     kong_client.create.assert_called_once_with(docs_url + api_data.name,
                                                name=api_data.name + '-doc',
-                                               uris='/' + api_data.name + '/?$')
+                                               uris='/' + api_data.name + '/$')
 
 
 def test_deleting_and_api_deletes_its_route_to_documentation(api_data, api_manager, kong_client):

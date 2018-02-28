@@ -65,7 +65,7 @@ class ApiManager:
     def _manage_doc_api(self, api_instance, kong_client):
         if not api_instance.id:  # if just created
             kong_client.create(self.docs_url + api_instance.name,
-                               uris='/' + api_instance.name + '/?$',
+                               uris='/' + api_instance.name + '/$',
                                name=api_instance.name + self.doc_suffix())
 
     @staticmethod
@@ -93,7 +93,6 @@ class ApiManager:
 
         kong_client.delete(api_instance.kong_id)
         api_instance.kong_id = None
-
 
     def delete_docs_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
