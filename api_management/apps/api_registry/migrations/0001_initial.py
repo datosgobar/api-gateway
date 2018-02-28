@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                                          validators=[
                                              django.core.validators.RegexValidator('^([/]{1}[\\w\\d]+)*\\/?$',
                                                                                    'Only alphanumeric and _ characters are allowed. \nMust be prefixed with slash (/)')])),
-                ('enabled', models.BooleanField(default=True)),
+                ('enabled', models.BooleanField()),
                 ('kong_id', models.CharField(max_length=100, null=True)),
                 ('strip_uri', models.BooleanField(default=True)),
             ],
