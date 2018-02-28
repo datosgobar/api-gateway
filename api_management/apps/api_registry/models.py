@@ -18,7 +18,7 @@ class ApiData(models.Model):
     uris = models.CharField(max_length=200, validators=[UrisValidator()], blank=True, default='')
     strip_uri = models.BooleanField(default=True)
     preserve_host = models.BooleanField(default=False)
-    enabled = models.BooleanField()
+    enabled = models.BooleanField(default=False)
     kong_id = models.CharField(max_length=100, null=True)
     documentation_url = models.URLField(blank=True)
 
