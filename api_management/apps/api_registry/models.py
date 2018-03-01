@@ -71,10 +71,12 @@ class ApiManager:
         if not api_instance.id:  # if just created
             kong_client.create(self.doc_upstream(api_instance),
                                uris=self.docs_uri_pattern(api_instance),
+                               hosts=api_instance.hosts,
                                name=api_instance.name + self.doc_suffix())
         else:
             kong_client.update(api_instance.name + self.doc_suffix(),
                                uris=self.docs_uri_pattern(api_instance),
+                               hosts=api_instance.hosts,
                                upstream_url=self.doc_upstream(api_instance))
 
     def doc_upstream(self, api_instance):
