@@ -72,6 +72,10 @@ class ApiManager:
             kong_client.create(self.doc_upstream(api_instance),
                                uris=self.docs_uri_pattern(api_instance),
                                name=api_instance.name + self.doc_suffix())
+        else:
+            kong_client.update(api_instance.name + self.doc_suffix(),
+                               uris=self.docs_uri_pattern(api_instance),
+                               upstream_url=self.doc_upstream(api_instance))
 
     def doc_upstream(self, api_instance):
         doc_endpoint = reverse('api-doc', args=[api_instance.name])
@@ -79,7 +83,7 @@ class ApiManager:
 
     @staticmethod
     def api_uri_pattern(api_instance):
-        return api_instance.uris + '(?=/.)'
+        return api_instance.uris + '/(?=.)'
 
     @staticmethod
     def docs_uri_pattern(api_instance):
@@ -89,7 +93,7 @@ class ApiManager:
     def __update(cls, api_instance, client):
         fields = {"name": api_instance.name,
                   "hosts": api_instance.hosts,
-                  "uris": api_instance.uris,
+                  "uris": cls.api_uri_pattern(api_instance),
                   "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri),
                   "preserve_host": str(api_instance.preserve_host)}
