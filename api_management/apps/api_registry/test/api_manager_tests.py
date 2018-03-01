@@ -40,7 +40,7 @@ def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
                                           name=api_data.name,
                                           strip_uri=api_data.strip_uri,
                                           hosts=api_data.hosts,
-                                          uris=api_data.uris,
+                                          uris=api_data.uris + '(?=/.)',
                                           preserve_host=api_data.preserve_host)
 
 
@@ -129,7 +129,7 @@ def test_api_w_preserve_host(faker, api_data, api_manager, kong_client):
                                           name=api_data.name,
                                           strip_uri=api_data.strip_uri,
                                           hosts=api_data.hosts,
-                                          uris=api_data.uris,
+                                          uris=api_data.uris + '(?=/.)',
                                           preserve_host=preserve_host)
 
 

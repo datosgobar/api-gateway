@@ -78,6 +78,10 @@ class ApiManager:
         return urllib.parse.urljoin(self.kong_traffic_url, doc_endpoint)
 
     @staticmethod
+    def api_uri_pattern(api_instance):
+        return api_instance.uris + '(?=/.)'
+
+    @staticmethod
     def docs_uri_pattern(api_instance):
         return api_instance.uris + '/?$'
 
@@ -96,7 +100,7 @@ class ApiManager:
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
                                  hosts=api_instance.hosts,
-                                 uris=api_instance.uris,
+                                 uris=cls.api_uri_pattern(api_instance),
                                  strip_uri=api_instance.strip_uri,
                                  preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
