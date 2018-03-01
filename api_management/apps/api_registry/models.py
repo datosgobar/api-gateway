@@ -31,15 +31,18 @@ class ApiManager:
 
     @classmethod
     def using_settings(cls):
-        return cls(settings.DOCS_URL,
+        return cls(settings.KONG_TRAFFIC_URL,
                    kong.APIAdminClient(settings.KONG_ADMIN_URL))
 
-    def __init__(self, docs_url, kong_client):
-        self.docs_url = docs_url
+    def __init__(self, kong_traffic_url, kong_client, doc_path='docs/'):
+        self.kong_traffic_url = kong_traffic_url
         self.kong_client = kong_client
+        self.doc_path = doc_path
 
     def __setattr__(self, key, value):
-        if key == 'docs_url' and isinstance(value, str) and not value.endswith('/'):
+        if key in ('kong_traffic_url', 'doc_path')\
+                and isinstance(value, str)\
+                and not value.endswith('/'):
             value += '/'
         return super(ApiManager, self).__setattr__(key, value)
 
@@ -64,8 +67,8 @@ class ApiManager:
 
     def _manage_doc_api(self, api_instance, kong_client):
         if not api_instance.id:  # if just created
-            kong_client.create(self.docs_url + api_instance.name,
-                               uris='/' + api_instance.name + '/$',
+            kong_client.create(self.kong_traffic_url + self.doc_path + api_instance.name,
+                               uris=api_instance.uris + '/$',
                                name=api_instance.name + self.doc_suffix())
 
     @staticmethod

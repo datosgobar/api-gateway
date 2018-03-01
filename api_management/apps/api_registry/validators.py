@@ -16,11 +16,11 @@ class HostsValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 class UrisValidator(RegexValidator):  # pylint: disable=too-few-public-methods
 
     def __init__(self):
-        uri_regex = r'([/]{1}[\w\d]+)+\/?'
+        uri_regex = r'([/]{1}[0-9a-zA-Z\.\_\-]+)+\/?'
         uris_validator_regex = helpers.coma_separated_list_of_regex(uri_regex)
 
         super(UrisValidator, self).__init__(uris_validator_regex,
-                                            'Only alphanumeric and _ characters are allowed. \n'
+                                            'Only alphanumeric and _ - and . characters are allowed. \n'
                                             'Must be prefixed with slash (/)')
 
 

@@ -159,7 +159,7 @@ def test_api_w_preserve_host(faker, api_data, api_manager, kong_client):
 
 def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
                                                                api_manager,
-                                                               docs_url,
+                                                               kong_traffic_url,
                                                                kong_client):
     """
     Test: al crear una api en el modelo, tambien se crea una api en kong que
@@ -172,9 +172,9 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.create.assert_called_once_with(docs_url + api_data.name,
+    kong_client.create.assert_called_once_with(kong_traffic_url + 'docs/' + api_data.name,
                                                name=api_data.name + '-doc',
-                                               uris='/' + api_data.name + '/$')
+                                               uris=api_data.uris + '/$')
 
 
 def test_deleting_and_api_deletes_its_route_to_documentation(api_data, api_manager, kong_client):

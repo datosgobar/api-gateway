@@ -38,10 +38,10 @@ def kong_client(faker, mocker):  # pylint: disable=redefined-outer-name
 
 
 @pytest.fixture()
-def docs_url(faker):  # pylint: disable=redefined-outer-name
+def kong_traffic_url(faker):  # pylint: disable=redefined-outer-name
     return faker.url()
 
 
 @pytest.fixture()
-def api_manager(docs_url, kong_client):  # pylint: disable=redefined-outer-name
-    return ApiManager(docs_url, kong_client)
+def api_manager(kong_traffic_url, kong_client):  # pylint: disable=redefined-outer-name
+    return ApiManager(kong_traffic_url, kong_client)
