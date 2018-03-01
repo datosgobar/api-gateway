@@ -19,7 +19,7 @@ def api_data(faker):  # pylint: disable=redefined-outer-name
                   upstream_url=faker.url(),
                   uris=faker.api_path(),
                   kong_id=None)
-    api.id = faker.uuid4()
+    api.id = faker.random_int()
     return api
 
 

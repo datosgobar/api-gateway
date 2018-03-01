@@ -26,6 +26,8 @@ class ApiData(models.Model):
         if not (self.uris or self.hosts):
             raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
 
+        return super(ApiData, self).clean()
+
 
 class ApiManager:
 
@@ -51,6 +53,7 @@ class ApiManager:
         return '-doc'
 
     def manage(self, api_instance, kong_client=None):
+
         kong_client = kong_client or self.kong_client
 
         self._manage_doc_api(api_instance, kong_client)
@@ -68,28 +71,36 @@ class ApiManager:
     def _manage_doc_api(self, api_instance, kong_client):
         if not api_instance.id:  # if just created
             kong_client.create(self.kong_traffic_url + self.doc_path + api_instance.name,
-                               uris=api_instance.uris + '/$',
+                               uris=self.docs_uri_pattern(api_instance),
                                name=api_instance.name + self.doc_suffix())
 
     @staticmethod
-    def __update(api_instance, client):
+    def docs_uri_pattern(api_instance):
+        return api_instance.uris + '/?$'
+
+    @classmethod
+    def __update(cls, api_instance, client):
         fields = {"name": api_instance.name,
                   "hosts": api_instance.hosts,
-                  "uris": api_instance.uris,
+                  "uris": cls.api_uri_pattern(api_instance),
                   "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri),
                   "preserve_host": str(api_instance.preserve_host)}
         client.update(api_instance.kong_id, **fields)
 
-    @staticmethod
-    def __create(api_instance, client):
+    @classmethod
+    def __create(cls, api_instance, client):
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
                                  hosts=api_instance.hosts,
-                                 uris=api_instance.uris,
+                                 uris=cls.api_uri_pattern(api_instance),
                                  strip_uri=api_instance.strip_uri,
                                  preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
+
+    @staticmethod
+    def api_uri_pattern(api_instance):
+        return api_instance.uris + '/.+'
 
     def delete_main_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
