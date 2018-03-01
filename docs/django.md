@@ -39,8 +39,8 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 1. Iniciar los servicios: `docker-compose up -d`
 1. Migrar la base de datos de kong: `docker-compose run kong kong migrations up`
 1. Reiniciar kong: `docker-compose up -d kong`
-1. Migrar la base de datos: `docker-compose run django /app/venv/bin/python manage.py migrate`
-1. Crear un super usuario: `docker-compose run django /app/venv/bin/python manage.py createsuperuser`
+1. Migrar la base de datos: `docker-compose run django python3 manage.py migrate`
+1. Crear un super usuario: `docker-compose run django python3 manage.py createsuperuser`
 
 ### Activar el plugin de httplog2 en Docker
 
@@ -77,7 +77,7 @@ curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=ht
 
 * `./manage.py shell`
 
-* Con Docker: `docker-compose run django /app/venv/bin/python manage.py migrate`
+* Con Docker: `docker-compose run django python3 manage.py migrate`
 
 ## Tests
 
