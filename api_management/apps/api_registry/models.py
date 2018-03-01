@@ -89,7 +89,7 @@ class ApiManager:
 
     @staticmethod
     def docs_uri_pattern(api_instance):
-        return api_instance.uris + '/?$'
+        return api_instance.uris + '/$'
 
     @classmethod
     def __update(cls, api_instance, client):
