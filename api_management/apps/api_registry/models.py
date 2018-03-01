@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -36,13 +37,12 @@ class ApiManager:
         return cls(settings.KONG_TRAFFIC_URL,
                    kong.APIAdminClient(settings.KONG_ADMIN_URL))
 
-    def __init__(self, kong_traffic_url, kong_client, doc_path='docs/'):
+    def __init__(self, kong_traffic_url, kong_client):
         self.kong_traffic_url = kong_traffic_url
         self.kong_client = kong_client
-        self.doc_path = doc_path
 
     def __setattr__(self, key, value):
-        if key in ('kong_traffic_url', 'doc_path')\
+        if key in ('kong_traffic_url',)\
                 and isinstance(value, str)\
                 and not value.endswith('/'):
             value += '/'
@@ -70,9 +70,13 @@ class ApiManager:
 
     def _manage_doc_api(self, api_instance, kong_client):
         if not api_instance.id:  # if just created
-            kong_client.create(self.kong_traffic_url + self.doc_path + api_instance.name,
+            kong_client.create(self.doc_upstream(api_instance),
                                uris=self.docs_uri_pattern(api_instance),
                                name=api_instance.name + self.doc_suffix())
+
+    def doc_upstream(self, api_instance):
+        doc_endpoint = reverse('api-doc', args=[api_instance.name])[1:]
+        return self.kong_traffic_url + doc_endpoint
 
     @staticmethod
     def docs_uri_pattern(api_instance):
@@ -82,7 +86,7 @@ class ApiManager:
     def __update(cls, api_instance, client):
         fields = {"name": api_instance.name,
                   "hosts": api_instance.hosts,
-                  "uris": cls.api_uri_pattern(api_instance),
+                  "uris": api_instance.uris,
                   "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri),
                   "preserve_host": str(api_instance.preserve_host)}
@@ -93,14 +97,10 @@ class ApiManager:
         response = client.create(api_instance.upstream_url,
                                  name=api_instance.name,
                                  hosts=api_instance.hosts,
-                                 uris=cls.api_uri_pattern(api_instance),
+                                 uris=api_instance.uris,
                                  strip_uri=api_instance.strip_uri,
                                  preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
-
-    @staticmethod
-    def api_uri_pattern(api_instance):
-        return api_instance.uris + '/.+'
 
     def delete_main_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client

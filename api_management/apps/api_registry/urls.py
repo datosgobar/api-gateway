@@ -4,5 +4,5 @@ from .views import DocsView
 
 # pylint: disable=invalid-name
 urlpatterns = [
-    url(r'^docs/(?P<name>.+)/$', DocsView.as_view(), name='item-detail'),
+    url(r'^docs/(?P<name>.+)/$', DocsView.as_view(), name='api-doc'),
 ]
