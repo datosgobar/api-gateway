@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.urls import reverse
 from django.db import models
 from django.conf import settings
@@ -38,15 +40,12 @@ class ApiManager:
                    kong.APIAdminClient(settings.KONG_ADMIN_URL))
 
     def __init__(self, kong_traffic_url, kong_client):
+        if isinstance(kong_traffic_url, str) \
+                and not kong_traffic_url.endswith('/'):
+            kong_traffic_url += '/'
+
         self.kong_traffic_url = kong_traffic_url
         self.kong_client = kong_client
-
-    def __setattr__(self, key, value):
-        if key in ('kong_traffic_url',)\
-                and isinstance(value, str)\
-                and not value.endswith('/'):
-            value += '/'
-        return super(ApiManager, self).__setattr__(key, value)
 
     @staticmethod
     def doc_suffix():
@@ -75,8 +74,8 @@ class ApiManager:
                                name=api_instance.name + self.doc_suffix())
 
     def doc_upstream(self, api_instance):
-        doc_endpoint = reverse('api-doc', args=[api_instance.name])[1:]
-        return self.kong_traffic_url + doc_endpoint
+        doc_endpoint = reverse('api-doc', args=[api_instance.name])
+        return urllib.parse.urljoin(self.kong_traffic_url, doc_endpoint)
 
     @staticmethod
     def docs_uri_pattern(api_instance):
