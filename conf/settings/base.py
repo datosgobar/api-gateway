@@ -144,9 +144,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 # Do not use a dir inside the project in production environments
-MEDIA_ROOT = BASE_DIR('media')
+MEDIA_ROOT = (BASE_DIR - 1)('media')
 MEDIA_URL = '/media/'
-STATIC_ROOT = BASE_DIR('static')
+STATIC_ROOT = (BASE_DIR - 1)('static')
 STATIC_URL = '/static/'
 
 SITE_ID = 1
