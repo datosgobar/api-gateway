@@ -118,7 +118,7 @@ def test_updating_disabled_api_data_only_sends_update_to_doc_api(api_data,
                                      '/'])
     kong_client.update.assert_called_once_with(api_data.name + '-doc',
                                                upstream_url=expected_upstream_url,
-                                               uris=api_data.uris + '/?$',
+                                               uris=api_data.uris + '/$',
                                                hosts=api_data.hosts)
     kong_client.delete.assert_not_called()
 
@@ -163,7 +163,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
                                      '/'])
     kong_client.create.assert_called_once_with(expected_upstream_url,
                                                name=api_data.name + '-doc',
-                                               uris=api_data.uris + '/?$',
+                                               uris=api_data.uris + '/$',
                                                hosts=api_data.hosts)
 
 
