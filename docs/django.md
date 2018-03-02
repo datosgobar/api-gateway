@@ -35,6 +35,7 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 1. Migrar la base de datos: `docker-compose run django python3 manage.py migrate`
 1. "Subir" los archivos estaticos a nginx: `docker-compose run django python3 manage.py collectstatic`
 1. Crear un super usuario: `docker-compose run django python3 manage.py createsuperuser`
+1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=http://nginx/ -d uris=/management`
 
 ## Configuracion Local
 
