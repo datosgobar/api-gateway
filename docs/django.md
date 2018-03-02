@@ -26,21 +26,23 @@ Opcionalmente se puede usar Docker y Docker Compose para desarrollo.
 Este proyecto adopta [The 12 factor methodology](https://12factor.net/).
 Esto significa que todas las configuraciones deberian hacerse por variables de entorno. [(Factor III)](https://12factor.net/config).
 
-## Configuracion Local
-
-1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.3 my_virtualenv`
-1. Crear un archivo `.python-version`: `echo "my_virtualenv" > .python-version`
-1. Instalar los requerimientos: `pip install -r requirements/local.txt`
-1. Instalar redis: `# apt-get install redis-server`
-
-### Development with Docker
+### Desarrollo con Docker
 
 1. Build: `docker-compose build`
 1. Iniciar los servicios: `docker-compose up -d`
 1. Migrar la base de datos de kong: `docker-compose run kong kong migrations up`
 1. Reiniciar kong: `docker-compose up -d kong`
 1. Migrar la base de datos: `docker-compose run django python3 manage.py migrate`
+1. "Subir" los archivos estaticos a nginx: `docker-compose run django python3 manage.py collectstatic`
 1. Crear un super usuario: `docker-compose run django python3 manage.py createsuperuser`
+1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=http://nginx/ -d uris=/management`
+
+## Configuracion Local
+
+1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.3 my_virtualenv`
+1. Crear un archivo `.python-version`: `echo "my_virtualenv" > .python-version`
+1. Instalar los requerimientos: `pip install -r requirements/local.txt`
+1. Instalar redis: `# apt-get install redis-server`
 
 ### Activar el plugin de httplog2 en Docker
 

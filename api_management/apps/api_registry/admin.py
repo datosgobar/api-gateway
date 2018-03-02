@@ -8,11 +8,11 @@ class ApiAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('name', 'documentation_url', 'upstream_url', 'hosts', 'uris', 'enabled')
+            'fields': ('name', 'documentation_url', 'upstream_url', 'uris', 'enabled')
         }),
         ('Advanced', {
             'classes': ('collapse',),
-            'fields': ('strip_uri', 'preserve_host', 'kong_id',),
+            'fields': ('hosts', 'strip_uri', 'preserve_host', 'kong_id',),
         }),
     )
 
