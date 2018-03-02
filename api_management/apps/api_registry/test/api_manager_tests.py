@@ -18,7 +18,7 @@ def test_disabling_an_api_removes_it_from_the_kong_server(api_data,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.delete.assert_called_once_with(kong_id)
+    kong_client.delete.assert_called_with(kong_id)
 
 
 # pylint: disable=invalid-name
@@ -94,14 +94,12 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
 
 
 # pylint: disable=invalid-name
-def test_updating_disabled_api_data_only_sends_update_to_doc_api(api_data,
-                                                                 api_manager,
-                                                                 kong_traffic_url,
-                                                                 kong_client):
+def test_updating_disabled_api_does_not_triggers_kong_communication(api_data,
+                                                                    api_manager,
+                                                                    kong_client):
     """
         actualizar data de una api desactivada
-        solo dispara comunicacion con el server kong
-        para updatear la api de doc
+        no dispara comunicacion con el server kong
     """
     # Setup
     api_data.enabled = False
@@ -112,14 +110,7 @@ def test_updating_disabled_api_data_only_sends_update_to_doc_api(api_data,
 
     # Verify
     kong_client.create.assert_not_called()
-    expected_upstream_url = ''.join([kong_traffic_url,
-                                     'management/api/registry/docs/',
-                                     api_data.name,
-                                     '/'])
-    kong_client.update.assert_called_once_with(api_data.name + '-doc',
-                                               upstream_url=expected_upstream_url,
-                                               uris=api_data.uris + '/$',
-                                               hosts=api_data.hosts)
+    kong_client.update.assert_not_called()
     kong_client.delete.assert_not_called()
 
 
@@ -151,6 +142,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
     direcciona hacia la documentacion.
     """
     # Setup
+    api_data.enabled = True
     api_data.id = None
 
     # Exercise
@@ -161,10 +153,10 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
                                      'management/api/registry/docs/',
                                      api_data.name,
                                      '/'])
-    kong_client.create.assert_called_once_with(expected_upstream_url,
-                                               name=api_data.name + '-doc',
-                                               uris=api_data.uris + '/$',
-                                               hosts=api_data.hosts)
+    kong_client.create.assert_any_call(expected_upstream_url,
+                                       name=api_data.name + '-doc',
+                                       uris=api_data.uris + '/$',
+                                       hosts=api_data.hosts)
 
 
 def test_deleting_and_api_deletes_its_route_to_documentation(api_data, api_manager, kong_client):
