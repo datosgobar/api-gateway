@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     "django_rq",
+    'axes',
+    'admin_honeypot',
 ]
 
 VENDOR_APPS = [
@@ -171,3 +173,14 @@ KONG_TRAFFIC_URL = ""
 KONG_ADMIN_URL = ""
 
 FORCE_SCRIPT_NAME = '/management'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'axes_cache': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
+AXES_CACHE = 'axes_cache'

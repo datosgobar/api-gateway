@@ -20,7 +20,7 @@ RUN apk add --no-cache python3 imagemagick zlib-dev jpeg-dev gcc build-base post
     addgroup -S $APP_USER && \
     adduser -D -H -S $APP_USER $APP_USER && \
     chown $APP_USER:$APP_USER -Rc $BASE_DIR && \
-    apk add --no-cache gcc python3-dev libc-dev --virtual build && \
+    apk add --no-cache git gcc python3-dev libc-dev --virtual build && \
     python3 -m pip install --no-cache -r $requirements && \
     apk del --no-cache build
 
