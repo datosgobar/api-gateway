@@ -26,7 +26,7 @@ api_urlpatterns = [
 
 urlpatterns = [
     path(r'admin/', include(('admin_honeypot.urls', 'honey'), namespace='admin_honeypot')),
-    path(r'secret/', admin.site.urls),
+    path(r'ingresar/', admin.site.urls),
     path('api/', include(api_urlpatterns)),
     path('django-rq/', include('django_rq.urls')),
 ]
