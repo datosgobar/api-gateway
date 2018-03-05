@@ -52,32 +52,15 @@ class ApiManager:
         return '-doc'
 
     def manage(self, api_instance, kong_client=None):
-
         kong_client = kong_client or self.kong_client
 
-        self._manage_doc_api(api_instance, kong_client)
-        self._manage_main_api(api_instance, kong_client)
-
-    def _manage_main_api(self, api_instance, kong_client):
         if api_instance.enabled:
             if api_instance.kong_id:
                 self.__update(api_instance, kong_client)
             else:
                 self.__create(api_instance, kong_client)
         elif api_instance.kong_id:
-            self.delete_main_api(api_instance, kong_client)
-
-    def _manage_doc_api(self, api_instance, kong_client):
-        if not api_instance.id:  # if just created
-            kong_client.create(self.doc_upstream(api_instance),
-                               uris=self.docs_uri_pattern(api_instance),
-                               hosts=api_instance.hosts,
-                               name=api_instance.name + self.doc_suffix())
-        else:
-            kong_client.update(api_instance.name + self.doc_suffix(),
-                               uris=self.docs_uri_pattern(api_instance),
-                               hosts=api_instance.hosts,
-                               upstream_url=self.doc_upstream(api_instance))
+            self.__delete(api_instance, kong_client)
 
     def doc_upstream(self, api_instance):
         doc_endpoint = reverse('api-doc', args=[api_instance.name])
@@ -91,31 +74,53 @@ class ApiManager:
     def docs_uri_pattern(api_instance):
         return api_instance.uris + '/$'
 
-    @classmethod
-    def __update(cls, api_instance, client):
+    def __update(self, api_instance, client):
+        self.update_docs_api(api_instance, client)
+        self.update_main_api(api_instance, client)
+
+    def __create(self, api_instance, client):
+        self.create_docs_api(api_instance, client)
+        self.create_main_api(api_instance, client)
+
+    def __delete(self, api_instance, client):
+        self.delete_docs_api(api_instance, client)
+        self.delete_main_api(api_instance, client)
+
+    def create_main_api(self, api_instance, client):
+        response = client.create(api_instance.upstream_url,
+                                 name=api_instance.name,
+                                 hosts=api_instance.hosts,
+                                 uris=self.api_uri_pattern(api_instance),
+                                 strip_uri=api_instance.strip_uri,
+                                 preserve_host=api_instance.preserve_host)
+        api_instance.kong_id = response['id']
+
+    def update_main_api(self, api_instance, client):
         fields = {"name": api_instance.name,
                   "hosts": api_instance.hosts,
-                  "uris": cls.api_uri_pattern(api_instance),
+                  "uris": self.api_uri_pattern(api_instance),
                   "upstream_url": api_instance.upstream_url,
                   "strip_uri": str(api_instance.strip_uri),
                   "preserve_host": str(api_instance.preserve_host)}
         client.update(api_instance.kong_id, **fields)
-
-    @classmethod
-    def __create(cls, api_instance, client):
-        response = client.create(api_instance.upstream_url,
-                                 name=api_instance.name,
-                                 hosts=api_instance.hosts,
-                                 uris=cls.api_uri_pattern(api_instance),
-                                 strip_uri=api_instance.strip_uri,
-                                 preserve_host=api_instance.preserve_host)
-        api_instance.kong_id = response['id']
 
     def delete_main_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
 
         kong_client.delete(api_instance.kong_id)
         api_instance.kong_id = None
+
+    def create_docs_api(self, api_instance, kong_client):
+        kong_client.create(self.doc_upstream(api_instance),
+                           uris=self.docs_uri_pattern(api_instance),
+                           hosts=api_instance.hosts,
+                           name=api_instance.name + self.doc_suffix())
+
+    def update_docs_api(self, api_instance, kong_client):
+        kong_client.update(api_instance.name + self.doc_suffix(),
+                           uris=self.docs_uri_pattern(api_instance),
+                           hosts=api_instance.hosts,
+                           upstream_url=self.doc_upstream(api_instance))
 
     def delete_docs_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
