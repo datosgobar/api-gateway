@@ -21,7 +21,12 @@ kong_admin_listen: "{{ kong_admin_interface }}:{{ kong_admin_port }}"
 
 # Sample!
 #kong_api_map:
-#  - {name: "stiempo-vagrant", hosts: "testing.stiempo.com", upstream_url: "http://192.168.35.10"}
+#  {
+#    name: "management",
+#    upstream_url: "http://192.168.35.5",
+#    uris: "/management",
+#    strip_uri: true
+#    }
 kong_api_map: []
 
 # Rate limit
