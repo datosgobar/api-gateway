@@ -51,3 +51,5 @@ sentry_environment: testing
 
 kong_traffic_url: ""
 kong_admin_url: ""
+
+django_redis_host: ""
