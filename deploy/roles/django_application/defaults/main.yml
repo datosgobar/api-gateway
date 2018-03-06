@@ -45,3 +45,9 @@ django_secret_key:
 # Sentry
 sentry_dsn:
 sentry_environment: testing
+
+
+# Kong configuration
+
+kong_traffic_url: ""
+kong_admin_url: ""
