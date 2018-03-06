@@ -25,14 +25,24 @@ class ApiData(models.Model):
     kong_id = models.CharField(max_length=100, null=True)
     documentation_url = models.URLField(blank=True)
     rate_limiting_enabled = models.BooleanField(default=False)
-    rate_limiting_second = models.IntegerField(blank=True, default=0)
-    rate_limiting_minute = models.IntegerField(blank=True, default=0)
-    rate_limiting_hour = models.IntegerField(blank=True, default=0)
-    rate_limiting_day = models.IntegerField(blank=True, default=0)
+    rate_limiting_second = models.IntegerField(default=0)
+    rate_limiting_minute = models.IntegerField(default=0)
+    rate_limiting_hour = models.IntegerField(default=0)
+    rate_limiting_day = models.IntegerField(default=0)
+    rate_limiting_kong_id = models.CharField(max_length=100, null=True)
 
     def clean(self):
         if not (self.uris or self.hosts):
             raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
+
+        if self.rate_limiting_enabled \
+                and self.rate_limiting_second == 0 \
+                and self.rate_limiting_minute == 0 \
+                and self.rate_limiting_hour == 0 \
+                and self.rate_limiting_day == 0:
+            raise ValidationError(
+                "At least one of 'second', 'minute', "
+                "'hour' or 'day' must be provided to enable rate limiting")
 
         return super(ApiData, self).clean()
 
@@ -59,6 +69,18 @@ class ApiManager:
     def manage(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
 
+        self._manage_apis(api_instance, kong_client)
+        self._manage_plugins(api_instance, kong_client)
+
+    def _manage_plugins(self, api_instance, kong_client):
+        if api_instance.rate_limiting_enabled:
+            # TODO: setup plugin
+            pass
+        else:
+            # TODO: teardown plugin
+            pass
+
+    def _manage_apis(self, api_instance, kong_client):
         if api_instance.enabled:
             if api_instance.kong_id:
                 self.__update(api_instance, kong_client)
