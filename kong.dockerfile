@@ -1,4 +1,4 @@
-FROM kong:0.11
+FROM kong:0.12
 
 RUN yum install git -y
 
