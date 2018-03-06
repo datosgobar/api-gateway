@@ -24,6 +24,11 @@ class ApiData(models.Model):
     enabled = models.BooleanField(default=False)
     kong_id = models.CharField(max_length=100, null=True)
     documentation_url = models.URLField(blank=True)
+    rate_limiting_enabled = models.BooleanField(default=False)
+    rate_limiting_second = models.IntegerField(blank=True, default=0)
+    rate_limiting_minute = models.IntegerField(blank=True, default=0)
+    rate_limiting_hour = models.IntegerField(blank=True, default=0)
+    rate_limiting_day = models.IntegerField(blank=True, default=0)
 
     def clean(self):
         if not (self.uris or self.hosts):
