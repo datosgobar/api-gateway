@@ -9,3 +9,5 @@ common_generate_ssh_key: no
 
 kong_traffic_url: http://192.168.35.60:8000
 kong_admin_url: http://192.168.35.60:8001
+
+django_redis_host: 192.168.35.7
