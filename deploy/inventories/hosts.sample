@@ -1,12 +1,15 @@
 kong0
-psql0
+psql-redis0
 web0
 
 [web]
 web0
 
 [postgresql]
-psql0
+psql-redis0
+
+[redis]
+psql-redis0
 
 [kong]
 kong0
@@ -14,4 +17,5 @@ kong0
 [api_cluster:children]
 kong
 web
+redis
 postgresql
