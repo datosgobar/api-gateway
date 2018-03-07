@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
+from django.core.validators import MinValueValidator
 
 import kong.kong_clients as kong
 from api_management.apps.api_registry.validators import HostsValidator,\
@@ -25,10 +26,10 @@ class ApiData(models.Model):
     kong_id = models.CharField(max_length=100, null=True)
     documentation_url = models.URLField(blank=True)
     rate_limiting_enabled = models.BooleanField(default=False)
-    rate_limiting_second = models.IntegerField(default=0)
-    rate_limiting_minute = models.IntegerField(default=0)
-    rate_limiting_hour = models.IntegerField(default=0)
-    rate_limiting_day = models.IntegerField(default=0)
+    rate_limiting_second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    rate_limiting_minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    rate_limiting_hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    rate_limiting_day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     rate_limiting_kong_id = models.CharField(max_length=100, null=True)
 
     def clean(self):
@@ -73,12 +74,30 @@ class ApiManager:
         self._manage_plugins(api_instance, kong_client)
 
     def _manage_plugins(self, api_instance, kong_client):
-        if api_instance.rate_limiting_enabled:
-            # TODO: setup plugin
-            pass
+        plugins = list(kong_client.plugins.list(api_id=api_instance.kong_id, name='rate-limiting'))
+
+        if api_instance.rate_limiting_enabled and api_instance.enabled:
+            config = {'second': api_instance.rate_limiting_second,
+                      'minute': api_instance.rate_limiting_minute,
+                      'hour': api_instance.rate_limiting_hour,
+                      'day': api_instance.rate_limiting_day}
+
+            for key, value in config.items():
+                if value <= 0:
+                    config[key] = None
+
+            if not plugins:
+                kong_client.plugins.create('rate-limiting',
+                                           api_name_or_id=api_instance.kong_id,
+                                           config=config)
+            else:
+                for plugin in plugins:
+                    kong_client.plugins.update(plugin['id'],
+                                               api_pk=api_instance.kong_id,
+                                               config=config)
         else:
-            # TODO: teardown plugin
-            pass
+            for rlm in plugins:
+                kong_client.plugins.delete(rlm['id'], api_pk=api_instance.kong_id)
 
     def _manage_apis(self, api_instance, kong_client):
         if api_instance.enabled:
