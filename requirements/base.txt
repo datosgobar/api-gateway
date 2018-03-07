@@ -8,3 +8,4 @@ django-rq==1.0.1
 requests==2.7.0
 django-axes==4.1.0
 git+https://github.com/devartis/django-admin-honeypot.git#egg=django-admin-honeypot
+git+https://github.com/devartis/python-kong-client#egg=python-kong-client

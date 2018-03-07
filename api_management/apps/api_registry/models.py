@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 
-import api_management.libs.kong.client as kong
+import kong.kong_clients as kong
 from api_management.apps.api_registry.validators import HostsValidator,\
                                                         UrisValidator,\
                                                         AlphanumericValidator
@@ -52,7 +52,7 @@ class ApiManager:
     @classmethod
     def using_settings(cls):
         return cls(settings.KONG_TRAFFIC_URL,
-                   kong.APIAdminClient(settings.KONG_ADMIN_URL))
+                   kong.KongAdminClient(settings.KONG_ADMIN_URL))
 
     def __init__(self, kong_traffic_url, kong_client):
         if isinstance(kong_traffic_url, str) \
@@ -114,45 +114,44 @@ class ApiManager:
         self.delete_main_api(api_instance, client)
 
     def create_main_api(self, api_instance, client):
-        response = client.create(api_instance.upstream_url,
-                                 name=api_instance.name,
-                                 hosts=api_instance.hosts,
-                                 uris=self.api_uri_pattern(api_instance),
-                                 strip_uri=api_instance.strip_uri,
-                                 preserve_host=api_instance.preserve_host)
+        response = client.apis.create(api_instance.name,
+                                      upstream_url=api_instance.upstream_url,
+                                      hosts=api_instance.hosts,
+                                      uris=self.api_uri_pattern(api_instance),
+                                      strip_uri=api_instance.strip_uri,
+                                      preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
 
     def update_main_api(self, api_instance, client):
-        fields = {"name": api_instance.name,
-                  "hosts": api_instance.hosts,
-                  "uris": self.api_uri_pattern(api_instance),
-                  "upstream_url": api_instance.upstream_url,
-                  "strip_uri": str(api_instance.strip_uri),
-                  "preserve_host": str(api_instance.preserve_host)}
-        client.update(api_instance.kong_id, **fields)
+        client.apis.update(api_instance.kong_id,
+                           upstream_url=api_instance.upstream_url,
+                           hosts=api_instance.hosts,
+                           uris=self.api_uri_pattern(api_instance),
+                           strip_uri=api_instance.strip_uri,
+                           preserve_host=api_instance.preserve_host)
 
     def delete_main_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
 
-        kong_client.delete(api_instance.kong_id)
+        kong_client.apis.delete(api_instance.kong_id)
         api_instance.kong_id = None
 
     def create_docs_api(self, api_instance, kong_client):
-        kong_client.create(self.doc_upstream(api_instance),
-                           uris=self.docs_uri_pattern(api_instance),
-                           hosts=api_instance.hosts,
-                           name=api_instance.name + self.doc_suffix())
+        kong_client.apis.create(api_instance.name + self.doc_suffix(),
+                                upstream_url=self.doc_upstream(api_instance),
+                                uris=self.docs_uri_pattern(api_instance),
+                                hosts=api_instance.hosts)
 
     def update_docs_api(self, api_instance, kong_client):
-        kong_client.update(api_instance.name + self.doc_suffix(),
-                           uris=self.docs_uri_pattern(api_instance),
-                           hosts=api_instance.hosts,
-                           upstream_url=self.doc_upstream(api_instance))
+        kong_client.apis.update(api_instance.name + self.doc_suffix(),
+                                upstream_url=self.doc_upstream(api_instance),
+                                uris=self.docs_uri_pattern(api_instance),
+                                hosts=api_instance.hosts)
 
     def delete_docs_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
 
-        kong_client.delete(api_instance.name + self.doc_suffix())
+        kong_client.apis.delete(api_instance.name + self.doc_suffix())
 
 
 @receiver(pre_save, sender=ApiData)
