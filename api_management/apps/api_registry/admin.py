@@ -30,4 +30,10 @@ class ApiAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         self.readonly_fields = ('name', 'kong_id')
+
+        if ApiData.objects.get(pk=object_id).rate_limiting_enabled:
+            self.readonly_fields += ('rate_limiting_second',
+                                     'rate_limiting_minute',
+                                     'rate_limiting_hour',
+                                     'rate_limiting_day')
         return super(ApiAdmin, self).change_view(request, object_id, form_url, extra_context)

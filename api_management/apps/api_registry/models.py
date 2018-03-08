@@ -74,7 +74,8 @@ class ApiManager:
         self._manage_plugins(api_instance, kong_client)
 
     def _manage_plugins(self, api_instance, kong_client):
-        plugins = list(kong_client.plugins.list(api_id=api_instance.kong_id, name='rate-limiting'))
+        plugin_name = 'rate-limiting'
+        plugins = list(kong_client.plugins.list(api_id=api_instance.kong_id, name=plugin_name))
 
         if api_instance.rate_limiting_enabled and api_instance.enabled:
             config = {'second': api_instance.rate_limiting_second,
@@ -87,7 +88,7 @@ class ApiManager:
                     config[key] = None
 
             if not plugins:
-                kong_client.plugins.create('rate-limiting',
+                kong_client.plugins.create(plugin_name,
                                            api_name_or_id=api_instance.kong_id,
                                            config=config)
             else:
@@ -96,8 +97,8 @@ class ApiManager:
                                                api_pk=api_instance.kong_id,
                                                config=config)
         else:
-            for rlm in plugins:
-                kong_client.plugins.delete(rlm['id'], api_pk=api_instance.kong_id)
+            for plugin in plugins:
+                kong_client.plugins.delete(plugin['id'], api_pk=api_instance.kong_id)
 
     def _manage_apis(self, api_instance, kong_client):
         if api_instance.enabled:
