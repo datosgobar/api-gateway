@@ -10,8 +10,7 @@
     template: template0
   become: yes
   become_user: postgres
-  vars:
-    ansible_ssh_pipelining: true
+
 
 - name: ensure user has access to database
   postgresql_user:
@@ -21,8 +20,7 @@
     priv: ALL
   become: yes
   become_user: postgres
-  vars:
-    ansible_ssh_pipelining: true
+
 
 - name: ensure user does not have unnecessary privilege
   postgresql_user:
@@ -30,8 +28,7 @@
     role_attr_flags: NOSUPERUSER,NOCREATEDB
   become: yes
   become_user: postgres
-  vars:
-    ansible_ssh_pipelining: true
+
 
 - name: ensure no other user can access the database
   postgresql_privs:
@@ -42,5 +39,4 @@
     state: absent
   become: yes
   become_user: postgres
-  vars:
-    ansible_ssh_pipelining: true
+
