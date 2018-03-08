@@ -87,8 +87,7 @@ class ApiManager:
                       'day': api_instance.rate_limiting_day}
 
             for key, value in config.items():
-                if value <= 0:
-                    config[key] = None
+                config[key] = value or None  # no enviar 0
 
             kong_client.plugins.create(plugin_name,
                                        api_name_or_id=api_instance.kong_id,
