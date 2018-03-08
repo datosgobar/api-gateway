@@ -28,6 +28,5 @@
     src: conf/pgpass
     dest: ~/.pgpass
     mode: 0600
-  become_user: "{{ application_user }}"
-  vars:
-    ansible_ssh_pipelining: true
+    owner: "{{ application_user }}"
+    group: "{{ application_group }}"
