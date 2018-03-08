@@ -36,6 +36,7 @@ def apis_kong_client(faker, mocker):  # pylint: disable=redefined-outer-name
     stub.delete = mocker.stub(name='apis_kong_client_delete_stub')
     return stub
 
+
 @pytest.fixture()
 def plugins_kong_client(mocker):
     stub = mocker.stub(name='plugins_kong_client')
@@ -43,8 +44,10 @@ def plugins_kong_client(mocker):
     stub.list.return_value = []
     return stub
 
+
 @pytest.fixture()
-def kong_client(plugins_kong_client, apis_kong_client, mocker):  # pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name
+def kong_client(plugins_kong_client, apis_kong_client, mocker):
     stub = mocker.stub(name='kong_client_stub')
     stub.apis = apis_kong_client
     stub.plugins = plugins_kong_client
