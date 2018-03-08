@@ -2,6 +2,8 @@ import requests_mock
 
 import faker
 
+from django.shortcuts import reverse
+from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -26,11 +28,16 @@ class DocsViewTests(APITestCase):
 
         request_mock.post(requests_mock.ANY,
                           status_code=status.HTTP_201_CREATED,
-                          json=self.api_data_dict)
+                          json={**self.api_data_dict, **{'id': self.faker.uuid4()}})
+
+        request_mock.get(requests_mock.ANY,
+                         status_code=status.HTTP_200_OK,
+                         json={'total': 0, 'data': []})
 
         self.api_data.save()
 
-        self.api_doc_url = '/api/registry/docs/%s/' % self.api_data.name
+        self.api_doc_url = reverse('api-doc', args=[self.api_data.name])
+        self.api_doc_url = self.api_doc_url.replace(settings.FORCE_SCRIPT_NAME, '')
 
     @requests_mock.mock()
     def tearDown(self, request_mock):  # pylint: disable=arguments-differ
@@ -39,7 +46,6 @@ class DocsViewTests(APITestCase):
         self.api_data.delete()
 
     def test_doc_view(self):
-
         # Exercise
         response = self.client.get(self.api_doc_url)
 

@@ -153,7 +153,9 @@ class ApiManager:
     def delete_main_api(self, api_instance, kong_client=None):
         kong_client = kong_client or self.kong_client
 
-        kong_client.apis.delete(api_instance.kong_id)
+        if api_instance.kong_id:
+            kong_client.apis.delete(api_instance.kong_id)
+
         api_instance.kong_id = None
 
     def create_docs_api(self, api_instance, kong_client):

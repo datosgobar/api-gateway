@@ -18,7 +18,7 @@ def test_disabling_an_api_removes_it_from_the_kong_server(api_data,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.delete.assert_called_with(kong_id)
+    kong_client.apis.delete.assert_called_with(kong_id)
 
 
 # pylint: disable=invalid-name
@@ -36,12 +36,13 @@ def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.create.assert_called_with(api_data.upstream_url,
-                                          name=api_data.name,
-                                          strip_uri=api_data.strip_uri,
-                                          hosts=api_data.hosts,
-                                          uris=api_data.uris + '/(?=.)',
-                                          preserve_host=api_data.preserve_host)
+    kong_client.apis.create\
+        .assert_called_with(api_data.name,
+                            upstream_url=api_data.upstream_url,
+                            strip_uri=api_data.strip_uri,
+                            hosts=api_data.hosts,
+                            uris=api_data.uris + '/(?=.)',
+                            preserve_host=api_data.preserve_host)
 
 
 # pylint: disable=invalid-name
@@ -84,13 +85,13 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.update.assert_called_with(api_data.kong_id,
-                                          upstream_url=api_data.upstream_url,
-                                          name=api_data.name,
-                                          strip_uri=str(api_data.strip_uri),
-                                          hosts=api_data.hosts,
-                                          uris=api_data.uris + '/(?=.)',
-                                          preserve_host=str(api_data.preserve_host))
+    kong_client.apis.update\
+        .assert_called_with(api_data.kong_id,
+                            upstream_url=api_data.upstream_url,
+                            strip_uri=api_data.strip_uri,
+                            hosts=api_data.hosts,
+                            uris=api_data.uris + '/(?=.)',
+                            preserve_host=api_data.preserve_host)
 
 
 # pylint: disable=invalid-name
@@ -109,9 +110,9 @@ def test_updating_disabled_api_does_not_triggers_kong_communication(api_data,
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.create.assert_not_called()
-    kong_client.update.assert_not_called()
-    kong_client.delete.assert_not_called()
+    kong_client.apis.create.assert_not_called()
+    kong_client.apis.update.assert_not_called()
+    kong_client.apis.delete.assert_not_called()
 
 
 def test_api_w_preserve_host(faker, api_data, api_manager, kong_client):
@@ -125,12 +126,13 @@ def test_api_w_preserve_host(faker, api_data, api_manager, kong_client):
     api_manager.manage(api_data, kong_client)
 
     # Verify
-    kong_client.create.assert_called_with(api_data.upstream_url,
-                                          name=api_data.name,
-                                          strip_uri=api_data.strip_uri,
-                                          hosts=api_data.hosts,
-                                          uris=api_data.uris + '/(?=.)',
-                                          preserve_host=preserve_host)
+    kong_client.apis.create\
+        .assert_called_with(api_data.name,
+                            upstream_url=api_data.upstream_url,
+                            strip_uri=api_data.strip_uri,
+                            hosts=api_data.hosts,
+                            uris=api_data.uris + '/(?=.)',
+                            preserve_host=preserve_host)
 
 
 def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
@@ -153,10 +155,11 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
                                      'management/api/registry/docs/',
                                      api_data.name,
                                      '/'])
-    kong_client.create.assert_any_call(expected_upstream_url,
-                                       name=api_data.name + '-doc',
-                                       uris=api_data.uris + '/$',
-                                       hosts=api_data.hosts)
+    kong_client.apis.create\
+        .assert_any_call(api_data.name + '-doc',
+                         upstream_url=expected_upstream_url,
+                         uris=api_data.uris + '/$',
+                         hosts=api_data.hosts)
 
 
 def test_deleting_and_api_deletes_its_route_to_documentation(api_data, api_manager, kong_client):
@@ -164,4 +167,5 @@ def test_deleting_and_api_deletes_its_route_to_documentation(api_data, api_manag
     api_manager.delete_docs_api(api_data, kong_client)
 
     # Verify
-    kong_client.delete.assert_called_once_with(api_data.name + '-doc')
+    kong_client.apis.delete\
+        .assert_called_once_with(api_data.name + '-doc')
