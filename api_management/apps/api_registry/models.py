@@ -36,14 +36,30 @@ class ApiData(models.Model):
         if not (self.uris or self.hosts):
             raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
 
-        if self.rate_limiting_enabled \
-                and self.rate_limiting_second == 0 \
-                and self.rate_limiting_minute == 0 \
-                and self.rate_limiting_hour == 0 \
-                and self.rate_limiting_day == 0:
-            raise ValidationError(
-                "At least one of 'second', 'minute', "
-                "'hour' or 'day' must be provided to enable rate limiting")
+        if self.rate_limiting_enabled:
+            config = {'second': self.rate_limiting_second,
+                      'minute': self.rate_limiting_minute,
+                      'hour': self.rate_limiting_hour,
+                      'day': self.rate_limiting_day}
+
+            cleaned_config = {}
+            for key, value in config.items():
+                if value:
+                    cleaned_config[key] = value
+
+            if not cleaned_config:
+                raise ValidationError(
+                    "At least one of 'second', 'minute', "
+                    "'hour' or 'day' must be provided to enable rate limiting")
+
+            prev_k = None
+            prev_v = 0
+            for key, value in cleaned_config.items():
+                if value < prev_v:
+                    raise ValidationError('The limit for %s cannot be lower '
+                                          'than the limit for %s' % (key, prev_k))
+                prev_k = key
+                prev_v = value
 
         return super(ApiData, self).clean()
 
