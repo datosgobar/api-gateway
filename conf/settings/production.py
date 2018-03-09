@@ -43,3 +43,26 @@ EMAIL_USE_TLS = True
 
 KONG_TRAFFIC_URL = env("KONG_TRAFFIC_URL")
 KONG_ADMIN_URL = env("KONG_ADMIN_URL")
+
+
+# Use default form base.py
+FORCE_SCRIPT_NAME = env("FORCE_SCRIPT_NAME", default=FORCE_SCRIPT_NAME)
+
+MEDIA_URL = '%s/media/' % FORCE_SCRIPT_NAME
+STATIC_URL = '%s/static/' % FORCE_SCRIPT_NAME
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': env('REDIS_HOST'),
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+
+    'create_model': {
+        'HOST': env('REDIS_HOST'),
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+}

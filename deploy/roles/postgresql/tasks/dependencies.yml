@@ -8,3 +8,8 @@
     - postgresql
     - postgresql-contrib
     - python-psycopg2 # For ansible postgresql module
+
+- name: Enable psql service
+  systemd:
+    name: postgresql.service
+    enabled: yes
