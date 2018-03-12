@@ -299,7 +299,7 @@ django_redis_host: "{{ vault_django_redis_host }}"
 
 vault_database_url: psql://mi_db_user:mi_db_pass@192.168.65.2:5432/mi_db_name
 
-vault_kong_traffic_url: http://192.168.35.1:8000
+vault_kong_traffic_url: http://192.168.35.1:80
 vault_kong_admin_url: http://192.168.35.1:8001
 
 vault_django_redis_host: 192.168.35.2
