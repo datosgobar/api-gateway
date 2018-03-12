@@ -83,27 +83,26 @@ class ApiManager:
     def doc_suffix():
         return '-doc'
 
-    def manage(self, api_instance, kong_client=None):
-        kong_client = kong_client or self.kong_client
+    def manage(self, api_instance):
+        self._manage_apis(api_instance)
+        self._manage_plugins(api_instance)
 
-        self._manage_apis(api_instance, kong_client)
-        self._manage_plugins(api_instance, kong_client)
-
-    def _manage_plugins(self, api_instance, kong_client):
+    def _manage_plugins(self, api_instance):
 
         if api_instance.rate_limiting_kong_id is not None:
-            self._delete_rate_limiting_plugin(api_instance, kong_client)
+            self._delete_rate_limiting_plugin(api_instance)
 
         if api_instance.rate_limiting_enabled \
                 and api_instance.enabled:
-            self._create_rate_limiting_plugin(api_instance, kong_client)
+            self._create_rate_limiting_plugin(api_instance)
 
-    def _delete_rate_limiting_plugin(self, api_instance, kong_client):
-        kong_client.plugins.delete(api_instance.rate_limiting_kong_id,
-                                   api_pk=api_instance.kong_id)
+    def _delete_rate_limiting_plugin(self, api_instance):
+        self.kong_client\
+            .plugins.delete(api_instance.rate_limiting_kong_id,
+                            api_pk=api_instance.kong_id)
         api_instance.rate_limiting_kong_id = None
 
-    def _create_rate_limiting_plugin(self, api_instance, kong_client):
+    def _create_rate_limiting_plugin(self, api_instance):
         config = {'second': api_instance.rate_limiting_second,
                   'minute': api_instance.rate_limiting_minute,
                   'hour': api_instance.rate_limiting_hour,
@@ -112,20 +111,21 @@ class ApiManager:
         for key, value in config.items():
             config[key] = value or None  # no enviar 0
 
-        response = kong_client.plugins.create('rate-limiting',
-                                              api_name_or_id=api_instance.kong_id,
-                                              config=config)
+        response = self.kong_client\
+            .plugins.create('rate-limiting',
+                            api_name_or_id=api_instance.kong_id,
+                            config=config)
 
         api_instance.rate_limiting_kong_id = response['id']
 
-    def _manage_apis(self, api_instance, kong_client):
+    def _manage_apis(self, api_instance):
         if api_instance.enabled:
             if api_instance.kong_id:
-                self.__update(api_instance, kong_client)
+                self.__update(api_instance)
             else:
-                self.__create(api_instance, kong_client)
+                self.__create(api_instance)
         elif api_instance.kong_id:
-            self.delete(api_instance, kong_client)
+            self.delete(api_instance)
 
     def doc_upstream(self, api_instance):
         doc_endpoint = reverse('api-doc', args=[api_instance.name])
@@ -139,58 +139,60 @@ class ApiManager:
     def docs_uri_pattern(api_instance):
         return api_instance.uris + '/$'
 
-    def __update(self, api_instance, client):
-        self.update_docs_api(api_instance, client)
-        self.update_main_api(api_instance, client)
+    def __update(self, api_instance):
+        self.update_docs_api(api_instance)
+        self.update_main_api(api_instance)
 
-    def __create(self, api_instance, client):
-        self.create_docs_api(api_instance, client)
-        self.create_main_api(api_instance, client)
+    def __create(self, api_instance):
+        self.create_docs_api(api_instance)
+        self.create_main_api(api_instance)
 
-    def delete(self, api_instance, kong_client=None):
-        kong_client = kong_client or self.kong_client
-
+    def delete(self, api_instance):
         if api_instance.kong_id:
-            self.delete_docs_api(api_instance, kong_client)
-            self.delete_main_api(api_instance, kong_client)
+            self.delete_docs_api(api_instance)
+            self.delete_main_api(api_instance)
 
-    def create_main_api(self, api_instance, client):
-        response = client.apis.create(api_instance.name,
-                                      upstream_url=api_instance.upstream_url,
-                                      hosts=api_instance.hosts,
-                                      uris=self.api_uri_pattern(api_instance),
-                                      strip_uri=api_instance.strip_uri,
-                                      preserve_host=api_instance.preserve_host)
+    def create_main_api(self, api_instance):
+        response = self.kong_client\
+            .apis.create(api_instance.name,
+                         upstream_url=api_instance.upstream_url,
+                         hosts=api_instance.hosts,
+                         uris=self.api_uri_pattern(api_instance),
+                         strip_uri=api_instance.strip_uri,
+                         preserve_host=api_instance.preserve_host)
         api_instance.kong_id = response['id']
 
-    def update_main_api(self, api_instance, client):
-        client.apis.update(api_instance.kong_id,
-                           upstream_url=api_instance.upstream_url,
-                           hosts=api_instance.hosts,
-                           uris=self.api_uri_pattern(api_instance),
-                           strip_uri=api_instance.strip_uri,
-                           preserve_host=api_instance.preserve_host)
+    def update_main_api(self, api_instance):
+        self.kong_client\
+            .apis.update(api_instance.kong_id,
+                         upstream_url=api_instance.upstream_url,
+                         hosts=api_instance.hosts,
+                         uris=self.api_uri_pattern(api_instance),
+                         strip_uri=api_instance.strip_uri,
+                         preserve_host=api_instance.preserve_host)
 
-    def delete_main_api(self, api_instance, kong_client):
+    def delete_main_api(self, api_instance):
 
-        kong_client.apis.delete(api_instance.kong_id)
+        self.kong_client.apis.delete(api_instance.kong_id)
 
         api_instance.kong_id = None
 
-    def create_docs_api(self, api_instance, kong_client):
-        kong_client.apis.create(api_instance.name + self.doc_suffix(),
-                                upstream_url=self.doc_upstream(api_instance),
-                                uris=self.docs_uri_pattern(api_instance),
-                                hosts=api_instance.hosts)
+    def create_docs_api(self, api_instance):
+        self.kong_client\
+            .apis.create(api_instance.name + self.doc_suffix(),
+                         upstream_url=self.doc_upstream(api_instance),
+                         uris=self.docs_uri_pattern(api_instance),
+                         hosts=api_instance.hosts)
 
-    def update_docs_api(self, api_instance, kong_client):
-        kong_client.apis.update(api_instance.name + self.doc_suffix(),
-                                upstream_url=self.doc_upstream(api_instance),
-                                uris=self.docs_uri_pattern(api_instance),
-                                hosts=api_instance.hosts)
+    def update_docs_api(self, api_instance):
+        self.kong_client\
+            .apis.update(api_instance.name + self.doc_suffix(),
+                         upstream_url=self.doc_upstream(api_instance),
+                         uris=self.docs_uri_pattern(api_instance),
+                         hosts=api_instance.hosts)
 
-    def delete_docs_api(self, api_instance, kong_client):
-        kong_client.apis.delete(api_instance.name + self.doc_suffix())
+    def delete_docs_api(self, api_instance):
+        self.kong_client.apis.delete(api_instance.name + self.doc_suffix())
 
 
 @receiver(pre_save, sender=ApiData)
