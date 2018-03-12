@@ -30,10 +30,10 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 
 1. Build: `docker-compose build`
 1. Iniciar los servicios: `docker-compose up -d`
-1. Migrar la base de datos de kong: `docker-compose --rm run kong kong migrations up`
+1. Migrar la base de datos de kong: `docker-compose run --rm kong kong migrations up`
 1. Reiniciar kong: `docker-compose restart kong`
 1. Migrar la base de datos: `docker-compose run --rm django python3 manage.py migrate`
-1. "Subir" los archivos estaticos a nginx: `docker-compose --rm run django python3 manage.py collectstatic`
+1. "Subir" los archivos estaticos a nginx: `docker-compose run --rm django python3 manage.py collectstatic`
 1. Reiniciar django: `docker-compose restart django nginx`
 1. Crear un super usuario: `docker-compose run --rm django python3 manage.py createsuperuser`
 1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=http://nginx/ -d uris=/management`
