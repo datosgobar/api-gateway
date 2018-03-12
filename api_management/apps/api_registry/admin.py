@@ -14,6 +14,14 @@ class ApiAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
             'fields': ('hosts', 'strip_uri', 'preserve_host', 'kong_id',),
         }),
+        ('Rate Limiting', {
+            'classes': ('collapse',),
+            'fields': ('rate_limiting_enabled',
+                       'rate_limiting_second',
+                       'rate_limiting_minute',
+                       'rate_limiting_hour',
+                       'rate_limiting_day')
+        })
     )
 
     def add_view(self, request, form_url='', extra_context=None):
