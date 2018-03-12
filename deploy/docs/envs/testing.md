@@ -248,7 +248,6 @@ postgresql_password: "{{ vault_postgresql_password }}"
 # Credenciales para kong
 kong_database_name: "{{ vault_kong_database_name }}"
 kong_user: "{{ vault_kong_user }}"
-kong_database_host: "{{ vault_kong_database_host }}"
 kong_database_pass: "{{ vault_kong_database_pass }}"
 ```
 
@@ -263,7 +262,6 @@ vault_postgresql_password: "mi_db_pass"
 # Momentanemente es requerido que el usuario y la base de datos sean "kong"
 vault_kong_database_name: "kong"
 vault_kong_user: "kong"
-vault_kong_database_host: "192.168.35.3"
 vault_kong_database_pass: mi_kong_db_pass
 
 ```
