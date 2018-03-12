@@ -125,7 +125,7 @@ class ApiManager:
             else:
                 self.__create(api_instance, kong_client)
         elif api_instance.kong_id:
-            self.__delete(api_instance, kong_client)
+            self.delete(api_instance, kong_client)
 
     def doc_upstream(self, api_instance):
         doc_endpoint = reverse('api-doc', args=[api_instance.name])
@@ -147,9 +147,12 @@ class ApiManager:
         self.create_docs_api(api_instance, client)
         self.create_main_api(api_instance, client)
 
-    def __delete(self, api_instance, client):
-        self.delete_docs_api(api_instance, client)
-        self.delete_main_api(api_instance, client)
+    def delete(self, api_instance, kong_client=None):
+        kong_client = kong_client or self.kong_client
+
+        if api_instance.kong_id:
+            self.delete_docs_api(api_instance, kong_client)
+            self.delete_main_api(api_instance, kong_client)
 
     def create_main_api(self, api_instance, client):
         response = client.apis.create(api_instance.name,
@@ -168,11 +171,9 @@ class ApiManager:
                            strip_uri=api_instance.strip_uri,
                            preserve_host=api_instance.preserve_host)
 
-    def delete_main_api(self, api_instance, kong_client=None):
-        kong_client = kong_client or self.kong_client
+    def delete_main_api(self, api_instance, kong_client):
 
-        if api_instance.kong_id:
-            kong_client.apis.delete(api_instance.kong_id)
+        kong_client.apis.delete(api_instance.kong_id)
 
         api_instance.kong_id = None
 
@@ -188,9 +189,7 @@ class ApiManager:
                                 uris=self.docs_uri_pattern(api_instance),
                                 hosts=api_instance.hosts)
 
-    def delete_docs_api(self, api_instance, kong_client=None):
-        kong_client = kong_client or self.kong_client
-
+    def delete_docs_api(self, api_instance, kong_client):
         kong_client.apis.delete(api_instance.name + self.doc_suffix())
 
 
@@ -201,6 +200,4 @@ def api_saved(**kwargs):
 
 @receiver(pre_delete, sender=ApiData)
 def api_deleted(**kwargs):
-    manager = ApiManager.using_settings()
-    manager.delete_docs_api(kwargs['instance'])
-    manager.delete_main_api(kwargs['instance'])
+    ApiManager.using_settings().delete(kwargs['instance'])
