@@ -31,6 +31,9 @@ class ApiData(models.Model):
     rate_limiting_hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     rate_limiting_day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     rate_limiting_kong_id = models.CharField(max_length=100, null=True)
+    httplog2_enabled = models.BooleanField(default=False)
+    httplog2_api_key = models.CharField(max_length=100, blank=True)
+    httplog2_kong_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.name
@@ -64,6 +67,9 @@ class ApiData(models.Model):
                 prev_k = key
                 prev_v = value
 
+        if self.httplog2_enabled and not self.httplog2_api_key:
+            raise ValidationError('must provide api key to enable logs')
+
         return super(ApiData, self).clean()
 
 
@@ -91,35 +97,56 @@ class ApiManager:
         self._manage_plugins(api_instance)
 
     def _manage_plugins(self, api_instance):
+        plugins = self._plugins_data(api_instance)
 
-        if api_instance.rate_limiting_kong_id is not None:
-            self._delete_rate_limiting_plugin(api_instance)
+        api_instance.rate_limiting_kong_id = self._manage_plugin(**plugins['rate-limiting'])
+        api_instance.httplog2_kong_id = self._manage_plugin(**plugins['httplog2'])
 
-        if api_instance.rate_limiting_enabled \
-                and api_instance.enabled:
-            self._create_rate_limiting_plugin(api_instance)
+    def _plugins_data(self, api_instance):
+        rate_limiting = self.rate_limiting_data(api_instance)
+        httplog2 = self.httplog2_data(api_instance)
+        return {'rate-limiting': rate_limiting,
+                'httplog2': httplog2}
 
-    def _delete_rate_limiting_plugin(self, api_instance):
-        self.kong_client\
-            .plugins.delete(api_instance.rate_limiting_kong_id,
-                            api_pk=api_instance.kong_id)
-        api_instance.rate_limiting_kong_id = None
+    def httplog2_data(self, api_instance):
+        return {'api_enabled': api_instance.enabled,
+                'api_kong_id': api_instance.kong_id,
+                'plugin_name': 'httplog2',
+                'plugin_kong_id': api_instance.httplog2_kong_id,
+                'plugin_enabled': api_instance.httplog2_enabled,
+                'plugin_config': {
+                    'token': api_instance.httplog2_api_key,
+                    'endpoint': None
+                }}
 
-    def _create_rate_limiting_plugin(self, api_instance):
-        config = {'second': api_instance.rate_limiting_second,
-                  'minute': api_instance.rate_limiting_minute,
-                  'hour': api_instance.rate_limiting_hour,
-                  'day': api_instance.rate_limiting_day}
+    def rate_limiting_data(self, api_instance):
+        return {'api_enabled': api_instance.enabled,
+                'api_kong_id': api_instance.kong_id,
+                'plugin_name': 'rate-limiting',
+                'plugin_kong_id': api_instance.rate_limiting_kong_id,
+                'plugin_enabled': api_instance.rate_limiting_enabled,
+                'plugin_config': {
+                    'second': api_instance.rate_limiting_second or None,
+                    'minute': api_instance.rate_limiting_minute or None,
+                    'hour': api_instance.rate_limiting_hour or None,
+                    'day': api_instance.rate_limiting_day or None}}
 
-        for key, value in config.items():
-            config[key] = value or None  # no enviar 0
+    # pylint: disable=too-many-arguments
+    def _manage_plugin(self, api_enabled, api_kong_id,
+                       plugin_config, plugin_enabled,
+                       plugin_kong_id, plugin_name):
+        response_id = None
+        if plugin_kong_id is not None:
+            self.kong_client.plugins.delete(plugin_kong_id,
+                                            api_pk=api_kong_id)
+        if plugin_enabled and api_enabled:
+            response = self.kong_client \
+                .plugins.create(plugin_name,
+                                api_name_or_id=api_kong_id,
+                                config=plugin_config)
 
-        response = self.kong_client\
-            .plugins.create('rate-limiting',
-                            api_name_or_id=api_instance.kong_id,
-                            config=config)
-
-        api_instance.rate_limiting_kong_id = response['id']
+            response_id = response['id']
+        return response_id
 
     def _manage_apis(self, api_instance):
         if api_instance.enabled:
