@@ -5,6 +5,9 @@ from .models import ApiData
 
 @admin.register(ApiData)
 class ApiAdmin(admin.ModelAdmin):
+    list_display = [
+        "name", "enabled", "upstream_url", "hosts", "uris",
+    ]
 
     fieldsets = (
         (None, {
