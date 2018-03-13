@@ -32,6 +32,9 @@ class ApiData(models.Model):
     rate_limiting_day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     rate_limiting_kong_id = models.CharField(max_length=100, null=True)
 
+    def __str__(self):
+        return self.name
+
     def clean(self):
         if not (self.uris or self.hosts):
             raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
