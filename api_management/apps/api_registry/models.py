@@ -33,6 +33,7 @@ class ApiData(models.Model):
     rate_limiting_kong_id = models.CharField(max_length=100, null=True)
     httplog2_enabled = models.BooleanField(default=False)
     httplog2_api_key = models.CharField(max_length=100, blank=True)
+    httplog2_endpoint = models.URLField(max_length=200, blank=True)
     httplog2_kong_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
@@ -67,8 +68,11 @@ class ApiData(models.Model):
                 prev_k = key
                 prev_v = value
 
-        if self.httplog2_enabled and not self.httplog2_api_key:
-            raise ValidationError('must provide api key to enable logs')
+        if self.httplog2_enabled:
+            if not self.httplog2_api_key:
+                raise ValidationError('must provide api key to enable logs')
+            if not self.httplog2_endpoint:
+                raise ValidationError('must provide endpoint to enable logs')
 
         return super(ApiData, self).clean()
 
@@ -116,7 +120,7 @@ class ApiManager:
                 'plugin_enabled': api_instance.httplog2_enabled,
                 'plugin_config': {
                     'token': api_instance.httplog2_api_key,
-                    'endpoint': None
+                    'endpoint': api_instance.httplog2_endpoint
                 }}
 
     def rate_limiting_data(self, api_instance):
