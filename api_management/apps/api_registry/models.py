@@ -33,7 +33,6 @@ class ApiData(models.Model):
     rate_limiting_kong_id = models.CharField(max_length=100, null=True)
     httplog2_enabled = models.BooleanField(default=False)
     httplog2_api_key = models.CharField(max_length=100, blank=True)
-    httplog2_endpoint = models.URLField(max_length=200, blank=True)
     httplog2_kong_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
@@ -68,11 +67,8 @@ class ApiData(models.Model):
                 prev_k = key
                 prev_v = value
 
-        if self.httplog2_enabled:
-            if not self.httplog2_api_key:
-                raise ValidationError('must provide api key to enable logs')
-            if not self.httplog2_endpoint:
-                raise ValidationError('must provide endpoint to enable logs')
+        if self.httplog2_enabled and not self.httplog2_api_key:
+            raise ValidationError('must provide api key to enable logs')
 
         return super(ApiData, self).clean()
 
@@ -82,15 +78,17 @@ class ApiManager:
     @classmethod
     def using_settings(cls):
         return cls(settings.KONG_TRAFFIC_URL,
-                   kong.KongAdminClient(settings.KONG_ADMIN_URL))
+                   kong.KongAdminClient(settings.KONG_ADMIN_URL),
+                   settings.HTTPLOG2_ENDPOINT)
 
-    def __init__(self, kong_traffic_url, kong_client):
+    def __init__(self, kong_traffic_url, kong_client, httplog2_endpoint):
         if isinstance(kong_traffic_url, str) \
                 and not kong_traffic_url.endswith('/'):
             kong_traffic_url += '/'
 
         self.kong_traffic_url = kong_traffic_url
         self.kong_client = kong_client
+        self.httplog2_endpoint = httplog2_endpoint
 
     @staticmethod
     def doc_suffix():
@@ -120,7 +118,7 @@ class ApiManager:
                 'plugin_enabled': api_instance.httplog2_enabled,
                 'plugin_config': {
                     'token': api_instance.httplog2_api_key,
-                    'endpoint': api_instance.httplog2_endpoint
+                    'endpoint': self.httplog2_endpoint
                 }}
 
     def rate_limiting_data(self, api_instance):

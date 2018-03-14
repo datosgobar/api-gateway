@@ -66,3 +66,7 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 360,
     },
 }
+
+HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT",
+                        default="%s%s/api/analytics/queries/"
+                                % (KONG_TRAFFIC_URL, FORCE_SCRIPT_NAME[1:]))

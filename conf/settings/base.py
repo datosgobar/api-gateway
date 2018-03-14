@@ -183,3 +183,4 @@ CACHES = {
 }
 
 AXES_CACHE = 'axes_cache'
+HTTPLOG2_ENDPOINT = ""
