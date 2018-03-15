@@ -1,21 +1,20 @@
 import urllib.parse
 
-from django.urls import reverse
-from django.db import models
+import kong.kong_clients as kong
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
+from django.db import models
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
-from django.core.validators import MinValueValidator
+from django.urls import reverse
 
-import kong.kong_clients as kong
-from api_management.apps.api_registry.validators import HostsValidator,\
-                                                        UrisValidator,\
-                                                        AlphanumericValidator
+from api_management.apps.api_registry.validators import HostsValidator, \
+    UrisValidator, \
+    AlphanumericValidator
 
 
 class ApiData(models.Model):
-
     name = models.CharField(unique=True, max_length=200, validators=[AlphanumericValidator()])
     upstream_url = models.URLField()
     hosts = models.CharField(max_length=200, validators=[HostsValidator()], blank=True, default='')
@@ -111,15 +110,18 @@ class ApiManager:
                 'httplog2': httplog2}
 
     def httplog2_data(self, api_instance):
-        return {'api_enabled': api_instance.enabled,
-                'api_kong_id': api_instance.kong_id,
-                'plugin_name': 'httplog2',
-                'plugin_kong_id': api_instance.httplog2_kong_id,
-                'plugin_enabled': api_instance.httplog2_enabled,
-                'plugin_config': {
-                    'token': api_instance.httplog2_api_key,
-                    'endpoint': self.httplog2_endpoint
-                }}
+        return {
+            'api_enabled': api_instance.enabled,
+            'api_kong_id': api_instance.kong_id,
+            'plugin_name': 'httplog2',
+            'plugin_kong_id': api_instance.httplog2_kong_id,
+            'plugin_enabled': api_instance.httplog2_enabled,
+            'plugin_config': {
+                'token': api_instance.httplog2_api_key,
+                'endpoint': self.httplog2_endpoint,
+                'api_data': api_instance.pk,
+            },
+        }
 
     def rate_limiting_data(self, api_instance):
         return {'api_enabled': api_instance.enabled,
@@ -185,7 +187,7 @@ class ApiManager:
             self.delete_main_api(api_instance)
 
     def create_main_api(self, api_instance):
-        response = self.kong_client\
+        response = self.kong_client \
             .apis.create(api_instance.name,
                          upstream_url=api_instance.upstream_url,
                          hosts=api_instance.hosts,
@@ -195,7 +197,7 @@ class ApiManager:
         api_instance.kong_id = response['id']
 
     def update_main_api(self, api_instance):
-        self.kong_client\
+        self.kong_client \
             .apis.update(api_instance.kong_id,
                          upstream_url=api_instance.upstream_url,
                          hosts=api_instance.hosts,
@@ -210,14 +212,14 @@ class ApiManager:
         api_instance.kong_id = None
 
     def create_docs_api(self, api_instance):
-        self.kong_client\
+        self.kong_client \
             .apis.create(api_instance.name + self.doc_suffix(),
                          upstream_url=self.doc_upstream(api_instance),
                          uris=self.docs_uri_pattern(api_instance),
                          hosts=api_instance.hosts)
 
     def update_docs_api(self, api_instance):
-        self.kong_client\
+        self.kong_client \
             .apis.update(api_instance.name + self.doc_suffix(),
                          upstream_url=self.doc_upstream(api_instance),
                          uris=self.docs_uri_pattern(api_instance),
