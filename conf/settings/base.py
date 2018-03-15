@@ -171,7 +171,7 @@ RQ_QUEUES = {
 KONG_TRAFFIC_URL = ""
 KONG_ADMIN_URL = ""
 
-FORCE_SCRIPT_NAME = '/management'
+URLS_PREFIX = 'management'
 
 CACHES = {
     'default': {

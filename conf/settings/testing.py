@@ -1,5 +1,6 @@
-from .base import *
 import logging
+
+from .base import *
 
 DATABASES = {
     'default': {
@@ -25,6 +26,5 @@ for queueConfig in RQ_QUEUES.values():
 KONG_TRAFFIC_URL = env("KONG_TRAFFIC_URL", default="http://localhost:8000/")
 KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")
 
-HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT",
-                        default="%s%s/api/analytics/queries/"
-                                % (KONG_TRAFFIC_URL, FORCE_SCRIPT_NAME[1:]))
+HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT", default="%s%s/api/analytics/queries/"
+                                                     % (KONG_TRAFFIC_URL, URLS_PREFIX))
