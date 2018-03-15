@@ -1,4 +1,9 @@
+import requests
+
+from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 
@@ -17,3 +22,19 @@ class Query(models.Model):
 
     def __str__(self):
         return 'Query at %s: %s' % (self.start_time, self.uri)
+
+
+@receiver(post_save, sender=Query)
+def api_deleted(**kwargs):
+    query = kwargs['instance']
+    tracking_id = settings.ANALYTICS_TID
+
+    data = {'tid': tracking_id,
+            'cid': query.ip_address,
+            'dh': query.host,
+            'dp': query.uri,
+            'ea': query.querystring,
+            'et': query.start_time,
+            'ed': query.request_time}
+
+    requests.post('http://www.google-analytics.com/collect', data=data)
