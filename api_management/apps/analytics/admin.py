@@ -10,6 +10,8 @@ class QueryAdmin(admin.ModelAdmin):
         'host', 'uri', 'api_data', 'ip_address',
         'querystring', 'status_code', 'start_time',
     ]
+    list_filter = ['status_code', 'api_data', 'start_time', ]
+    search_fields = ['ip_address', 'uri', 'querystring', ]
 
 
 TokenAdmin.raw_id_fields = ('user',)
