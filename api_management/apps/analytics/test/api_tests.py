@@ -55,8 +55,7 @@ def test_analytics_api_unauthorized(well_formed_query):
     assert response.status_code == 401
 
 
-# pylint: disable=invalid-name
-def test_valid_api_request_creates_model_query(staff_user, well_formed_query):
+def test_create_model_query(staff_user, well_formed_query):
     """
     Test cuando un staff_user le pega al endpoint de queries
     con un json de query bien formado crea un Query en el modelo
@@ -68,3 +67,34 @@ def test_valid_api_request_creates_model_query(staff_user, well_formed_query):
     client.post(reverse("query-list"), well_formed_query, format='json')
 
     assert Query.objects.all().count() == 1
+
+
+def test_query_has_status_code(staff_user, well_formed_query):
+    """
+    Test cuando un staff_user le pega al endpoint de queries
+    con un json de query bien formado crea un Query con un status code
+    :return:
+    """
+
+    client = APIClient()
+    client.force_authenticate(user=staff_user)
+    client.post(reverse("query-list"), well_formed_query, format='json')
+
+    query = Query.objects.all().first()
+    assert query.status_code == well_formed_query['status_code']
+
+
+def test_status_code_is_optional(staff_user, well_formed_query):
+    """
+    Test cuando un staff_user le pega al endpoint de queries
+    con un json de query bien formado crea un Query, sin requerir el status_code
+    :return:
+    """
+
+    client = APIClient()
+    client.force_authenticate(user=staff_user)
+    well_formed_query.pop('status_code', None)
+    client.post(reverse("query-list"), well_formed_query, format='json')
+
+    query = Query.objects.all().first()
+    assert query.status_code is None

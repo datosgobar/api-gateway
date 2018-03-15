@@ -6,7 +6,7 @@ from .models import Query
 
 @admin.register(Query)
 class QueryAdmin(admin.ModelAdmin):
-    list_display = ['host', 'uri', 'ip_address', 'querystring', 'start_time']
+    list_display = ['host', 'uri', 'ip_address', 'querystring', 'status_code', 'start_time']
 
 
 TokenAdmin.raw_id_fields = ('user',)
