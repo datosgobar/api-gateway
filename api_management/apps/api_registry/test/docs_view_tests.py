@@ -1,9 +1,6 @@
-import requests_mock
-
 import faker
-
+import requests_mock
 from django.shortcuts import reverse
-from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -37,7 +34,7 @@ class DocsViewTests(APITestCase):
         self.api_data.save()
 
         self.api_doc_url = reverse('api-doc', args=[self.api_data.name])
-        self.api_doc_url = self.api_doc_url.replace(settings.FORCE_SCRIPT_NAME, '')
+        # self.api_doc_url = self.api_doc_url.replace(settings.FORCE_SCRIPT_NAME, '')
 
     @requests_mock.mock()
     def tearDown(self, request_mock):  # pylint: disable=arguments-differ
