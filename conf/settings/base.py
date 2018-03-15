@@ -184,3 +184,5 @@ CACHES = {
 
 AXES_CACHE = 'axes_cache'
 HTTPLOG2_ENDPOINT = ""
+
+SESSION_COOKIE_NAME = 'mgmtsessionid'
