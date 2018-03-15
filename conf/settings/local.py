@@ -13,6 +13,9 @@ DATABASES = {
 KONG_TRAFFIC_URL = env("KONG_TRAFFIC_URL", default="http://localhost:8000/")
 KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")
 
-MEDIA_URL = '%s/media/' % FORCE_SCRIPT_NAME
-STATIC_URL = '%s/static/' % FORCE_SCRIPT_NAME
+MEDIA_URL = '/%s/media/' % URLS_PREFIX
+STATIC_URL = '/%s/static/' % URLS_PREFIX
+
+HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT", default="http://nginx/api/analytics/queries/")
+
 ANALYTICS_TID = env('ANALYTICS_TID', default='')

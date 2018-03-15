@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_framework.test import APIClient
 
 from api_management.apps.analytics.models import Query
@@ -12,7 +13,7 @@ def test_analytics_api_valid_query(staff_user, well_formed_query):
 
     client = APIClient()
     client.force_authenticate(user=staff_user)
-    response = client.post('/api/analytics/queries/', well_formed_query, format='json')
+    response = client.post(reverse("query-list"), well_formed_query, format='json')
     assert response.status_code == 204
 
 
@@ -25,7 +26,7 @@ def test_analytics_api_invalid_query(staff_user):  # pylint: disable=invalid-nam
 
     client = APIClient()
     client.force_authenticate(user=staff_user)
-    response = client.post('/api/analytics/queries/', {}, format='json')
+    response = client.post(reverse("query-list"), {}, format='json')
     assert response.status_code == 400
 
 
@@ -38,7 +39,7 @@ def test_analytics_api_forbidden(user, well_formed_query):
 
     client = APIClient()
     client.force_authenticate(user=user)
-    response = client.post('/api/analytics/queries/', well_formed_query, format='json')
+    response = client.post(reverse("query-list"), well_formed_query, format='json')
     assert response.status_code == 403
 
 
@@ -50,7 +51,7 @@ def test_analytics_api_unauthorized(well_formed_query):
     """
 
     client = APIClient()
-    response = client.post('/api/analytics/queries/', well_formed_query, format='json')
+    response = client.post(reverse("query-list"), well_formed_query, format='json')
     assert response.status_code == 401
 
 
@@ -64,6 +65,6 @@ def test_valid_api_request_creates_model_query(staff_user, well_formed_query):
 
     client = APIClient()
     client.force_authenticate(user=staff_user)
-    client.post('/api/analytics/queries/', well_formed_query, format='json')
+    client.post(reverse("query-list"), well_formed_query, format='json')
 
     assert Query.objects.all().count() == 1

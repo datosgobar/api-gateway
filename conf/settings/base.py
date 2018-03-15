@@ -133,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True
 
@@ -171,7 +171,7 @@ RQ_QUEUES = {
 KONG_TRAFFIC_URL = ""
 KONG_ADMIN_URL = ""
 
-FORCE_SCRIPT_NAME = '/management'
+URLS_PREFIX = 'management'
 
 CACHES = {
     'default': {
@@ -184,3 +184,7 @@ CACHES = {
 
 AXES_CACHE = 'axes_cache'
 ANALYTICS_TID = ''
+HTTPLOG2_ENDPOINT = ""
+
+SESSION_COOKIE_NAME = 'mgmtsessionid'
+

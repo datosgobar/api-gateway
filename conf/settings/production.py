@@ -46,10 +46,10 @@ KONG_ADMIN_URL = env("KONG_ADMIN_URL")
 
 
 # Use default form base.py
-FORCE_SCRIPT_NAME = env("FORCE_SCRIPT_NAME", default=FORCE_SCRIPT_NAME)
+URLS_PREFIX = env("URLS_PREFIX", default=URLS_PREFIX)
 
-MEDIA_URL = '%s/media/' % FORCE_SCRIPT_NAME
-STATIC_URL = '%s/static/' % FORCE_SCRIPT_NAME
+MEDIA_URL = '/%s/media/' % URLS_PREFIX
+STATIC_URL = '/%s/static/' % URLS_PREFIX
 
 RQ_QUEUES = {
     'default': {
@@ -66,4 +66,8 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 360,
     },
 }
+HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT",
+                        default="%s%s/api/analytics/queries/"
+                                % (KONG_TRAFFIC_URL, URLS_PREFIX))
+
 ANALYTICS_TID = env('ANALYTICS_TID', default='')
