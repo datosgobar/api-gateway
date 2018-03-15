@@ -108,6 +108,12 @@ function plugin:log(plugin_conf)
     status_code = status_code
   }
 
+  if plugin_conf.api_data then
+    JSONRequestArray['api_data'] = plugin_conf.api_data
+  else
+    JSONRequestArray['api_data'] = nil
+  end
+
   local jsonRequest = JSON:encode(JSONRequestArray)
 
   local headers = {
@@ -118,7 +124,6 @@ function plugin:log(plugin_conf)
   if plugin_conf.host then
     headers['Host'] = plugin_conf.host
   end
-
 
   --print(plugin_conf.endpoint)
   print(JSON:encode(headers))
