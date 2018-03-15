@@ -25,7 +25,7 @@ class Query(models.Model):
 
 
 @receiver(post_save, sender=Query)
-def api_deleted(**kwargs):
+def send_analytics(**kwargs):
     query = kwargs['instance']
     tracking_id = settings.ANALYTICS_TID
 
@@ -40,4 +40,7 @@ def api_deleted(**kwargs):
             'cm1': query.start_time,    # Custom Metric
             'srt': query.request_time}  # Server Response Time
 
-    requests.post('http://www.google-analytics.com/collect', data=data)
+    response = requests.post('http://www.google-analytics.com/collect', data=data)
+
+    if not response.ok:
+        raise ConnectionError(response.content)
