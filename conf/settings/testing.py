@@ -24,3 +24,4 @@ for queueConfig in RQ_QUEUES.values():
 
 KONG_TRAFFIC_URL = env("KONG_TRAFFIC_URL", default="http://localhost:8000/")
 KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")
+ANALYTICS_TID = env('ANALYTICS_TID', default='')

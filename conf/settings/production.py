@@ -66,3 +66,4 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 360,
     },
 }
+ANALYTICS_TID = env('ANALYTICS_TID', default='')

@@ -15,3 +15,4 @@ KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")
 
 MEDIA_URL = '%s/media/' % FORCE_SCRIPT_NAME
 STATIC_URL = '%s/static/' % FORCE_SCRIPT_NAME
+ANALYTICS_TID = env('ANALYTICS_TID', default='')
