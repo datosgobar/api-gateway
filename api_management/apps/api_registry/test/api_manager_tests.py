@@ -4,13 +4,13 @@
 def test_disabling_an_api_removes_it_from_the_kong_server(api_data,
                                                           kong_client,
                                                           api_manager,
-                                                          faker):
+                                                          cfaker):
     """
         al desactivar una api que tiene kong_id
         se elimina del server de kong
     """
     # Setup
-    kong_id = faker.kong_id()
+    kong_id = cfaker.kong_id()
     api_data.enabled = False
     api_data.kong_id = kong_id
 
@@ -64,7 +64,7 @@ def test_creating_api_in_kong_server_sets_kong_id_in_api_data(api_data,
 
 
 # pylint: disable=invalid-name
-def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
+def test_updating_enabled_api_data_sends_an_update_to_kong_server(cfaker,
                                                                   api_data,
                                                                   api_manager,
                                                                   kong_client):
@@ -78,8 +78,8 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(faker,
     api_manager.manage(api_data)
 
     # Exercise
-    api_data.uris = faker.api_path()
-    api_data.upstream_url = faker.url()
+    api_data.uris = cfaker.api_path()
+    api_data.upstream_url = cfaker.url()
 
     api_manager.manage(api_data)
 
@@ -114,9 +114,9 @@ def test_updating_disabled_api_does_not_triggers_kong_communication(api_data,
     kong_client.apis.delete.assert_not_called()
 
 
-def test_api_w_preserve_host(faker, api_data, api_manager, kong_client):
+def test_api_w_preserve_host(cfaker, api_data, api_manager, kong_client):
     # Setup
-    preserve_host = faker.boolean()
+    preserve_host = cfaker.boolean()
 
     api_data.enabled = True
     api_data.preserve_host = preserve_host

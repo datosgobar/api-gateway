@@ -1,19 +1,19 @@
 import pytest
 from faker import Faker
 
-from api_management.libs.providers.providers import CustomInfoProvider
-from ..models import ApiData
+from api_management.apps.analytics.test.support import custom_faker
+from api_management.apps.api_registry.test.support import generate_api_data
 
+
+# pylint: disable=redefined-outer-name
 
 @pytest.fixture()
-def faker():
-    a_faker = Faker()
-    a_faker.add_provider(CustomInfoProvider)
-    return a_faker
+def cfaker():
+    return custom_faker()
 
 
 @pytest.fixture
-def user(db):  # pylint: disable=invalid-name, unused-argument, redefined-outer-name
+def user(db):  # pylint: disable=invalid-name, unused-argument
     """
     Create a test user.
     """
@@ -24,7 +24,7 @@ def user(db):  # pylint: disable=invalid-name, unused-argument, redefined-outer-
 
 
 @pytest.fixture
-def staff_user(user):  # pylint: disable=unused-argument, redefined-outer-name, invalid-name
+def staff_user(user):  # pylint: disable=unused-argument, invalid-name
     """
     Create a test staff user.
     """
@@ -48,11 +48,11 @@ def well_formed_query():
 
 
 @pytest.fixture
-def api_data(faker):
-    api = ApiData(name=faker.api_name(),
-                  upstream_url=faker.url(),
-                  uris=faker.api_path(),
-                  kong_id=None)
-    api.id = faker.random_int()
+def api_data(cfaker):
+    api = generate_api_data(name=cfaker.api_name(),
+                            upstream_url=cfaker.url(),
+                            uris=cfaker.api_path(),
+                            kong_id=None,
+                            api_id=cfaker.random_int())
     api.save()
     return api
