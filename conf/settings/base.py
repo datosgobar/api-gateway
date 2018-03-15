@@ -133,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires'
 
 USE_I18N = True
 
@@ -183,3 +183,6 @@ CACHES = {
 }
 
 AXES_CACHE = 'axes_cache'
+HTTPLOG2_ENDPOINT = ""
+
+SESSION_COOKIE_NAME = 'mgmtsessionid'

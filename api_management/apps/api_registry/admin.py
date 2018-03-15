@@ -24,6 +24,11 @@ class ApiAdmin(admin.ModelAdmin):
                        'rate_limiting_minute',
                        'rate_limiting_hour',
                        'rate_limiting_day')
+        }),
+        ('Logs', {
+            'classes': ('collapse',),
+            'fields': ('httplog2_enabled',
+                       'httplog2_api_key')
         })
     )
 
