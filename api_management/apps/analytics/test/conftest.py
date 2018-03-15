@@ -1,6 +1,16 @@
 import pytest
 from faker import Faker
 
+from api_management.libs.providers.providers import CustomInfoProvider
+from ..models import ApiData
+
+
+@pytest.fixture()
+def faker():
+    a_faker = Faker()
+    a_faker.add_provider(CustomInfoProvider)
+    return a_faker
+
 
 @pytest.fixture
 def user(db):  # pylint: disable=invalid-name, unused-argument, redefined-outer-name
@@ -33,4 +43,16 @@ def well_formed_query():
         "start_time": faker.iso8601(),
         "request_time": 0.5,
         "status_code": 200,
+        "api_data": None,  # Is required!
     }
+
+
+@pytest.fixture
+def api_data(faker):
+    api = ApiData(name=faker.api_name(),
+                  upstream_url=faker.url(),
+                  uris=faker.api_path(),
+                  kong_id=None)
+    api.id = faker.random_int()
+    api.save()
+    return api

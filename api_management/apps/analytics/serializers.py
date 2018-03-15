@@ -7,6 +7,6 @@ class QuerySerializer(serializers.ModelSerializer):
     class Meta:
         model = Query
         fields = (
-            'id', 'ip_address', 'host', 'uri',
+            'id', 'ip_address', 'host', 'uri', 'api_data',
             'querystring', 'start_time', 'request_time', 'status_code',
         )

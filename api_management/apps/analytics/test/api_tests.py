@@ -98,3 +98,19 @@ def test_status_code_is_optional(staff_user, well_formed_query):
 
     query = Query.objects.all().first()
     assert query.status_code is None
+
+
+def test_query_has_api_data_id(staff_user, well_formed_query, api_data):
+    """
+    Test cuando un staff_user le pega al endpoint de queries
+    con un json de query bien formado crea un Query con un status code
+    :return:
+    """
+
+    client = APIClient()
+    client.force_authenticate(user=staff_user)
+    well_formed_query['api_data'] = api_data.id
+    client.post(reverse("query-list"), well_formed_query, format='json')
+
+    query = Query.objects.all().first()
+    assert query.api_data.pk == api_data.pk
