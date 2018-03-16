@@ -4,14 +4,6 @@
 - import_playbook: postgresql.yml
 - import_playbook: redis.yml
 
-- hosts: django_app
-  become: yes
-  become_method: sudo
-  gather_facts: yes
-  roles:
-    - python_project
-    - django_application
-
 - import_playbook: app.yml
 
 - hosts: rqworkers
