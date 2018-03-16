@@ -10,8 +10,3 @@
     state: restarted
   with_sequence: count={{ worker_count }}
 
-- name: Enable and restart rqscheduler
-  systemd:
-    name: rqscheduler.service
-    enabled: yes
-    state: restarted

@@ -15,4 +15,4 @@ RANDOM_IDENTIFIER=$(date +%s | sha256sum | base64 | head -c 32 ; echo)
 SENTRY_ARG="--sentry-dsn={{ sentry_dsn }}"
 {% endif %}
 cd {{ application_repo_dir }};
-python {{ application_repo_dir }}manage.py rqworker --name "WORKER-$WORKER_NAME-$RANDOM_IDENTIFIER" $SENTRY_ARG high default low scrapping indexing
+python {{ application_repo_dir }}manage.py rqworker --name "WORKER-$WORKER_NAME-$RANDOM_IDENTIFIER" $SENTRY_ARG {{ workers_queues }}
