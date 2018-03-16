@@ -95,6 +95,7 @@ function plugin:log(plugin_conf)
   local uri = ngx.var.uri
   local start_time_nginx = ngx.req.start_time()
   local request_time = ngx.now() - start_time_nginx
+  local status_code = ngx.status
 
   local start_time = os.date("!%Y-%m-%dT%TZ", start_time_nginx)
   local JSONRequestArray = {
@@ -103,8 +104,15 @@ function plugin:log(plugin_conf)
     uri = uri,
     querystring = querystring,
     start_time = start_time,
-    request_time = request_time
+    request_time = request_time,
+    status_code = status_code
   }
+
+  if plugin_conf.api_data then
+    JSONRequestArray['api_data'] = plugin_conf.api_data
+  else
+    JSONRequestArray['api_data'] = nil
+  end
 
   local jsonRequest = JSON:encode(JSONRequestArray)
 
@@ -116,7 +124,6 @@ function plugin:log(plugin_conf)
   if plugin_conf.host then
     headers['Host'] = plugin_conf.host
   end
-
 
   --print(plugin_conf.endpoint)
   print(JSON:encode(headers))
