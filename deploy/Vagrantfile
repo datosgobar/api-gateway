@@ -22,6 +22,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     web.vm.hostname = "api-mgmt0"
   end
 
+  config.vm.define "rqworker0" do |web|
+    web.vm.provider :virtualbox do |vb|
+        vb.memory = 1024
+        vb.cpus = 1
+    end
+    web.vm.network "private_network", ip: "192.168.35.9"
+    web.vm.hostname = "rqworker0"
+  end
+
   config.vm.define "psql0" do |web|
     web.vm.provider :virtualbox do |vb|
         vb.memory = 1024
