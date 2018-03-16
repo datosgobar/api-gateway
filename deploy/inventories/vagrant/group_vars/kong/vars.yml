@@ -11,7 +11,7 @@ kong_api_map:
     name: "management",
     upstream_url: "http://192.168.35.5",
     uris: "/management",
-    strip_uri: true
+    strip_uri: false
     }
 #  - {
 #    name: "api-mgmt-vagrant",

@@ -3,6 +3,3 @@
 ansible_host: "{{ vault_ansible_host }}"
 ansible_port: "{{ vault_ansible_port }}"
 
-
-allowed_host: kong.dev.datos.gob.ar
-allowed_host_ip: 192.168.35.60

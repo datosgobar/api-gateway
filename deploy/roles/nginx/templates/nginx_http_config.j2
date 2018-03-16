@@ -18,21 +18,21 @@ server {
 
     client_max_body_size 4G;
     keepalive_timeout 5;
-    location /robots.txt {
+    location /{{ django_urls_prefix }}/robots.txt {
         alias {{ nginx_static_dir }}robots.txt;
     }
-    location /favicon.ico {
+    location /{{ django_urls_prefix }}/favicon.ico {
         alias {{ nginx_static_dir }}favicon.ico;
     }
-    location /media/  {
+    location /{{ django_urls_prefix }}/media/  {
         alias {{ nginx_media_dir }};
         expires 30d;
     }
-    location /static/  {
+    location /{{ django_urls_prefix }}/static/  {
         alias {{ nginx_static_dir }};
         expires 30d;
     }
-    location / {
+    location /{{ django_urls_prefix }}/ {
         {{ nginx_http_auth_mark }}
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $http_host;

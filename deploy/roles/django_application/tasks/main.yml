@@ -35,10 +35,21 @@
     msg: "'kong_admin_url' must be set"
   when: kong_admin_url == ""
 
+- name: Check 'kong_http_log2_endpoint'
+  fail:
+    msg: "'kong_http_log2_endpoint' must be set"
+  when: kong_http_log2_endpoint == ""
+
 - name: Check 'django_redis_host'
   fail:
     msg: "'django_redis_host' must be set"
   when: django_redis_host == ""
+
+
+- name: Check 'django_urls_prefix'
+  fail:
+    msg: "'django_urls_prefix' must be set"
+  when: django_urls_prefix == ""
 
 - include_tasks: create_file_structures.yml
   become_user: "{{ application_user }}"
