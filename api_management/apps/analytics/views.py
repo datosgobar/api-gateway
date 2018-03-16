@@ -23,4 +23,4 @@ class QueryViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_create(self, serializer):
-        make_model_object.delay(serializer.validated_data, type(serializer))
+        make_model_object.delay(serializer.data, type(serializer))
