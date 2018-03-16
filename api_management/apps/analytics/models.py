@@ -41,7 +41,10 @@ def send_analytics(**kwargs):
             'dp': query.uri,            # Document Path
             'cd1': query.querystring,   # Custom Dimention
             'cm1': query.start_time,    # Custom Metric
-            'srt': query.request_time}  # Server Response Time
+            'srt': query.request_time,  # Server Response Time
+            'cm2': query.status_code,   # Custom Metric
+            'cd3': query.api_data.name,
+            'cm3': query.api_data.pk}
 
     response = requests.post('http://www.google-analytics.com/collect', data=data)
 
