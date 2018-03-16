@@ -1,9 +1,17 @@
 kong0
 psql-redis0
 web0
+rqworker0
 
 [web]
 web0
+
+[rqworkers]
+rqworker0
+
+[django_app:children]
+web
+rqworkers
 
 [postgresql]
 psql-redis0
