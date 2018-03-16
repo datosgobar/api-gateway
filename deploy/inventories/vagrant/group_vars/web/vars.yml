@@ -1,17 +1,3 @@
 ---
 
-application_clone_url: git@github.com:datosgobar/api-gateway.git
-application_deploy_ssh_key_required: no # Usar 'application_deploy_ssh_key' con el valor de la api key privada!
-database_url: psql://database_user:database_password@192.168.35.7:5432/database_name
-allowed_host: dev.apis.datos.gob.ar
-allowed_host_ip: 192.168.35.5
-common_generate_ssh_key: no
-
-kong_traffic_url: http://192.168.35.60:8000
-kong_admin_url: http://192.168.35.60:8001
-
-django_redis_host: 192.168.35.7
-
-# Configuración para el manejo del plugin de log
-kong_http_log2_endpoint: http://192.168.35.5:80/management/api/analytics/queries/
 django_urls_prefix: management
