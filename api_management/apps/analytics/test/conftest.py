@@ -33,7 +33,7 @@ def staff_user(user):  # pylint: disable=unused-argument, invalid-name
 
 
 @pytest.fixture
-def well_formed_query():
+def well_formed_query(api_data):
     faker = Faker()
     return {
         "ip_address": faker.ipv4(),
@@ -43,12 +43,12 @@ def well_formed_query():
         "start_time": faker.iso8601(),
         "request_time": 0.5,
         "status_code": 200,
-        "api_data": None,  # Is required!
+        "api_data": api_data.pk,  # Is required!
     }
 
 
 @pytest.fixture
-def api_data(cfaker):
+def api_data(cfaker, db):  # pylint: disable=unused-argument, invalid-name
     api = generate_api_data(name=cfaker.api_name(),
                             upstream_url=cfaker.url(),
                             uris=cfaker.api_path(),
