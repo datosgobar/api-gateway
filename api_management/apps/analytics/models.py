@@ -29,10 +29,11 @@ class Query(models.Model):
 
 @receiver(post_save, sender=Query)
 def prepare_send_analytics(**kwargs):
-    query = kwargs['instance']
-    tracking_id = settings.ANALYTICS_TID
+    if kwargs['created']:
+        query = kwargs['instance']
+        tracking_id = settings.ANALYTICS_TID
 
-    send_analytics(query, tracking_id)
+        send_analytics(query, tracking_id)
 
 
 def send_analytics(query, tracking_id):
