@@ -1,0 +1,16 @@
+[Unit]
+Description=Rqworker daemon %i
+After=network.target
+
+[Service]
+User={{ worker_user }}
+Group={{ worker_group }}
+WorkingDirectory={{ application_repo_dir }}
+ExecStart={{ worker_run_bin }} %i %H
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

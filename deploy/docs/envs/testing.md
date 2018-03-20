@@ -1,6 +1,6 @@
 # Testing
 
-_Ultima actualizacion: 09/03/2018_
+_Ultima actualizacion: 19/03/2018_
 
 ## Pre-requisitos
 
@@ -92,9 +92,17 @@ Si miramos el archivo `inventories/hosts.sample` veremos la version mas actualiz
 kong0
 psql-redis0
 web0
+rqworker0
 
 [web]
 web0
+
+[rqworkers]
+rqworker0
+
+[django_application:children]
+web
+rqworkers
 
 [postgresql]
 psql-redis0
@@ -108,6 +116,8 @@ kong0
 [api_cluster:children]
 kong
 web
+redis
+rqworkers
 postgresql
 ```
 
@@ -124,6 +134,14 @@ cp inventories/hosts.sample "inventories/$ENVIRONMENT/hosts"
 
 
 ### Configuracion especifica de cada host
+
+En esta documentacion, asumiremos que tenemos los siguientes servidores e IPs:
+
+web0: 192.168.65.1
+rqworker0: 192.168.65.2
+psql-redis0: 192.168.65.3
+kong0: 192.168.65.4
+
 
 Luego debemos configurar cada uno de los "hosts" definidos en ese archivo.
 
@@ -150,12 +168,6 @@ ansible_host: "{{ vault_ansible_host }}"
 ansible_port: "{{ vault_ansible_port }}"
 ansible_user: "{{ vault_ansible_user }}"
 
-# Dominio para esta aplicacion
-# Deberia ser el dominio de Kong
-allowed_host: apis-dev.datos.gob.ar
-# La IP del servidor de kong, en caso de que el dominio no este disponible
-allowed_host_ip: 192.168.65.1
-
 ```
 
 
@@ -173,7 +185,35 @@ vault_ansible_port: 22
 # El usuario real con el cual conectarse
 vault_ansible_user: mi_usuario
 # La contraseña con la cual poder correr comandos con "sudo"
-ansible_become_pass: mi_pass_segura
+ansible_become_pass: secure_pass
+```
+
+**host_vars/rqworker0/vars.yml**
+
+En este archivo podremos poner configuracion especifica del servidor "worker0".
+
+```yaml
+---
+
+ansible_host: "{{ vault_ansible_host }}"
+ansible_port: "{{ vault_ansible_port }}"
+ansible_user: "{{ vault_ansible_user }}"
+
+```
+
+
+**host_vars/rqworker0/vault.yml**
+
+```yaml
+---
+
+# La ip real a donde conectarse desde el servidor de "deploy"
+vault_ansible_host: 192.168.1.2
+vault_ansible_port: 22
+# El usuario real con el cual conectarse
+vault_ansible_user: mi_usuario
+# La contraseña con la cual poder correr comandos con "sudo"
+ansible_become_pass: secure_pass
 ```
 
 **host_vars/psql-redis0/vars.yml**
@@ -197,12 +237,12 @@ postgresql_listen_address: "{{ ansible_host }}"
 ---
 
 # La ip real a donde conectarse desde el servidor de "deploy"
-vault_ansible_host: 192.168.1.2
+vault_ansible_host: 192.168.1.3
 vault_ansible_port: 22
 # El usuario real con el cual conectarse
 vault_ansible_user: mi_usuario_para_este_server
 # La contraseña con la cual poder correr comandos con "sudo"
-ansible_become_pass: mi_pass_segura_para_este_server
+ansible_become_pass: secure_pass_para_este_server
 ```
 
 **host_vars/kong0/vars.yml**
@@ -221,12 +261,12 @@ ansible_user: "{{ vault_ansible_user }}"
 ---
 
 # La ip real a donde conectarse desde el servidor de "deploy"
-vault_ansible_host: 192.168.1.3
+vault_ansible_host: 192.168.1.4
 vault_ansible_port: 22
 # El usuario real con el cual conectarse
 vault_ansible_user: mi_usuario_para_este_otro_server
 # La contraseña con la cual poder correr comandos con "sudo"
-ansible_become_pass: mi_pass_segura_para_este_otro_server
+ansible_become_pass: secure_pass_para_este_otro_server
 ```
 
 ### Configuracion de grupos
@@ -237,7 +277,7 @@ el grupo "psql" los servidores con Postgrsql, etc.
 
 **group_vars/postgresql/vars.yml**
 
-```
+```yaml
 ---
 
 # Credenciales para la aplicacion web
@@ -252,7 +292,8 @@ kong_database_pass: "{{ vault_kong_database_pass }}"
 ```
 
 **group_vars/postgresql/vault.yml**
-```
+
+```yaml
 ---
 
 vault_postgresql_user: "mi_db_user"
@@ -268,7 +309,18 @@ vault_kong_database_pass: mi_kong_db_pass
 
 **group_vars/web/vars.yml**
 
+
+```yaml
+---
+
+django_urls_prefix: management
+
 ```
+
+
+**group_vars/django_application/vars.yml**
+
+```yaml
 ---
 
 # Repositorio de donde clonar la aplicacion
@@ -282,6 +334,10 @@ database_url: "{{ vault_database_url }}"
 # Branch o tag de la aplicacion que se desea
 checkout_branch: master
 
+
+allowed_host: apis-dev.apis.datos.gob.ar
+allowed_host_ip: 192.168.65.4
+
 # URL de la aplicacion de kong
 kong_traffic_url: "{{ vault_kong_traffic_url }}"
 # URL de la aplicacion admin de kong
@@ -289,27 +345,31 @@ kong_admin_url: "{{ vault_kong_admin_url }}"
 
 # Host o IP del servidor de redis
 django_redis_host: "{{ vault_django_redis_host }}"
+
+# Configuración para el manejo del plugin de log
+kong_http_log2_endpoint: http://192.168.35.4:80/management/api/analytics/queries/
+django_urls_prefix: management
+
 ```
 
+**group_vars/django_application/vault.yml**
 
-**group_vars/web/vault.yml**
-
-```
+```yaml
 ---
 
 vault_database_url: psql://mi_db_user:mi_db_pass@192.168.65.2:5432/mi_db_name
 
-vault_kong_traffic_url: http://192.168.35.1:80
-vault_kong_admin_url: http://192.168.35.1:8001
+vault_kong_traffic_url: http://192.168.35.4:80
+vault_kong_admin_url: http://192.168.35.4:8001
 
-vault_django_redis_host: 192.168.35.2
+vault_django_redis_host: 192.168.35.3
 
 ```
 
 
 **group_vars/kong/vars.yml**
 
-```
+```yaml
 ---
 
 # IP o interfaz por la que escuchara el admin de Kong
@@ -330,7 +390,7 @@ kong_api_map:
     name: "management",
     upstream_url: "{{ vault_api_management_upstream_url }}",
     uris: "/management",
-    strip_uri: true
+    strip_uri: false
     }
 
 ```
@@ -342,9 +402,9 @@ kong_api_map:
 ---
 
 vault_kong_database_pass: mi_kong_db_pass
-vault_kong_database_host: 192.168.65.2
+vault_kong_database_host: 192.168.65.3
 
-vault_api_management_upstream_url: http://192.168.65.2
+vault_api_management_upstream_url: http://192.168.65.1
 ```
 
 
@@ -412,10 +472,10 @@ web0                       : ok=18   changed=2    unreachable=0    failed=0
 
 
 Una vez asegurado, entramos al servidor que definimos como "web1" y nos logueamos como el usuario "devartis".
-Por ejemplo, si el servidor esta en 192.168.0.2, correr estos comandos desde el server de deploy:
+Correr estos comandos desde el serveridor de deploy:
 
 ```
-@deploy-server$ ssh mi_user@192.168.0.2
+@deploy-server$ ssh mi_user@192.168.65.1
 
 # Una vez logueados, cambiamos de usuario
 mi_user@web-server$ sudo su - devartis

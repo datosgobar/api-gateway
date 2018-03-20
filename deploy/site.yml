@@ -3,5 +3,14 @@
 - import_playbook: api_cluster.yml
 - import_playbook: postgresql.yml
 - import_playbook: redis.yml
+
 - import_playbook: app.yml
+
+- hosts: rqworkers
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  roles:
+    - rqworker
+
 - import_playbook: kong.yml

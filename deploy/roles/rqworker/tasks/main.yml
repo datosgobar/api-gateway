@@ -1,0 +1,13 @@
+---
+
+- name: Create required directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ worker_user }}"
+    group: "{{ worker_group }}"
+    state: directory
+  with_items:
+    - "{{ worker_dir }}"
+    - "{{ worker_bins_dir }}"
+
+- include_tasks: worker_units.yml
