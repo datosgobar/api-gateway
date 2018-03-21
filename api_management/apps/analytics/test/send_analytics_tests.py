@@ -1,6 +1,6 @@
 from urllib.parse import parse_qsl
 import requests_mock
-from api_management.apps.analytics.models import send_analytics
+from api_management.apps.analytics.models import GoogleAnalyticsManager
 
 
 def test_send_analytics(query):
@@ -8,9 +8,10 @@ def test_send_analytics(query):
         # Setup
         rmock.post(requests_mock.ANY, status_code=200)
         tracking_id = 'UA-XXXXXXXXX-Y'
+        ga_manager = GoogleAnalyticsManager(tracking_id)
 
         # Exercise
-        send_analytics(query, tracking_id)
+        ga_manager.send_analytics(query)
 
         # Verify
         history = rmock.request_history
