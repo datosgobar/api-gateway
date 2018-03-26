@@ -350,6 +350,9 @@ django_redis_host: "{{ vault_django_redis_host }}"
 kong_http_log2_endpoint: http://192.168.35.4:80/management/api/analytics/queries/
 django_urls_prefix: management
 
+# Configuración de google analytics para log
+ga_tracking_id: UA-XXXX-Y
+
 ```
 
 **group_vars/django_application/vault.yml**
