@@ -40,6 +40,11 @@
     msg: "'kong_http_log2_endpoint' must be set"
   when: kong_http_log2_endpoint == ""
 
+- name: Check 'ga_tracking_id'
+  fail:
+    msg: "'ga_tracking_id' must be set"
+  when: ga_tracking_id == ""
+
 - name: Check 'django_redis_host'
   fail:
     msg: "'django_redis_host' must be set"
