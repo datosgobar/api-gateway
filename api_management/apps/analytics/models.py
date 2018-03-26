@@ -27,26 +27,40 @@ class Query(models.Model):
         return 'Query at %s: %s' % (self.start_time, self.uri)
 
 
-@receiver(post_save, sender=Query)
-def send_analytics(**kwargs):
-    query = kwargs['instance']
-    tracking_id = settings.ANALYTICS_TID
+class GoogleAnalyticsManager:
 
-    data = {'v': 1,                     # Protocol Version
-            'cid': query.id,            # Client ID
-            'tid': tracking_id,         # Tracking ID
-            'uip': query.ip_address,    # User IP override
-            't': 'pageview',            # Hit Type
-            'dh': query.host,           # Document HostName
-            'dp': query.uri,            # Document Path
-            'cd1': query.querystring,   # Custom Dimention
-            'cm1': query.start_time,    # Custom Metric
-            'srt': query.request_time,  # Server Response Time
-            'cm2': query.status_code,   # Custom Metric
-            'cd3': query.api_data.name,
-            'cm3': query.api_data.pk}
+    @classmethod
+    def using_settings(cls):
+        return cls(tracking_id=settings.ANALYTICS_TID)
 
-    response = requests.post('http://www.google-analytics.com/collect', data=data)
+    def __init__(self, tracking_id):
+        self.session = requests.session()
+        self.tracking_id = tracking_id
 
-    if not response.ok:
-        raise ConnectionError(response.content)
+    @staticmethod
+    @receiver(post_save, sender=Query)
+    def prepare_send_analytics(created, instance, **_):
+        if created:
+            query = instance
+
+            GoogleAnalyticsManager.using_settings().send_analytics(query)
+
+    def send_analytics(self, query):
+        data = {'v': 1,  # Protocol Version
+                'cid': query.id,  # Client ID
+                'tid': self.tracking_id,  # Tracking ID
+                'uip': query.ip_address,  # User IP override
+                't': 'pageview',  # Hit Type
+                'dh': query.host,  # Document HostName
+                'dp': query.uri,  # Document Path
+                'cd1': query.querystring,  # Custom Dimention
+                'cm1': query.start_time,  # Custom Metric
+                'srt': query.request_time,  # Server Response Time
+                'cm2': query.status_code,  # Custom Metric
+                'cd3': query.api_data.name,
+                'cm3': query.api_data.pk}
+
+        response = self.session.post('http://www.google-analytics.com/collect',
+                                     data=data)
+        if not response.ok:
+            raise ConnectionError(response.content)

@@ -56,3 +56,20 @@ def api_data(cfaker, db):  # pylint: disable=unused-argument, invalid-name
                             api_id=cfaker.random_int())
     api.save()
     return api
+
+
+@pytest.fixture
+def query(mocker, well_formed_query, api_data):
+    query = mocker.stub(name="query-stub")
+
+    query.id = Faker().random_number()
+    query.ip_address = well_formed_query['ip_address']
+    query.host = well_formed_query['host']
+    query.uri = well_formed_query['uri']
+    query.querystring = well_formed_query['querystring']
+    query.start_time = well_formed_query['start_time']
+    query.request_time = well_formed_query['request_time']
+    query.status_code = well_formed_query['status_code']
+    query.api_data = api_data
+
+    return query
