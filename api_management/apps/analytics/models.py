@@ -33,15 +33,15 @@ class GoogleAnalyticsManager:
     def using_settings(cls):
         return cls(tracking_id=settings.ANALYTICS_TID)
 
-    def __init__(self, tracking_id, session=requests.session()):
-        self.session = session
+    def __init__(self, tracking_id):
+        self.session = requests.session()
         self.tracking_id = tracking_id
 
     @staticmethod
     @receiver(post_save, sender=Query)
-    def prepare_send_analytics(**kwargs):
-        if kwargs['created']:
-            query = kwargs['instance']
+    def prepare_send_analytics(created, instance, **_):
+        if created:
+            query = instance
 
             GoogleAnalyticsManager.using_settings().send_analytics(query)
 

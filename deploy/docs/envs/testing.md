@@ -351,6 +351,7 @@ kong_http_log2_endpoint: http://192.168.35.4:80/management/api/analytics/queries
 django_urls_prefix: management
 
 # Configuración de google analytics para log
+# [tid](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters#tid)
 ga_tracking_id: UA-XXXX-Y
 
 ```
