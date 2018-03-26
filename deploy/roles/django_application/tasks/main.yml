@@ -56,11 +56,10 @@
     msg: "'django_urls_prefix' must be set"
   when: django_urls_prefix == ""
 
-- include_tasks: create_file_structures.yml
+- name: Setup django
+  block:
+    - include_tasks: create_file_structures.yml
+    - include_tasks: setup_python_env.yml
+    - include_tasks: post_install.yml
   become_user: "{{ application_user }}"
 
-- include_tasks: setup_python_env.yml
-  become_user: "{{ application_user }}"
-
-- include_tasks: post_install.yml
-  become_user: "{{ application_user }}"
