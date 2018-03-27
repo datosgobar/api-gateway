@@ -15,7 +15,7 @@ class Query(models.Model):
     uri = models.TextField()
     querystring = models.TextField(default="", blank=True)
     start_time = models.DateTimeField()
-    request_time = models.DecimalField(max_digits=20, decimal_places=15)
+    request_time = models.DecimalField(max_digits=30, decimal_places=25)
     status_code = models.IntegerField(blank=True, null=True)
     api_data = models.ForeignKey(ApiData, blank=True, null=True, on_delete=models.PROTECT)
 
