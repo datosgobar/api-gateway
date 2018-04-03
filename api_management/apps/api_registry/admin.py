@@ -28,7 +28,8 @@ class ApiAdmin(admin.ModelAdmin):
         ('Logs', {
             'classes': ('collapse',),
             'fields': ('httplog2_enabled',
-                       'httplog2_api_key')
+                       'httplog2_api_key',
+                       'httplog2_ga_exclude_regex')
         })
     )
 
