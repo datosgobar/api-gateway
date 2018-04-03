@@ -3,6 +3,7 @@ from faker import Faker
 
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.test.support import generate_api_data
+from api_management.apps.analytics.models import GoogleAnalyticsManager
 
 
 # pylint: disable=redefined-outer-name
@@ -73,3 +74,13 @@ def query(mocker, well_formed_query, api_data):
     query.api_data = api_data
 
     return query
+
+
+@pytest.fixture
+def tracking_id():
+    return 'UA-XXXXXXXXX-Y'
+
+
+@pytest.fixture
+def ga_manager(tracking_id):
+    return GoogleAnalyticsManager(tracking_id)
