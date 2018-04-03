@@ -33,6 +33,7 @@ class ApiData(models.Model):
     httplog2_enabled = models.BooleanField(default=False)
     httplog2_api_key = models.CharField(max_length=100, blank=True)
     httplog2_kong_id = models.CharField(max_length=100, null=True)
+    httplog2_ga_exclude_regex = models.CharField(max_length=100, null=False, blank=True)
 
     def __str__(self):
         return self.name

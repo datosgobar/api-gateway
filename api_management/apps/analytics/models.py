@@ -1,3 +1,4 @@
+import re
 import requests
 
 from django.conf import settings
@@ -43,7 +44,13 @@ class GoogleAnalyticsManager:
         if created:
             query = instance
 
-            GoogleAnalyticsManager.using_settings().send_analytics(query)
+            GoogleAnalyticsManager.using_settings().manage_query(query)
+
+    def manage_query(self, query):
+        regex = query.api_data.httplog2_ga_exclude_regex
+        if not regex \
+                or re.search(regex, query.uri) is None:
+            self.send_analytics(query)
 
     def send_analytics(self, query):
         data = {'v': 1,  # Protocol Version

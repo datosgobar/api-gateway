@@ -1,14 +1,14 @@
+from unittest.mock import MagicMock
+
 from urllib.parse import parse_qsl
+import pytest
 import requests_mock
-from api_management.apps.analytics.models import GoogleAnalyticsManager
 
 
-def test_send_analytics(query):
+def test_send_analytics(ga_manager, tracking_id, query):
     with requests_mock.mock() as rmock:
         # Setup
         rmock.post(requests_mock.ANY, status_code=200)
-        tracking_id = 'UA-XXXXXXXXX-Y'
-        ga_manager = GoogleAnalyticsManager(tracking_id)
 
         # Exercise
         ga_manager.send_analytics(query)
@@ -39,3 +39,43 @@ def test_send_analytics(query):
             expected_data[key] = str(val)
 
         assert dict(parse_qsl(request.text)) == expected_data
+
+
+MATCHING_REGEX_URI_PAIRS = [('regex', '/api/regex/test/'),
+                            ('static', '/api/static/resource'),
+                            ('media', '/media')]
+
+
+#  pylint: disable=invalid-name
+@pytest.mark.parametrize("regex,uri", MATCHING_REGEX_URI_PAIRS)
+def test_if_exclude_regex_matches_query_uri_send_analyitics_you_must_not(ga_manager, query,
+                                                                         regex, uri):
+    exercise_manage_query(ga_manager, query, regex, uri)
+
+    # Verify
+    ga_manager.send_analytics.assert_not_called()
+
+
+NON_MATCHING_REGEX_URI_PAIRS = [('', '/path/'),
+                                ('no-match', '/path/'),
+                                ('no-match', '')]
+
+
+#  pylint: disable=invalid-name
+@pytest.mark.parametrize("regex,uri", NON_MATCHING_REGEX_URI_PAIRS)
+def test_if_exclude_regex_does_not_matches_query_uri_send_analyitics_you_must(ga_manager, query,
+                                                                              regex, uri):
+    exercise_manage_query(ga_manager, query, regex, uri)
+
+    # Verify
+    ga_manager.send_analytics.assert_called_once_with(query)
+
+
+def exercise_manage_query(ga_manager, query, regex, uri):
+    # Setup
+    ga_manager.send_analytics = MagicMock()
+    query.api_data.httplog2_ga_exclude_regex = regex
+    query.uri = uri
+
+    # Exercise
+    ga_manager.manage_query(query)
