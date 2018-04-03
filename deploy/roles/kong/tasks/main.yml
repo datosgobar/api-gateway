@@ -15,12 +15,12 @@
     - libpcre3
     - procps
     - perl
-  when: kong_check|failed
+  when: kong_check|failed or kong_force_install
 
 - name: Install kong
   apt:
     deb: "{{ kong_download_deb }}"
-  when: kong_check|failed
+  when: kong_check|failed or kong_force_install
 
 - name: Copy default configuration
   copy:
