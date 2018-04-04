@@ -347,6 +347,7 @@ kong_admin_url: "{{ vault_kong_admin_url }}"
 django_redis_host: "{{ vault_django_redis_host }}"
 
 # Configuración para el manejo del plugin de log
+# Esta variable **No debe pasar por Kong**, debe pegarle directamente al server de api-mgmt
 kong_http_log2_endpoint: http://192.168.35.4:80/management/api/analytics/queries/
 django_urls_prefix: management
 
