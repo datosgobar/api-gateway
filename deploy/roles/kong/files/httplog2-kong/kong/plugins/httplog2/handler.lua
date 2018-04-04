@@ -16,7 +16,7 @@ local plugin = require("kong.plugins.base_plugin"):extend()
 -- constructor
 function plugin:new()
   plugin.super.new(self, plugin_name)
-
+  http.TIMEOUT = 2
   -- do initialization here, runs in the 'init_by_lua_block', before worker processes are forked
 
 end
