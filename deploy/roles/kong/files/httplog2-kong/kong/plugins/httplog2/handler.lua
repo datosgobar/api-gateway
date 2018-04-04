@@ -119,29 +119,19 @@ function plugin:log(plugin_conf)
   local headers = {
     ['content-type'] = "application/json",
     ['content-length'] = string.len(jsonRequest),
+    ["connection"] = "close",
     Authorization = "Token " .. plugin_conf.token
   }
   if plugin_conf.host then
     headers['Host'] = plugin_conf.host
   end
-
-  --print(plugin_conf.endpoint)
-  print(JSON:encode(headers))
   local result, respcode, respheaders, respstatus = http.request {
     url = plugin_conf.endpoint,
     method = "POST",
     headers = headers,
     source = ltn12.source.string(jsonRequest)
   }
-  print(jsonRequest)
-  -- print(result)
-  -- print(respcode)
-  -- print(respheaders)
-  -- print(respstatus)
-  print("[ HTTPLOG2 ] " .. result)
-  print("[ HTTPLOG2 ] Got a " .. tostring(respcode) .. " response code from API Management application.")
-  --print(respheaders)
-  --print(respstatus)
+  print("[ HTTPLOG2 ] Got a '" .. tostring(respcode) .. "' response code from API-mgmt(" .. plugin_conf.endpoint .. ").")
 
 end
 
