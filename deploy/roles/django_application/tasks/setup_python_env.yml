@@ -1,5 +1,12 @@
 ---
 
+- name: Ensure pip 9
+  pip:
+    name: pip
+    version: 9.0.3
+    virtualenv: "{{ application_virtualenv_dir }}"
+    virtualenv_python: python3
+
 - name: Init virtualenv
   pip:
     virtualenv: "{{ application_virtualenv_dir }}"
