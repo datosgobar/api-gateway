@@ -45,6 +45,7 @@ def well_formed_query(api_data):
         "request_time": 0.5,
         "status_code": 200,
         "api_data": api_data.pk,  # Is required!
+        "user_agent": faker.sentence(),
     }
 
 

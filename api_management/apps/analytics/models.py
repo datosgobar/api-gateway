@@ -19,6 +19,7 @@ class Query(models.Model):
     request_time = models.DecimalField(max_digits=30, decimal_places=25)
     status_code = models.IntegerField(blank=True, null=True)
     api_data = models.ForeignKey(ApiData, blank=True, null=True, on_delete=models.PROTECT)
+    user_agent = models.TextField()
 
     class Meta:  # pylint: disable=too-few-public-methods
         verbose_name = _("query")
