@@ -15,7 +15,7 @@ def test_disabling_an_api_removes_it_from_the_kong_server(api_data,
     api_data.kong_id = kong_id
 
     # Exercise
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     kong_client.apis.delete.assert_called_with(kong_id)
@@ -33,7 +33,7 @@ def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
     api_data.enabled = True
 
     # Exercise
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     kong_client.apis.create\
@@ -57,7 +57,7 @@ def test_creating_api_in_kong_server_sets_kong_id_in_api_data(api_data,
     api_data.kong_id = None
 
     # Exercise
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     assert api_data.kong_id is not None
@@ -75,13 +75,13 @@ def test_updating_enabled_api_data_sends_an_update_to_kong_server(cfaker,
     # Setup
     api_data.enabled = True
     api_data.kong_id = None
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Exercise
     api_data.uris = cfaker.api_path()
     api_data.upstream_url = cfaker.url()
 
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     kong_client.apis.update\
@@ -106,7 +106,7 @@ def test_updating_disabled_api_does_not_triggers_kong_communication(api_data,
     api_data.kong_id = None
 
     # Exercise
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     kong_client.apis.create.assert_not_called()
@@ -122,7 +122,7 @@ def test_api_w_preserve_host(cfaker, api_data, api_manager, kong_client):
     api_data.preserve_host = preserve_host
 
     # Exercise
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     kong_client.apis.create\
@@ -147,7 +147,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
     api_data.id = None
 
     # Exercise
-    api_manager.manage(api_data)
+    api_manager.manage_apis(api_data)
 
     # Verify
     expected_upstream_url = ''.join([kong_traffic_url,
