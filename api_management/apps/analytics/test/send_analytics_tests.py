@@ -22,7 +22,7 @@ def test_send_analytics(ga_manager, tracking_id, query):
         assert request.url == 'http://www.google-analytics.com/collect'
 
         expected_data = {'v': 1,  # Protocol Version
-                         'cid': query.id,  # Client ID
+                         'cid': '6d4f80a4-bb67-aa0f-cdcb-0bb54da8c324',  # Client ID
                          'tid': tracking_id,  # Tracking ID
                          't': 'pageview',  # Hit Type
                          'uip': query.ip_address,  # User IP override
