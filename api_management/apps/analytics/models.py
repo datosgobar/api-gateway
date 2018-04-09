@@ -1,3 +1,6 @@
+import uuid
+import hashlib
+
 import re
 import requests
 
@@ -54,8 +57,13 @@ class GoogleAnalyticsManager:
             self.send_analytics(query)
 
     def send_analytics(self, query):
+
+        cid = query.ip_address + query.user_agent
+        cid = hashlib.sha1(cid.encode()).digest()
+        cid = str(uuid.UUID(bytes=cid[:16]))
+
         data = {'v': 1,  # Protocol Version
-                'cid': query.id,  # Client ID
+                'cid': cid,  # Client ID
                 'tid': self.tracking_id,  # Tracking ID
                 'uip': query.ip_address,  # User IP override
                 't': 'pageview',  # Hit Type

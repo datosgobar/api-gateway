@@ -37,7 +37,7 @@ def staff_user(user):  # pylint: disable=unused-argument, invalid-name
 def well_formed_query(api_data):
     faker = Faker()
     return {
-        "ip_address": faker.ipv4(),
+        "ip_address": "192.168.254.254",
         "host": faker.domain_name(),
         "uri": faker.uri_path(),
         "querystring": faker.text(),
@@ -45,7 +45,8 @@ def well_formed_query(api_data):
         "request_time": 0.5,
         "status_code": 200,
         "api_data": api_data.pk,  # Is required!
-        "user_agent": faker.sentence(),
+        "user_agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:59.0) "
+                      "Gecko/20100101 Firefox/59.0",
     }
 
 
@@ -73,6 +74,7 @@ def query(mocker, well_formed_query, api_data):
     query.request_time = well_formed_query['request_time']
     query.status_code = well_formed_query['status_code']
     query.api_data = api_data
+    query.user_agent = well_formed_query['user_agent']
 
     return query
 
