@@ -6,6 +6,7 @@
     method: DELETE
     status_code: 204,404
   with_items: "{{ kong_api_map }}"
+  when: kong_is_master
 
 - name: Add API
   uri:
@@ -14,6 +15,6 @@
     body: "name={{ item.name }}&upstream_url={{ item.upstream_url }}&uris={{ item.uris }}&preserve_host={{ item.preserve_host|default(true) }}&strip_uri={{ item.strip_uri|default(true) }}"
     status_code: 201,200
   with_items: "{{ kong_api_map }}"
-
+  when: kong_is_master
 
 
