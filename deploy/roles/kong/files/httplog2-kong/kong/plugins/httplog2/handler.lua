@@ -96,7 +96,6 @@ function plugin:log(plugin_conf)
   local start_time_nginx = ngx.req.start_time()
   local request_time = ngx.now() - start_time_nginx
   local status_code = ngx.status
---  local user_agent = ngx.var.User-Agent
   local user_agent = ngx.req.get_headers()['User-Agent']
 
   if (type(user_agent) == "table") then
