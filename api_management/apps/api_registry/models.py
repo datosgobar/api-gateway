@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save
+from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
@@ -94,11 +94,7 @@ class ApiManager:
     def doc_suffix():
         return '-doc'
 
-    def manage(self, api_instance):
-        self._manage_apis(api_instance)
-        self._manage_plugins(api_instance)
-
-    def _manage_plugins(self, api_instance):
+    def manage_plugins(self, api_instance):
         plugins = self._plugins_data(api_instance)
 
         api_instance.rate_limiting_kong_id = self._manage_plugin(**plugins['rate-limiting'])
@@ -153,7 +149,7 @@ class ApiManager:
             response_id = response['id']
         return response_id
 
-    def _manage_apis(self, api_instance):
+    def manage_apis(self, api_instance):
         if api_instance.enabled:
             if api_instance.kong_id:
                 self.__update(api_instance)
@@ -232,7 +228,12 @@ class ApiManager:
 
 @receiver(pre_save, sender=ApiData)
 def api_saved(**kwargs):
-    ApiManager.using_settings().manage(kwargs['instance'])
+    ApiManager.using_settings().manage_apis(kwargs['instance'])
+
+
+@receiver(post_save, sender=ApiData)
+def api_saved_add_plugins(**kwargs):
+    ApiManager.using_settings().manage_plugins(kwargs['instance'])
 
 
 @receiver(pre_delete, sender=ApiData)
