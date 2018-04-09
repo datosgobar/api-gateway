@@ -14,3 +14,4 @@
     - rqworker
 
 - import_playbook: kong.yml
+- import_playbook: load_balancer.yml

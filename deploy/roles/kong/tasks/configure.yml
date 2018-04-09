@@ -87,6 +87,7 @@
 
 - name: Run kong migrations
   shell: kong migrations up
+  when: kong_is_master
 
 - name: Run kong
   shell: kong restart

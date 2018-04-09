@@ -4,6 +4,7 @@
 kong_version: 0.12.3
 kong_download_deb: "https://bintray.com/kong/kong-community-edition-deb/download_file?file_path=dists/kong-community-edition-{{ kong_version }}.xenial.all.deb"
 kong_force_install: no
+kong_is_master: yes
 
 #Database
 kong_database_name: kong
