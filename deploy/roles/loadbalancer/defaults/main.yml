@@ -1,0 +1,4 @@
+---
+
+varnish_port: 80
+loadbalancer_backends: []

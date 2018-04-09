@@ -1,0 +1,30 @@
+---
+
+- name: Install varnish
+  apt:
+    name: varnish
+    state: present
+
+- name: Create systemd config dir
+  file:
+    path: /etc/systemd/system/varnish.service.d/
+    state: directory
+
+- name: Configure Varnish
+  template:
+    src: varnish/customexec.conf
+    dest: /etc/systemd/system/varnish.service.d/customexec.conf
+
+- name: Configure backends
+  template:
+    src: varnish/default.vcl
+    dest: /etc/varnish/default.vcl
+
+- name: Enable varnish
+  systemd:
+    daemon_reload: yes
+    name: varnish
+    state: restarted
+    enabled: yes
+
+- include_tasks: security.yml
