@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save, post_save
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
@@ -242,13 +242,9 @@ class ApiManager:
         self.kong_client.apis.delete(api_instance.name + self.doc_suffix())
 
 
-@receiver(pre_save, sender=ApiData)
-def api_saved(**kwargs):
-    ApiManager.using_settings().manage_apis(kwargs['instance'])
-
-
 @receiver(post_save, sender=ApiData)
 def api_saved_add_plugins(sender, instance, **_):
+    ApiManager.using_settings().manage_apis(instance)
     ApiManager.using_settings().manage_plugins(instance)
 
     post_save.disconnect(api_saved_add_plugins, sender=sender)
