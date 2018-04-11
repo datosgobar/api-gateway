@@ -101,12 +101,26 @@ class ApiManager:
 
         api_instance.rate_limiting_kong_id = self._manage_plugin(**plugins['rate-limiting'])
         api_instance.httplog2_kong_id = self._manage_plugin(**plugins['httplog2'])
+        api_instance.jwt_kong_id = self._manage_plugin(**plugins['jwt'])
 
     def _plugins_data(self, api_instance):
         rate_limiting = self.rate_limiting_data(api_instance)
         httplog2 = self.httplog2_data(api_instance)
+        jwt = self.jwt_data(api_instance)
         return {'rate-limiting': rate_limiting,
-                'httplog2': httplog2}
+                'httplog2': httplog2,
+                'jwt': jwt}
+
+    def jwt_data(self, api_instance):
+        return {
+            'api_enabled': api_instance.enabled,
+            'api_kong_id': api_instance.kong_id,
+            'plugin_name': 'jwt',
+            'plugin_kong_id': api_instance.jwt_kong_id,
+            'plugin_enabled': api_instance.jwt_enabled,
+            'plugin_config': {
+            },
+        }
 
     def httplog2_data(self, api_instance):
         return {
