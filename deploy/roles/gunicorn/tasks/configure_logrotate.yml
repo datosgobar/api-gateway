@@ -1,7 +1,0 @@
----
-
-- name: "Add logrotate file for gunicorn"
-  template:
-    src: "logrotate/gunicorn"
-    dest: "/etc/logrotate.d/gunicorn-{{ application_name }}"
-

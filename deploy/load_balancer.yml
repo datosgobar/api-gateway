@@ -1,7 +1,0 @@
----
-
-- hosts: loadbalancers
-  become: yes
-  become_method: sudo
-  roles:
-    - loadbalancer

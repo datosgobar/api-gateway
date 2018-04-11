@@ -1,6 +1,0 @@
----
-
-dependencies:
-  - { role: python_project }
-  - { role: django_application }
-  - { role: variables }
