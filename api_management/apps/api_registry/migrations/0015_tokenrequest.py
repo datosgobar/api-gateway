@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api_registry', '0013_apidata_httplog2_ga_exclude_regex'),
+        ('api_registry', '0014_auto_20180411_1510'),
     ]
 
     operations = [

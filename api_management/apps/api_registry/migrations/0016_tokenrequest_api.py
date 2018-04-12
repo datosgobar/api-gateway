@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api_registry', '0014_tokenrequest'),
+        ('api_registry', '0015_tokenrequest'),
     ]
 
     operations = [
