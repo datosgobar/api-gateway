@@ -1,0 +1,38 @@
+sudo: required
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - net-tools
+    - openvpn
+
+services:
+- docker
+
+language: python
+python:
+- "2.7"
+
+env:
+- DJANGO_SETTINGS_MODULE=conf.settings.testing
+- NODE_JS_VERSION=v8.11.1
+
+before_install:
+- docker-compose pull
+- docker-compose build
+- docker-compose up -d db kong redis kong_db
+- docker-compose ps
+
+install:
+- pip install -r requirements/testing.txt
+- nvm install $NODE_JS_VERSION
+- nvm use $NODE_JS_VERSION
+- npm install
+
+script:
+- scripts/esling.sh
+- scripts/flake8.sh
+- scripts/jscpd.sh
+- scripts/pylint.sh
+- scripts/tests.sh
