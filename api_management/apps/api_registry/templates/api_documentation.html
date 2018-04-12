@@ -31,7 +31,9 @@
 </head>
 
 <body>
-
+{% if token_required %}
+<a href="{% url 'token-request' api_name %}">Request token</a>
+{% endif %}
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="position:absolute;width:0;height:0">
   <defs>
     <symbol viewBox="0 0 20 20" id="unlocked">
@@ -72,7 +74,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.11.0/swagger-ui-standalone-preset.js" integrity="sha256-Ym2A2ugDnSzqFF7+ikt/fyAKN3w7yX1FDltCRsmh+Ns=" crossorigin="anonymous"></script>
 <script>
 window.onload = function() {
-  
+
   // Build a system
   const ui = SwaggerUIBundle({
     url: "{{ documentation_url }}",

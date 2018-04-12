@@ -45,6 +45,6 @@ class ApiAdmin(admin.ModelAdmin):
 @admin.register(TokenRequest)
 class TokenRequestAdmin(admin.ModelAdmin):
     list_display = [
-        'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
+        'api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
     ]
-    fields = ('applicant', 'contact_email', 'consumer_application', 'requests_per_day', )
+    fields = ('api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day', )

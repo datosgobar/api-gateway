@@ -243,6 +243,7 @@ def api_deleted(**kwargs):
 
 class TokenRequest(models.Model):
 
+    api = models.ForeignKey(ApiData, on_delete=models.CASCADE)
     applicant = models.CharField(max_length=100, blank=False)
     contact_email = models.EmailField(blank=False)
     consumer_application = models.CharField(max_length=200, blank=False)
