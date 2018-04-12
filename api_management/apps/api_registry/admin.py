@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ApiData
+from .models import ApiData, TokenRequest
 
 
 @admin.register(ApiData)
@@ -40,3 +40,11 @@ class ApiAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url='', extra_context=None):
         self.readonly_fields = ('name', 'kong_id')
         return super(ApiAdmin, self).change_view(request, object_id, form_url, extra_context)
+
+
+@admin.register(TokenRequest)
+class TokenRequestAdmin(admin.ModelAdmin):
+    list_display = [
+        'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
+    ]
+    fields = ('applicant', 'contact_email', 'consumer_application', 'requests_per_day', )

@@ -239,3 +239,11 @@ def api_saved_add_plugins(**kwargs):
 @receiver(pre_delete, sender=ApiData)
 def api_deleted(**kwargs):
     ApiManager.using_settings().delete(kwargs['instance'])
+
+
+class TokenRequest(models.Model):
+
+    applicant = models.CharField(max_length=100, blank=False)
+    contact_email = models.EmailField(blank=False)
+    consumer_application = models.CharField(max_length=200, blank=False)
+    requests_per_day = models.IntegerField()
