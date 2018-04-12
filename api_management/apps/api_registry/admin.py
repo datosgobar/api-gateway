@@ -30,7 +30,9 @@ class ApiAdmin(admin.ModelAdmin):
             'fields': ('httplog2_enabled',
                        'httplog2_api_key',
                        'httplog2_ga_exclude_regex')
-        })
+        }),
+        (None, {
+            'fields': ('jwt_enabled',)}),
     )
 
     def add_view(self, request, form_url='', extra_context=None):

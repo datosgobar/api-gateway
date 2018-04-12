@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save, post_save
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
@@ -34,6 +34,8 @@ class ApiData(models.Model):
     httplog2_api_key = models.CharField(max_length=100, blank=True)
     httplog2_kong_id = models.CharField(max_length=100, null=True)
     httplog2_ga_exclude_regex = models.CharField(max_length=100, null=False, blank=True)
+    jwt_enabled = models.BooleanField(default=False)
+    jwt_kong_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.name
@@ -99,12 +101,26 @@ class ApiManager:
 
         api_instance.rate_limiting_kong_id = self._manage_plugin(**plugins['rate-limiting'])
         api_instance.httplog2_kong_id = self._manage_plugin(**plugins['httplog2'])
+        api_instance.jwt_kong_id = self._manage_plugin(**plugins['jwt'])
 
     def _plugins_data(self, api_instance):
         rate_limiting = self.rate_limiting_data(api_instance)
         httplog2 = self.httplog2_data(api_instance)
+        jwt = self.jwt_data(api_instance)
         return {'rate-limiting': rate_limiting,
-                'httplog2': httplog2}
+                'httplog2': httplog2,
+                'jwt': jwt}
+
+    def jwt_data(self, api_instance):
+        return {
+            'api_enabled': api_instance.enabled,
+            'api_kong_id': api_instance.kong_id,
+            'plugin_name': 'jwt',
+            'plugin_kong_id': api_instance.jwt_kong_id,
+            'plugin_enabled': api_instance.jwt_enabled,
+            'plugin_config': {
+            },
+        }
 
     def httplog2_data(self, api_instance):
         return {
@@ -226,14 +242,14 @@ class ApiManager:
         self.kong_client.apis.delete(api_instance.name + self.doc_suffix())
 
 
-@receiver(pre_save, sender=ApiData)
-def api_saved(**kwargs):
-    ApiManager.using_settings().manage_apis(kwargs['instance'])
-
-
 @receiver(post_save, sender=ApiData)
-def api_saved_add_plugins(**kwargs):
-    ApiManager.using_settings().manage_plugins(kwargs['instance'])
+def api_saved_add_plugins(sender, instance, **_):
+    ApiManager.using_settings().manage_apis(instance)
+    ApiManager.using_settings().manage_plugins(instance)
+
+    post_save.disconnect(api_saved_add_plugins, sender=sender)
+    instance.save()
+    post_save.connect(api_saved_add_plugins, sender=sender)
 
 
 @receiver(pre_delete, sender=ApiData)
