@@ -1,38 +1,44 @@
 from django.contrib import admin
 
-from .models import ApiData, TokenRequest
+from .models import ApiData, TokenRequest, HttpLogData, RateLimitingData, JwtData
+
+
+class PluginDataInline(admin.StackedInline):
+    readonly_fields = ('kong_id', )
+
+
+class HttpLogDataInline(PluginDataInline):
+    model = HttpLogData
+
+
+class RateLimitingDataInline(PluginDataInline):
+    model = RateLimitingData
+
+
+class JwtDataInline(PluginDataInline):
+    model = JwtData
 
 
 @admin.register(ApiData)
 class ApiAdmin(admin.ModelAdmin):
+    inlines = [
+        HttpLogDataInline,
+        RateLimitingDataInline,
+        JwtDataInline,
+    ]
+
     list_display = [
-        "name", "enabled", "upstream_url", "hosts", "uris",
+        "name", "enabled", "upstream_url", "hosts", "uri",
     ]
 
     fieldsets = (
         (None, {
-            'fields': ('name', 'documentation_url', 'upstream_url', 'uris', 'enabled')
+            'fields': ('name', 'documentation_url', 'upstream_url', 'uri', 'enabled')
         }),
         ('Advanced', {
             'classes': ('collapse',),
             'fields': ('hosts', 'strip_uri', 'preserve_host', 'kong_id',),
         }),
-        ('Rate Limiting', {
-            'classes': ('collapse',),
-            'fields': ('rate_limiting_enabled',
-                       'rate_limiting_second',
-                       'rate_limiting_minute',
-                       'rate_limiting_hour',
-                       'rate_limiting_day')
-        }),
-        ('Logs', {
-            'classes': ('collapse',),
-            'fields': ('httplog2_enabled',
-                       'httplog2_api_key',
-                       'httplog2_ga_exclude_regex')
-        }),
-        (None, {
-            'fields': ('jwt_enabled',)}),
     )
 
     def add_view(self, request, form_url='', extra_context=None):

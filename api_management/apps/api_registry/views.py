@@ -26,8 +26,7 @@ class DocsView(APIView):
                 'api_name': api.name}
 
         try:
-            api.jwtdata
-            data['token_required'] = True
+            data['token_required'] = api.jwtdata.enabled
         except JwtData.DoesNotExist:
             data['token_required'] = False
 
