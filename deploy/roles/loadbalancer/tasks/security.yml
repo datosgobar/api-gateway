@@ -1,8 +1,0 @@
----
-
-- name: Allow server ports
-  ufw:
-    rule: allow
-    port: "{{ item }}"
-  with_items:
-    - "{{ varnish_port }}"
