@@ -1,5 +1,7 @@
 import urllib.parse
 
+from abc import abstractmethod
+
 import kong.kong_clients as kong
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -26,18 +28,6 @@ class ApiData(models.Model):
     enabled = models.BooleanField(default=False)
     kong_id = models.CharField(max_length=100, null=True)
     documentation_url = models.URLField(blank=True)
-    rate_limiting_enabled = models.BooleanField(default=False)
-    rate_limiting_second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    rate_limiting_minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    rate_limiting_hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    rate_limiting_day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    rate_limiting_kong_id = models.CharField(max_length=100, null=True)
-    httplog2_enabled = models.BooleanField(default=False)
-    httplog2_api_key = models.CharField(max_length=100, blank=True)
-    httplog2_kong_id = models.CharField(max_length=100, null=True)
-    httplog2_ga_exclude_regex = models.CharField(max_length=100, null=False, blank=True)
-    jwt_enabled = models.BooleanField(default=False)
-    jwt_kong_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.name
@@ -46,35 +36,26 @@ class ApiData(models.Model):
         if not (self.uris or self.hosts):
             raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
 
-        if self.rate_limiting_enabled:
-            config = {'second': self.rate_limiting_second,
-                      'minute': self.rate_limiting_minute,
-                      'hour': self.rate_limiting_hour,
-                      'day': self.rate_limiting_day}
-
-            cleaned_config = {}
-            for key, value in config.items():
-                if value:
-                    cleaned_config[key] = value
-
-            if not cleaned_config:
-                raise ValidationError(
-                    "At least one of 'second', 'minute', "
-                    "'hour' or 'day' must be provided to enable rate limiting")
-
-            prev_k = None
-            prev_v = 0
-            for key, value in cleaned_config.items():
-                if value < prev_v:
-                    raise ValidationError('The limit for %s cannot be lower '
-                                          'than the limit for %s' % (key, prev_k))
-                prev_k = key
-                prev_v = value
-
-        if self.httplog2_enabled and not self.httplog2_api_key:
-            raise ValidationError('must provide api key to enable logs')
-
         return super(ApiData, self).clean()
+
+    def get_enabled_plugins(self):
+        plugins = []
+
+        try:
+            plugins.append(self.ratelimitingdata)
+        except RateLimitingData.DoesNotExist:
+            pass
+        try:
+            plugins.append(self.jwtdata)
+        except JwtData.DoesNotExist:
+            pass
+
+        try:
+            plugins.append(self.httplogdata)
+        except HttpLogData.DoesNotExist:
+            pass
+
+        return plugins
 
 
 class ApiManager:
@@ -99,74 +80,24 @@ class ApiManager:
         return '-doc'
 
     def manage_plugins(self, api_instance):
-        plugins = self._plugins_data(api_instance)
+        enabled_plugins = api_instance.get_enabled_plugins()
 
-        api_instance.rate_limiting_kong_id = self._manage_plugin(**plugins['rate-limiting'])
-        api_instance.httplog2_kong_id = self._manage_plugin(**plugins[API_GATEWAY_LOG_PLUGIN_NAME])
-        api_instance.jwt_kong_id = self._manage_plugin(**plugins['jwt'])
-        api_instance.httplog2_kong_id = self._manage_plugin(**plugins[API_GATEWAY_LOG_PLUGIN_NAME])
-
-    def _plugins_data(self, api_instance):
-        rate_limiting = self.rate_limiting_data(api_instance)
-        httplog2 = self.httplog2_data(api_instance)
-        jwt = self.jwt_data(api_instance)
-        return {'rate-limiting': rate_limiting,
-                API_GATEWAY_LOG_PLUGIN_NAME: httplog2,
-                'jwt': jwt}
-
-    def jwt_data(self, api_instance):
-        return {
-            'api_enabled': api_instance.enabled,
-            'api_kong_id': api_instance.kong_id,
-            'plugin_name': 'jwt',
-            'plugin_kong_id': api_instance.jwt_kong_id,
-            'plugin_enabled': api_instance.jwt_enabled,
-            'plugin_config': {
-            },
-        }
-
-    def httplog2_data(self, api_instance):
-        return {
-            'api_enabled': api_instance.enabled,
-            'api_kong_id': api_instance.kong_id,
-            'plugin_name': API_GATEWAY_LOG_PLUGIN_NAME,
-            'plugin_kong_id': api_instance.httplog2_kong_id,
-            'plugin_enabled': api_instance.httplog2_enabled,
-            'plugin_config': {
-                'token': api_instance.httplog2_api_key,
-                'endpoint': self.httplog2_endpoint,
-                'api_data': api_instance.pk,
-            },
-        }
-
-    def rate_limiting_data(self, api_instance):
-        return {'api_enabled': api_instance.enabled,
-                'api_kong_id': api_instance.kong_id,
-                'plugin_name': 'rate-limiting',
-                'plugin_kong_id': api_instance.rate_limiting_kong_id,
-                'plugin_enabled': api_instance.rate_limiting_enabled,
-                'plugin_config': {
-                    'second': api_instance.rate_limiting_second or None,
-                    'minute': api_instance.rate_limiting_minute or None,
-                    'hour': api_instance.rate_limiting_hour or None,
-                    'day': api_instance.rate_limiting_day or None}}
+        for plugin in enabled_plugins:
+            self._manage_plugin(plugin)
 
     # pylint: disable=too-many-arguments
-    def _manage_plugin(self, api_enabled, api_kong_id,
-                       plugin_config, plugin_enabled,
-                       plugin_kong_id, plugin_name):
-        response_id = None
-        if plugin_kong_id is not None:
-            self.kong_client.plugins.delete(plugin_kong_id,
-                                            api_pk=api_kong_id)
-        if plugin_enabled and api_enabled:
-            response = self.kong_client \
-                .plugins.create(plugin_name,
-                                api_name_or_id=api_kong_id,
-                                config=plugin_config)
+    def _manage_plugin(self, plugin):
 
-            response_id = response['id']
-        return response_id
+        if plugin.kong_id is not None:
+            self.kong_client.plugins.delete(plugin.kong_id,
+                                            api_pk=plugin.api.kong_id)
+        if plugin.api.enabled:
+            response = self.kong_client \
+                .plugins.create(plugin.name,
+                                api_name_or_id=plugin.api.kong_id,
+                                config=plugin.config())
+
+            plugin.kong_id = response['id']
 
     def manage_apis(self, api_instance):
         if api_instance.enabled:
@@ -267,3 +198,82 @@ class TokenRequest(models.Model):
     contact_email = models.EmailField(blank=False)
     consumer_application = models.CharField(max_length=200, blank=False)
     requests_per_day = models.IntegerField()
+
+
+class PluginData(models.Model):
+
+    apidata = models.OneToOneField(ApiData, on_delete=models.CASCADE)
+    kong_id = models.UUIDField(null=True)
+
+    class Meta:
+        abstract = True
+
+    @abstractmethod
+    def name(self):
+        pass
+
+    @abstractmethod
+    def config(self):
+        pass
+
+
+class RateLimitingData(PluginData):
+
+    second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    def clean(self):
+        config = {'second': self.second,
+                  'minute': self.minute,
+                  'hour': self.hour,
+                  'day': self.day}
+
+        cleaned_config = {}
+        for key, value in config.items():
+            if value:
+                cleaned_config[key] = value
+
+        prev_k = None
+        prev_v = 0
+        for key, value in cleaned_config.items():
+            if value < prev_v:
+                raise ValidationError('The limit for %s cannot be lower '
+                                      'than the limit for %s' % (key, prev_k))
+            prev_k = key
+            prev_v = value
+
+    @property
+    def name(self):
+        return 'rate-limiting'
+
+    def config(self):
+        return {'second': self.second,
+                'minute': self.minute,
+                'hour': self.hour,
+                'day': self.day}
+
+class HttpLogData(PluginData):
+
+    api_key = models.CharField(max_length=100, blank=False, null=False)
+    exclude_regex = models.CharField(max_length=100, null=False, blank=True)
+
+    @property
+    def name(self):
+        return API_GATEWAY_LOG_PLUGIN_NAME
+
+    def config(self):
+        return {'token': self.api_key,
+                'endpoint': settings.HTTPLOG2_ENDPOINT,
+                'api_data': self.api.pk}
+
+
+class JwtData(PluginData):
+
+    @property
+    def name(self):
+        return 'jwt'
+
+    def config(self):
+        return {}

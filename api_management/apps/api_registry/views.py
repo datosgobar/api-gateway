@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.views.generic import View
 from django.shortcuts import get_object_or_404, render
-from .models import ApiData
+from .models import ApiData, JwtData
 from .forms import TokenRequestForm
 
 
@@ -23,8 +23,14 @@ class DocsView(APIView):
             return Response(data, status=status.HTTP_404_NOT_FOUND, template_name="404.html")
 
         data = {'documentation_url': url,
-                'api_name': api.name,
-                'token_required': api.jwt_enabled}
+                'api_name': api.name}
+
+        try:
+            api.jwtdata
+            data['token_required'] = True
+        except JwtData.DoesNotExist:
+            data['token_required'] = False
+
         return Response(data, template_name="api_documentation.html")
 
 
