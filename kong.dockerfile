@@ -1,11 +1,13 @@
 FROM kong:0.12
 
+ENV API_GATEWAY_PLUING_DIR=/api-gateway-httplog
+
 RUN yum install git -y
 
-COPY deploy/roles/kong/files/httplog2-kong /httplog2-kong
+RUN git clone https://github.com/datosgobar/api-gateway-httplog.git $API_GATEWAY_PLUING_DIR
 
-ENV KONG_CUSTOM_PLUGINS=httplog2
+ENV KONG_CUSTOM_PLUGINS=api-gateway-httplog
 
 RUN luarocks install json-lua && \
-    cd /httplog2-kong && luarocks make
+    cd $API_GATEWAY_PLUING_DIR && luarocks make
 

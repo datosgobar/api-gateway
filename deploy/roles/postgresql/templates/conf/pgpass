@@ -1,1 +1,0 @@
-{{ postgresql_listen_address }}:{{ postgresql_port }}:{{ postgresql_database_name }}:{{ postgresql_user }}:{{ postgresql_password }}

@@ -1,6 +1,0 @@
----
-
-- name: "Add logrotate file for nginx"
-  template:
-    src: "logrotate/nginx"
-    dest: "/etc/logrotate.d/nginx-{{ application_name }}"
