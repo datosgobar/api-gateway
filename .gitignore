@@ -113,3 +113,5 @@ venv.bak/
 *.sqlite3
 node_modules/
 *.db
+.rbenv-gemset
+.ruby-version

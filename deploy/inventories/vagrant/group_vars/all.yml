@@ -1,7 +1,0 @@
----
-
-# Vagrant specific
-ansible_user: vagrant
-ansible_ssh_pass: vagrant
-# Allow local access with vagrant/vagrant
-disable_ssh_password: no

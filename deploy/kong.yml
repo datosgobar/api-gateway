@@ -1,7 +1,0 @@
----
-
-- hosts: kong
-  become: yes
-  become_method: sudo
-  roles:
-    - kong

@@ -13,6 +13,8 @@ from api_management.apps.api_registry.validators import HostsValidator, \
     UrisValidator, \
     AlphanumericValidator
 
+API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
+
 
 class ApiData(models.Model):
     name = models.CharField(unique=True, max_length=200, validators=[AlphanumericValidator()])
@@ -100,15 +102,16 @@ class ApiManager:
         plugins = self._plugins_data(api_instance)
 
         api_instance.rate_limiting_kong_id = self._manage_plugin(**plugins['rate-limiting'])
-        api_instance.httplog2_kong_id = self._manage_plugin(**plugins['httplog2'])
+        api_instance.httplog2_kong_id = self._manage_plugin(**plugins[API_GATEWAY_LOG_PLUGIN_NAME])
         api_instance.jwt_kong_id = self._manage_plugin(**plugins['jwt'])
+        api_instance.httplog2_kong_id = self._manage_plugin(**plugins[API_GATEWAY_LOG_PLUGIN_NAME])
 
     def _plugins_data(self, api_instance):
         rate_limiting = self.rate_limiting_data(api_instance)
         httplog2 = self.httplog2_data(api_instance)
         jwt = self.jwt_data(api_instance)
         return {'rate-limiting': rate_limiting,
-                'httplog2': httplog2,
+                API_GATEWAY_LOG_PLUGIN_NAME: httplog2,
                 'jwt': jwt}
 
     def jwt_data(self, api_instance):
@@ -126,7 +129,7 @@ class ApiManager:
         return {
             'api_enabled': api_instance.enabled,
             'api_kong_id': api_instance.kong_id,
-            'plugin_name': 'httplog2',
+            'plugin_name': API_GATEWAY_LOG_PLUGIN_NAME,
             'plugin_kong_id': api_instance.httplog2_kong_id,
             'plugin_enabled': api_instance.httplog2_enabled,
             'plugin_config': {
