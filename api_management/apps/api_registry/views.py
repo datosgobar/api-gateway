@@ -31,7 +31,7 @@ class DocsView(APIView):
 class TokenRequestView(View):
 
     @staticmethod
-    def get(request, name=None, form=None):
+    def get(request, name, form=None):
 
         get_object_or_404(ApiData, name=name)
 
