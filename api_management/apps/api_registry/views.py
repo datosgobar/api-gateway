@@ -2,7 +2,8 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from django.shortcuts import get_object_or_404
+from django.views.generic import View
+from django.shortcuts import get_object_or_404, render
 from .models import ApiData
 from .forms import TokenRequestForm
 
@@ -27,17 +28,17 @@ class DocsView(APIView):
         return Response(data, template_name="api_documentation.html")
 
 
-class TokenRequestView(APIView):
-
-    renderer_classes = (TemplateHTMLRenderer, )
+class TokenRequestView(View):
 
     @staticmethod
-    def get(_, name, form=None):
+    def get(request, name=None, form=None):
+
         get_object_or_404(ApiData, name=name)
 
-        return Response({'api_name': name,
-                         'form': (form or TokenRequestForm())},
-                        template_name="token_request.html")
+        return render(request,
+                      "token_request.html",
+                      {'api_name': name,
+                       'form': (form or TokenRequestForm())})
 
     def post(self, request, name):
         form = TokenRequestForm(request.POST)
@@ -49,4 +50,4 @@ class TokenRequestView(APIView):
         token_request.api = get_object_or_404(ApiData, name=name)
         token_request.save()
 
-        return Response({}, template_name='token_request_success.html')
+        return render(request, 'token_request_success.html', {})
