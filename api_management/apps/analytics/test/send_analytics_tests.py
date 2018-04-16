@@ -49,8 +49,8 @@ MATCHING_REGEX_URI_PAIRS = [('regex', '/api/regex/test/'),
 #  pylint: disable=invalid-name
 @pytest.mark.parametrize("regex,uri", MATCHING_REGEX_URI_PAIRS)
 def test_if_exclude_regex_matches_query_uri_send_analyitics_you_must_not(ga_manager, query,
-                                                                         regex, uri):
-    exercise_manage_query(ga_manager, query, regex, uri)
+                                                                         regex, uri, httplogdata):
+    exercise_manage_query(ga_manager, query, regex, uri, httplogdata)
 
     # Verify
     ga_manager.send_analytics.assert_not_called()
@@ -64,17 +64,19 @@ NON_MATCHING_REGEX_URI_PAIRS = [('', '/path/'),
 #  pylint: disable=invalid-name
 @pytest.mark.parametrize("regex,uri", NON_MATCHING_REGEX_URI_PAIRS)
 def test_if_exclude_regex_does_not_matches_query_uri_send_analyitics_you_must(ga_manager, query,
-                                                                              regex, uri):
-    exercise_manage_query(ga_manager, query, regex, uri)
+                                                                              regex, uri,
+                                                                              httplogdata):
+    exercise_manage_query(ga_manager, query, regex, uri, httplogdata)
 
     # Verify
     ga_manager.send_analytics.assert_called_once_with(query)
 
 
-def exercise_manage_query(ga_manager, query, regex, uri):
+def exercise_manage_query(ga_manager, query, regex, uri, httplogdata):
     # Setup
     ga_manager.send_analytics = MagicMock()
-    query.api_data.httplog2_ga_exclude_regex = regex
+    httplogdata.exclude_regex = regex
+    query.api_data.httplogdata = httplogdata
     query.uri = uri
 
     # Exercise

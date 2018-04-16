@@ -1,9 +1,12 @@
+import requests_mock
+
 import pytest
 from faker import Faker
 
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.test.support import generate_api_data
 from api_management.apps.analytics.models import GoogleAnalyticsManager
+from api_management.apps.api_registry.models import HttpLogData
 
 
 # pylint: disable=redefined-outer-name
@@ -55,9 +58,11 @@ def api_data(cfaker, db):  # pylint: disable=unused-argument, invalid-name
     api = generate_api_data(name=cfaker.api_name(),
                             upstream_url=cfaker.url(),
                             uris=cfaker.api_path(),
-                            kong_id=None,
+                            kong_id=cfaker.uuid4(),
                             api_id=cfaker.random_int())
-    api.save()
+    with requests_mock.mock() as rmock:
+        rmock.delete(requests_mock.ANY, status_code=204)
+        api.save()
     return api
 
 
@@ -87,3 +92,21 @@ def tracking_id():
 @pytest.fixture
 def ga_manager(tracking_id):
     return GoogleAnalyticsManager(tracking_id)
+
+
+# pylint: disable=unused-argument, invalid-name
+@pytest.fixture
+def httplogdata(mocker, api_data, cfaker, db):
+    httplogdata = HttpLogData()
+    httplogdata.enabled = True
+    httplogdata.exclude_regex = ''
+    httplogdata.api_key = ''
+    httplogdata.apidata = api_data
+
+    with requests_mock.mock() as rmock:
+        rmock.post(requests_mock.ANY,
+                   status_code=201,
+                   json={'id': cfaker.uuid4()})
+        httplogdata.save()
+
+    return httplogdata

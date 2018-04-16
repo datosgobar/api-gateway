@@ -18,7 +18,7 @@ class DocsViewTests(APITestCase):
 
         self.api_data_dict = {'name': self.faker.api_name(),
                               'upstream_url': self.faker.url(),
-                              'uris': self.faker.api_path(),
+                              'uri': self.faker.api_path(),
                               'documentation_url': self.faker.url()}
 
         self.api_data = ApiData(**self.api_data_dict)
