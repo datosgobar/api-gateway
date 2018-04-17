@@ -48,5 +48,32 @@ class ApiAdmin(admin.ModelAdmin):
 class TokenRequestAdmin(admin.ModelAdmin):
     list_display = [
         'api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
+        'state',
     ]
-    fields = ('api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day', )
+    fields = ('api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
+              'state',)
+
+    readonly_fields = ('state', )
+
+    change_form_template = 'token_request_changeform.html'
+
+    def response_change(self, request, obj):
+
+        if "_accept" in request.POST:
+            obj.accept()
+            self.message_user(request, "Solicitud Aceptada")
+
+        if "_reject" in request.POST:
+            obj.reject()
+            self.message_user(request, "Solicitud Rechazada")
+
+        return super(TokenRequestAdmin, self).response_change(request, obj)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        if object_id is not None:
+            extra_context = extra_context or {}
+        extra_context['is_pending'] = TokenRequest.objects.get(id=object_id).is_pending()
+
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
+        )

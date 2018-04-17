@@ -1,3 +1,5 @@
+from enum import Enum
+
 import urllib.parse
 
 import kong.kong_clients as kong
@@ -260,6 +262,15 @@ def api_deleted(**kwargs):
     ApiManager.using_settings().delete(kwargs['instance'])
 
 
+class TokenRequestState(Enum):
+    PENDING = ('Pendiente', )
+    ACCEPTED = ('Aceptada', )
+    REJECTED = ('Rechazada', )
+
+    def __init__(self, kind_name):
+        self.kind_name = kind_name
+
+
 class TokenRequest(models.Model):
 
     api = models.ForeignKey(ApiData, on_delete=models.CASCADE)
@@ -267,3 +278,23 @@ class TokenRequest(models.Model):
     contact_email = models.EmailField(blank=False)
     consumer_application = models.CharField(max_length=200, blank=False)
     requests_per_day = models.IntegerField()
+    state = models.CharField(default=TokenRequestState.PENDING.name,
+                             choices=((x.name, x.kind_name) for x in TokenRequestState),
+                             max_length=20)
+
+    def is_pending(self):
+        return TokenRequestState[self.state] == TokenRequestState.PENDING
+
+    def accept(self):
+        if not self.is_pending():
+            raise ValidationError('only pending requests can be accepted')
+
+        self.state = TokenRequestState.ACCEPTED.name
+        self.save()
+
+    def reject(self):
+        if not self.is_pending():
+            raise ValidationError('only pending requests can be rejected')
+
+        self.state = TokenRequestState.REJECTED.name
+        self.save()
