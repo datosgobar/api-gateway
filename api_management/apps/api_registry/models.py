@@ -14,6 +14,7 @@ from django.urls import reverse
 from api_management.apps.api_registry.validators import HostsValidator, \
     UrisValidator, \
     AlphanumericValidator
+from api_management.apps.api_registry.signals import token_request_accepted
 
 API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
 
@@ -291,6 +292,8 @@ class TokenRequest(models.Model):
 
         self.state = TokenRequestState.ACCEPTED.name
         self.save()
+
+        token_request_accepted.send(sender=self)
 
     def reject(self):
         if not self.is_pending():
