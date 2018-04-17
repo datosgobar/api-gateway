@@ -2,7 +2,6 @@ import urllib.parse
 
 from abc import abstractmethod
 
-import kong.kong_clients as kong
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
@@ -14,15 +13,9 @@ from django.urls import reverse
 from api_management.apps.api_registry.validators import HostsValidator, \
     UrisValidator, \
     AlphanumericValidator
+from api_management.apps.api_registry.helpers import kong_client_using_settings
 
 API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
-
-
-class KongClient:  # pylint: disable=too-few-public-methods
-
-    @staticmethod
-    def using_settings():
-        return kong.KongAdminClient(settings.KONG_ADMIN_URL)
 
 
 class KongObjectData(models.Model):
@@ -151,12 +144,12 @@ class ApiData(KongObjectData):
 
 @receiver(pre_save, sender=ApiData)
 def api_saved(instance, **_):
-    instance.manage_kong(KongClient.using_settings())
+    instance.manage_kong(kong_client_using_settings())
 
 
 @receiver(pre_delete, sender=ApiData)
 def api_deleted(instance, **_):
-    instance.delete_kong(KongClient.using_settings())
+    instance.delete_kong(kong_client_using_settings())
 
 
 class TokenRequest(models.Model):
@@ -199,14 +192,14 @@ class PluginData(KongObjectData):
 
     def delete(self, using=None, keep_parents=False):
 
-        self.delete_kong(KongClient.using_settings())
+        self.delete_kong(kong_client_using_settings())
 
         return super(PluginData, self).delete(using=using, keep_parents=keep_parents)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
 
-        self.manage_kong(KongClient.using_settings())
+        self.manage_kong(kong_client_using_settings())
 
         return super(PluginData, self).save(force_insert=force_insert,
                                             force_update=force_update,
