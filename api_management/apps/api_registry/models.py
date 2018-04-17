@@ -3,7 +3,7 @@ import urllib.parse
 from abc import abstractmethod
 
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import pre_delete, pre_save
@@ -163,22 +163,24 @@ class TokenRequest(models.Model):
 
 class KongPlugin(KongObject):
 
+    plugin_name = None
     apidata = models.OneToOneField(KongApi, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
-    @property
-    @abstractmethod
-    def name(self):
-        pass
+    def get_plugin_name(self):
+        if self.plugin_name is None:
+            raise ImproperlyConfigured("falta definir el nombre del plugin")
+
+        return self.plugin_name
 
     @abstractmethod
     def config(self):
         pass
 
     def create_kong(self, kong_client):
-        return kong_client.plugins.create(self.name,
+        return kong_client.plugins.create(self.get_plugin_name(),
                                           api_name_or_id=str(self.apidata.kong_id),
                                           config=self.config())
 
@@ -210,6 +212,7 @@ class KongPlugin(KongObject):
 
 class KongPluginRateLimiting(KongPlugin):
 
+    plugin_name = 'rate-limiting'
     second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
@@ -235,10 +238,6 @@ class KongPluginRateLimiting(KongPlugin):
             prev_k = key
             prev_v = value
 
-    @property
-    def name(self):
-        return 'rate-limiting'
-
     def config(self):
         config = {'second': self.second,
                   'minute': self.minute,
@@ -255,12 +254,9 @@ class KongPluginRateLimiting(KongPlugin):
 
 class KongPluginHttpLog(KongPlugin):
 
+    plugin_name = API_GATEWAY_LOG_PLUGIN_NAME
     api_key = models.CharField(max_length=100, blank=False, null=False)
     exclude_regex = models.CharField(max_length=100, null=False, blank=True)
-
-    @property
-    def name(self):
-        return API_GATEWAY_LOG_PLUGIN_NAME
 
     def config(self):
         return {'token': self.api_key,
@@ -270,9 +266,7 @@ class KongPluginHttpLog(KongPlugin):
 
 class KongPluginJwt(KongPlugin):
 
-    @property
-    def name(self):
-        return 'jwt'
+    plugin_name = 'jwt'
 
     def config(self):
         return {}
