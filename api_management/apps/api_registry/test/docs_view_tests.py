@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from api_management.apps.api_registry.models import ApiData
+from api_management.apps.api_registry.models import KongApi
 from api_management.libs.providers.providers import CustomInfoProvider
 
 
@@ -18,10 +18,10 @@ class DocsViewTests(APITestCase):
 
         self.api_data_dict = {'name': self.faker.api_name(),
                               'upstream_url': self.faker.url(),
-                              'uris': self.faker.api_path(),
+                              'uri': self.faker.api_path(),
                               'documentation_url': self.faker.url()}
 
-        self.api_data = ApiData(**self.api_data_dict)
+        self.api_data = KongApi(**self.api_data_dict)
 
         request_mock.post(requests_mock.ANY,
                           status_code=status.HTTP_201_CREATED,
