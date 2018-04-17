@@ -1,4 +1,6 @@
 env/
+scripts/deploy/files/
+scripts/deploy/*.tar.gz
 .idea/
 .vagrant/
 *.retry
