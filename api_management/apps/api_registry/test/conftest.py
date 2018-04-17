@@ -1,8 +1,9 @@
 import pytest
 
+from django.conf import settings
+
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.test.support import generate_api_data
-from ..models import ApiManager
 
 
 # pylint: disable=redefined-outer-name
@@ -24,10 +25,14 @@ def apis_kong_client(cfaker, mocker):
     def create_side_effect(*args, **kwargs):  # pylint: disable=unused-argument
         return {'id': cfaker.kong_id()}
 
+    def update_side_effect(a_id, *args, **kwargs):  # pylint: disable=unused-argument
+        return {'id': a_id}
+
     stub = mocker.stub(name='apis_kong_client')
     stub.create = mocker.stub(name='apis_kong_client_create_stub')
     stub.create.side_effect = create_side_effect
     stub.update = mocker.stub(name='apis_kong_client_update_stub')
+    stub.update.side_effect = update_side_effect
     stub.delete = mocker.stub(name='apis_kong_client_delete_stub')
     return stub
 
@@ -49,16 +54,10 @@ def kong_client(plugins_kong_client, apis_kong_client, mocker):
 
 
 @pytest.fixture()
-def kong_traffic_url(cfaker):
-    return cfaker.url()
+def kong_traffic_url():
+    return settings.KONG_TRAFFIC_URL
 
 
 @pytest.fixture()
 def httplog2_endpoint(cfaker):
     return cfaker.url()
-
-
-@pytest.fixture()
-# pylint: disable=redefined-outer-name
-def api_manager(kong_traffic_url, kong_client, httplog2_endpoint):
-    return ApiManager(kong_traffic_url, kong_client, httplog2_endpoint)
