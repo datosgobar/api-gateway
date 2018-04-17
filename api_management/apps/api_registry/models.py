@@ -18,7 +18,7 @@ from api_management.apps.api_registry.helpers import kong_client_using_settings
 API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
 
 
-class KongObjectData(models.Model):
+class KongObject(models.Model):
 
     enabled = models.BooleanField(default=False)
     kong_id = models.UUIDField(null=True)
@@ -50,7 +50,7 @@ class KongObjectData(models.Model):
         pass
 
 
-class ApiData(KongObjectData):
+class KongApi(KongObject):
 
     name = models.CharField(unique=True, max_length=200, validators=[AlphanumericValidator()])
     upstream_url = models.URLField()
@@ -68,7 +68,7 @@ class ApiData(KongObjectData):
         if not (self.uri or self.hosts):
             raise ValidationError("At least one of 'hosts' or 'uris' must be specified")
 
-        return super(ApiData, self).clean()
+        return super(KongApi, self).clean()
 
     def create_kong(self, kong_client):
         self._create_docs_api(kong_client)
@@ -142,32 +142,33 @@ class ApiData(KongObjectData):
         self.docs_kong_id = None
 
 
-@receiver(pre_save, sender=ApiData)
+@receiver(pre_save, sender=KongApi)
 def api_saved(instance, **_):
     instance.manage_kong(kong_client_using_settings())
 
 
-@receiver(pre_delete, sender=ApiData)
+@receiver(pre_delete, sender=KongApi)
 def api_deleted(instance, **_):
     instance.delete_kong(kong_client_using_settings())
 
 
 class TokenRequest(models.Model):
 
-    api = models.ForeignKey(ApiData, on_delete=models.CASCADE)
+    api = models.ForeignKey(KongApi, on_delete=models.CASCADE)
     applicant = models.CharField(max_length=100, blank=False)
     contact_email = models.EmailField(blank=False)
     consumer_application = models.CharField(max_length=200, blank=False)
     requests_per_day = models.IntegerField()
 
 
-class PluginData(KongObjectData):
+class KongPlugin(KongObject):
 
-    apidata = models.OneToOneField(ApiData, on_delete=models.CASCADE)
+    apidata = models.OneToOneField(KongApi, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
 
+    @property
     @abstractmethod
     def name(self):
         pass
@@ -194,20 +195,20 @@ class PluginData(KongObjectData):
 
         self.delete_kong(kong_client_using_settings())
 
-        return super(PluginData, self).delete(using=using, keep_parents=keep_parents)
+        return super(KongPlugin, self).delete(using=using, keep_parents=keep_parents)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
 
         self.manage_kong(kong_client_using_settings())
 
-        return super(PluginData, self).save(force_insert=force_insert,
+        return super(KongPlugin, self).save(force_insert=force_insert,
                                             force_update=force_update,
                                             using=using,
                                             update_fields=update_fields)
 
 
-class RateLimitingData(PluginData):
+class KongPluginRateLimiting(KongPlugin):
 
     second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
@@ -252,7 +253,7 @@ class RateLimitingData(PluginData):
         return cleaned_config
 
 
-class HttpLogData(PluginData):
+class KongPluginHttpLog(KongPlugin):
 
     api_key = models.CharField(max_length=100, blank=False, null=False)
     exclude_regex = models.CharField(max_length=100, null=False, blank=True)
@@ -267,7 +268,7 @@ class HttpLogData(PluginData):
                 'api_data': self.apidata.pk}
 
 
-class JwtData(PluginData):
+class KongPluginJwt(KongPlugin):
 
     @property
     def name(self):

@@ -6,7 +6,7 @@ from faker import Faker
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.test.support import generate_api_data
 from api_management.apps.analytics.models import GoogleAnalyticsManager
-from api_management.apps.api_registry.models import HttpLogData
+from api_management.apps.api_registry.models import KongPluginHttpLog
 
 
 # pylint: disable=redefined-outer-name
@@ -97,7 +97,7 @@ def ga_manager(tracking_id):
 # pylint: disable=unused-argument, invalid-name
 @pytest.fixture
 def httplogdata(mocker, api_data, cfaker, db):
-    httplogdata = HttpLogData()
+    httplogdata = KongPluginHttpLog()
     httplogdata.enabled = True
     httplogdata.exclude_regex = ''
     httplogdata.api_key = ''

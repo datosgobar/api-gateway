@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ApiData, TokenRequest, HttpLogData, RateLimitingData, JwtData
+from .models import KongApi, TokenRequest, KongPluginHttpLog, KongPluginRateLimiting, KongPluginJwt
 
 
 class PluginDataInline(admin.StackedInline):
@@ -8,18 +8,18 @@ class PluginDataInline(admin.StackedInline):
 
 
 class HttpLogDataInline(PluginDataInline):
-    model = HttpLogData
+    model = KongPluginHttpLog
 
 
 class RateLimitingDataInline(PluginDataInline):
-    model = RateLimitingData
+    model = KongPluginRateLimiting
 
 
 class JwtDataInline(PluginDataInline):
-    model = JwtData
+    model = KongPluginJwt
 
 
-@admin.register(ApiData)
+@admin.register(KongApi)
 class ApiAdmin(admin.ModelAdmin):
     inlines = [
         HttpLogDataInline,

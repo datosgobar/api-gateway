@@ -9,7 +9,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-from api_management.apps.api_registry.models import ApiData
+from api_management.apps.api_registry.models import KongApi
 
 
 class Query(models.Model):
@@ -21,7 +21,7 @@ class Query(models.Model):
     start_time = models.DateTimeField()
     request_time = models.DecimalField(max_digits=30, decimal_places=25)
     status_code = models.IntegerField(blank=True, null=True)
-    api_data = models.ForeignKey(ApiData, blank=True, null=True, on_delete=models.PROTECT)
+    api_data = models.ForeignKey(KongApi, blank=True, null=True, on_delete=models.PROTECT)
     user_agent = models.TextField()
 
     class Meta:  # pylint: disable=too-few-public-methods
@@ -51,7 +51,7 @@ class GoogleAnalyticsManager:
             GoogleAnalyticsManager.using_settings().manage_query(query)
 
     def manage_query(self, query):
-        regex = query.api_data.httplogdata.exclude_regex
+        regex = query.api_data.kongpluginhttplog.exclude_regex
         if not regex \
                 or re.search(regex, query.uri) is None:
             self.send_analytics(query)
