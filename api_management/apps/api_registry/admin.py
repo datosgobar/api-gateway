@@ -1,30 +1,32 @@
 from django.contrib import admin
 
-from .models import KongApi, TokenRequest, KongPluginHttpLog, KongPluginRateLimiting, KongPluginJwt
+from .models import KongApi, TokenRequest, KongPluginHttpLog,\
+    KongPluginRateLimiting, KongPluginJwt, \
+    KongConsumer, JwtCredential
 
 
-class PluginDataInline(admin.StackedInline):
+class KongObjectInline(admin.StackedInline):
     readonly_fields = ('kong_id', )
 
 
-class HttpLogDataInline(PluginDataInline):
+class KongPluginHttpLogInline(KongObjectInline):
     model = KongPluginHttpLog
 
 
-class RateLimitingDataInline(PluginDataInline):
+class KongPluginRateLimitingInline(KongObjectInline):
     model = KongPluginRateLimiting
 
 
-class JwtDataInline(PluginDataInline):
+class KongPluginJwtInline(KongObjectInline):
     model = KongPluginJwt
 
 
 @admin.register(KongApi)
 class ApiAdmin(admin.ModelAdmin):
     inlines = [
-        HttpLogDataInline,
-        RateLimitingDataInline,
-        JwtDataInline,
+        KongPluginHttpLogInline,
+        KongPluginRateLimitingInline,
+        KongPluginJwtInline,
     ]
 
     list_display = [
@@ -83,3 +85,31 @@ class TokenRequestAdmin(admin.ModelAdmin):
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
+
+
+class JwtCredentialInline(KongObjectInline):
+    model = JwtCredential
+
+    readonly_fields = KongObjectInline.readonly_fields + ('key', 'secret', )
+
+    fieldsets = (
+        (None, {
+            'fields': ('kong_id', )
+        }),
+        ('Keys', {
+            'classes': ('collapse',),
+            'fields': ('key', 'secret', ),
+        }),
+    )
+
+
+@admin.register(KongConsumer)
+class KongConsumerAdmin(admin.ModelAdmin):
+
+    list_display = ['api', 'applicant', 'contact_email', 'kong_id']
+
+    exclude = ('enabled', )
+
+    readonly_fields = ('kong_id', )
+
+    inlines = (JwtCredentialInline, )

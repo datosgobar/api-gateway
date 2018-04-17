@@ -4,18 +4,19 @@ import urllib.parse
 
 from abc import abstractmethod
 
+import requests
+
 from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save
+from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
 from api_management.apps.api_registry.validators import HostsValidator, \
     UrisValidator, \
     AlphanumericValidator
-
 from api_management.apps.api_registry.signals import token_request_accepted
 from api_management.apps.api_registry.helpers import kong_client_using_settings
 
@@ -157,7 +158,31 @@ def api_deleted(instance, **_):
     instance.delete_kong(kong_client_using_settings())
 
 
-class KongPlugin(KongObject):
+# pylint: disable=too-few-public-methods
+class DeleteKongOnDeleteMixin:
+    def delete(self, using=None, keep_parents=False):
+
+        self.delete_kong(kong_client_using_settings())
+
+        return super().delete(using=using, keep_parents=keep_parents)
+
+
+# pylint: disable=too-few-public-methods
+class ManageKongOnSaveMixin:
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+
+        self.manage_kong(kong_client_using_settings())
+
+        return super().save(force_insert=force_insert,
+                            force_update=force_update,
+                            using=using,
+                            update_fields=update_fields)
+
+
+class KongPlugin(ManageKongOnSaveMixin,
+                 DeleteKongOnDeleteMixin,
+                 KongObject):
 
     plugin_name = None
     apidata = models.OneToOneField(KongApi, on_delete=models.CASCADE)
@@ -189,21 +214,38 @@ class KongPlugin(KongObject):
         kong_client.plugins.delete(str(self.kong_id))
         self.kong_id = None
 
-    def delete(self, using=None, keep_parents=False):
 
-        self.delete_kong(kong_client_using_settings())
+class KongConsumer(ManageKongOnSaveMixin,
+                   DeleteKongOnDeleteMixin,
+                   KongObject):
 
-        return super(KongPlugin, self).delete(using=using, keep_parents=keep_parents)
+    api = models.ForeignKey(KongApi, on_delete=models.CASCADE)
+    applicant = models.CharField(max_length=100, blank=False)
+    contact_email = models.EmailField(blank=False)
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    class Meta:
+        unique_together = ('api', 'applicant')
 
-        self.manage_kong(kong_client_using_settings())
+    def username(self):
+        return '%s@%s' % (self.applicant, self.api.name)
 
-        return super(KongPlugin, self).save(force_insert=force_insert,
-                                            force_update=force_update,
-                                            using=using,
-                                            update_fields=update_fields)
+    def create_kong(self, kong_client):
+        return kong_client.consumers.create(username=self.username())
+
+    def update_kong(self, kong_client):
+        return kong_client.consumers.update(str(self.kong_id), username=self.username())
+
+    def delete_kong(self, kong_client):
+        kong_client.consumers.delete(str(self.kong_id))
+        self.kong_id = False
+
+
+class JwtCredential(models.Model):
+
+    consumer = models.OneToOneField(KongConsumer, on_delete=models.CASCADE)
+    kong_id = models.UUIDField(null=True)
+    key = models.CharField(max_length=100, null=True)
+    secret = models.CharField(max_length=100, null=True)
 
 
 class TokenRequestState(Enum):
@@ -236,7 +278,7 @@ class TokenRequest(models.Model):
         self.state = TokenRequestState.ACCEPTED.name
         self.save()
 
-        token_request_accepted.send(sender=self)
+        token_request_accepted.send(sender=self.__class__, instance=self)
 
     def reject(self):
         if not self.is_pending():
@@ -306,3 +348,38 @@ class KongPluginJwt(KongPlugin):
 
     def config(self):
         return {}
+
+
+@receiver(token_request_accepted, sender=TokenRequest)
+def token_request_accepted_handler(instance, *_, **__):
+
+    consumer = KongConsumer(enabled=True,
+                            api=instance.api,
+                            applicant=instance.applicant,
+                            contact_email=instance.contact_email)
+
+    consumer.save()
+
+    JwtCredential(consumer=consumer).save()
+
+
+@receiver(post_save, sender=JwtCredential)
+def jwt_credential_created(created, instance, *_, **__):
+    if created:
+        if instance.consumer.kong_id is None:
+            raise ValidationError('cannot create a credential for a consumer with out kong id')
+
+        endpoint = '%s%s/%s' % (kong_client_using_settings().consumers.endpoint,
+                                instance.consumer.kong_id,
+                                'jwt')
+
+        response = requests.post(endpoint)
+        json = response.json()
+
+        if response.status_code != 201:
+            raise ConnectionError(json)
+
+        instance.kong_id = json['id']
+        instance.key = json['key']
+        instance.secret = json['secret']
+        instance.save()
