@@ -187,6 +187,14 @@ def api_saved(instance, **_):
     instance.manage_kong(kong_client_using_settings())
 
 
+# pylint: disable=invalid-name
+@receiver(post_save, sender=KongApi)
+def re_create_kong_plugins_when_re_enabling_existing_api(created, instance, *_, **__):
+    if not created:
+        for plugin in instance.plugins:
+            plugin.save()
+
+
 @receiver(pre_delete, sender=KongApi)
 def api_deleted(instance, **_):
     instance.delete_kong(kong_client_using_settings())
