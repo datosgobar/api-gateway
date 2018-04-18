@@ -33,15 +33,21 @@ class KongObject(models.Model):
     class Meta:
         abstract = True
 
+    def is_enabled(self):
+        return self.enabled
+
+    def get_kong_id(self):
+        return self.kong_id
+
     def manage_kong(self, kong_client):
-        if self.enabled:
-            if self.kong_id:
+        if self.is_enabled():
+            if self.get_kong_id():
                 response = self.update_kong(kong_client)
             else:
                 response = self.create_kong(kong_client)
             self.kong_id = response['id']
 
-        elif self.kong_id:
+        elif self.get_kong_id():
             self.delete_kong(kong_client)
 
     @abstractmethod
@@ -178,6 +184,9 @@ class KongPlugin(ManageKongOnSaveMixin,
     @abstractmethod
     def config(self):
         pass
+
+    def is_enabled(self):
+        return super(KongPlugin, self).is_enabled() and self.apidata.enabled
 
     def create_kong(self, kong_client):
         return kong_client.plugins.create(self.get_plugin_name(),
