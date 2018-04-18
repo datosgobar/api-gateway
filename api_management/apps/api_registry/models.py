@@ -37,18 +37,21 @@ class KongObject(models.Model):
         return self.enabled
 
     def get_kong_id(self):
-        return self.kong_id
+        return str(self.kong_id)
 
     def manage_kong(self, kong_client):
         if self.is_enabled():
-            if self.get_kong_id():
-                response = self.update_kong(kong_client)
-            else:
-                response = self.create_kong(kong_client)
-            self.kong_id = response['id']
+            self.update_or_create_kong(kong_client)
 
-        elif self.get_kong_id():
+        elif self.kong_id:
             self.delete_kong(kong_client)
+
+    def update_or_create_kong(self, kong_client):
+        if self.kong_id:
+            response = self.update_kong(kong_client)
+        else:
+            response = self.create_kong(kong_client)
+        self.kong_id = response['id']
 
     @abstractmethod
     def create_kong(self, kong_client):
@@ -109,6 +112,9 @@ class KongApi(KongObject):
                          hosts=self.hosts)
         self.docs_kong_id = response['id']
 
+    def get_docs_kong_id(self):
+        return str(self.docs_kong_id)
+
     @staticmethod
     def _docs_suffix():
         return '-doc'
@@ -126,7 +132,7 @@ class KongApi(KongObject):
 
     def _update_main_api(self, kong_client):
         return kong_client \
-            .apis.update(str(self.kong_id),
+            .apis.update(self.get_kong_id(),
                          upstream_url=self.upstream_url,
                          hosts=self.hosts,
                          uris=self._api_uri_pattern(),
@@ -135,24 +141,45 @@ class KongApi(KongObject):
 
     def _update_docs_api(self, kong_client):
         return kong_client \
-            .apis.update(str(self.docs_kong_id),
+            .apis.update(self.get_docs_kong_id(),
                          upstream_url=self._docs_upstream(),
                          uris=self._docs_uri_pattern(),
                          hosts=self.hosts)
 
     def delete_kong(self, kong_client):
-        if self.docs_kong_id:
-            self._delete_docs_api(kong_client)
-        if self.kong_id:
-            self._delete_main_api(kong_client)
+        for plugin in self.plugins:
+            plugin.kong_id = None
+            plugin.save()
+
+        self._delete_docs_api(kong_client)
+        self._delete_main_api(kong_client)
 
     def _delete_main_api(self, kong_client):
-        kong_client.apis.delete(self.kong_id)
+        kong_client.apis.delete(self.get_kong_id())
         self.kong_id = None
 
     def _delete_docs_api(self, kong_client):
-        kong_client.apis.delete(self.docs_kong_id)
+        kong_client.apis.delete(self.get_docs_kong_id())
         self.docs_kong_id = None
+
+    @property
+    def plugins(self):
+        plugins = []
+
+        try:
+            plugins.append(self.kongpluginhttplog)
+        except KongPluginHttpLog.DoesNotExist:
+            pass
+        try:
+            plugins.append(self.kongpluginratelimiting)
+        except KongPluginRateLimiting.DoesNotExist:
+            pass
+        try:
+            plugins.append(self.kongpluginjwt)
+        except KongPluginJwt.DoesNotExist:
+            pass
+
+        return plugins
 
 
 @receiver(pre_save, sender=KongApi)
@@ -194,12 +221,12 @@ class KongPlugin(ManageKongOnSaveMixin,
                                           config=self.config())
 
     def update_kong(self, kong_client):
-        return kong_client.plugins.update(str(self.kong_id),
+        return kong_client.plugins.update(self.get_kong_id(),
                                           api_pk=str(self.apidata.kong_id),
                                           config=self.config())
 
     def delete_kong(self, kong_client):
-        kong_client.plugins.delete(str(self.kong_id))
+        kong_client.plugins.delete(self.get_kong_id())
         self.kong_id = None
 
 
@@ -221,10 +248,10 @@ class KongConsumer(ManageKongOnSaveMixin,
         return kong_client.consumers.create(username=self.username())
 
     def update_kong(self, kong_client):
-        return kong_client.consumers.update(str(self.kong_id), username=self.username())
+        return kong_client.consumers.update(self.get_kong_id(), username=self.username())
 
     def delete_kong(self, kong_client):
-        kong_client.consumers.delete(str(self.kong_id))
+        kong_client.consumers.delete(self.get_kong_id())
         self.kong_id = False
 
 
