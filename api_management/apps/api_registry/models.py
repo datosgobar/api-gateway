@@ -19,6 +19,7 @@ from api_management.apps.api_registry.validators import HostsValidator, \
     AlphanumericValidator
 from api_management.apps.api_registry.signals import token_request_accepted
 from api_management.apps.api_registry.helpers import kong_client_using_settings
+from api_management.apps.api_registry.mixins import ManageKongOnSaveMixin, DeleteKongOnDeleteMixin
 
 
 API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
@@ -156,28 +157,6 @@ def api_saved(instance, **_):
 @receiver(pre_delete, sender=KongApi)
 def api_deleted(instance, **_):
     instance.delete_kong(kong_client_using_settings())
-
-
-# pylint: disable=too-few-public-methods
-class DeleteKongOnDeleteMixin:
-    def delete(self, using=None, keep_parents=False):
-
-        self.delete_kong(kong_client_using_settings())
-
-        return super().delete(using=using, keep_parents=keep_parents)
-
-
-# pylint: disable=too-few-public-methods
-class ManageKongOnSaveMixin:
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-
-        self.manage_kong(kong_client_using_settings())
-
-        return super().save(force_insert=force_insert,
-                            force_update=force_update,
-                            using=using,
-                            update_fields=update_fields)
 
 
 class KongPlugin(ManageKongOnSaveMixin,
