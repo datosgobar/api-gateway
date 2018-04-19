@@ -59,7 +59,11 @@ class GoogleAnalyticsManager:
 
     def send_analytics(self, query):
 
-        cid = query.ip_address + query.user_agent
+        if query.token is None:
+            cid = query.ip_address + query.user_agent
+        else:
+            cid = query.token
+
         cid = hashlib.sha1(cid.encode()).digest()
         cid = str(uuid.UUID(bytes=cid[:16]))
 

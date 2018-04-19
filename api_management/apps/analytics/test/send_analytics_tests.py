@@ -1,3 +1,6 @@
+import uuid
+import hashlib
+
 from unittest.mock import MagicMock
 
 from urllib.parse import parse_qsl
@@ -6,6 +9,22 @@ import requests_mock
 
 
 def test_send_analytics(ga_manager, tracking_id, query):
+
+    token = query.ip_address + query.user_agent
+
+    exercise_and_verify_send_analytics(ga_manager, query, token, tracking_id)
+
+
+def test_send_analytics_with_token(ga_manager, tracking_id, query):
+
+    token = "a36c3049b36249a3c9f8891cb127243c"
+    query.token = token
+
+    exercise_and_verify_send_analytics(ga_manager, query, token, tracking_id)
+
+
+# pylint: disable=invalid-name
+def exercise_and_verify_send_analytics(ga_manager, query, token, tracking_id):
     with requests_mock.mock() as rmock:
         # Setup
         rmock.post(requests_mock.ANY, status_code=200)
@@ -21,8 +40,11 @@ def test_send_analytics(ga_manager, tracking_id, query):
         assert request.method == 'POST'
         assert request.url == 'http://www.google-analytics.com/collect'
 
+        expected_cid = hashlib.sha1(token.encode()).digest()
+        expected_cid = str(uuid.UUID(bytes=expected_cid[:16]))
+
         expected_data = {'v': 1,  # Protocol Version
-                         'cid': '6d4f80a4-bb67-aa0f-cdcb-0bb54da8c324',  # Client ID
+                         'cid': expected_cid,  # Client ID
                          'tid': tracking_id,  # Tracking ID
                          't': 'pageview',  # Hit Type
                          'uip': query.ip_address,  # User IP override
