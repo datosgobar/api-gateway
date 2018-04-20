@@ -19,7 +19,6 @@ from api_management.apps.api_registry.validators import HostsValidator, \
     AlphanumericValidator
 from api_management.apps.api_registry.signals import token_request_accepted
 from api_management.apps.api_registry.helpers import kong_client_using_settings
-from api_management.apps.api_registry.mixins import ManageKongOnSaveMixin, DeleteKongOnDeleteMixin
 
 
 API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
@@ -182,11 +181,6 @@ class KongApi(KongObject):
         return plugins
 
 
-@receiver(pre_save, sender=KongApi)
-def api_saved(instance, **_):
-    instance.manage_kong(kong_client_using_settings())
-
-
 # pylint: disable=invalid-name
 @receiver(post_save, sender=KongApi)
 def re_create_kong_plugins_when_re_enabling_existing_api(created, instance, *_, **__):
@@ -195,14 +189,7 @@ def re_create_kong_plugins_when_re_enabling_existing_api(created, instance, *_, 
             plugin.save()
 
 
-@receiver(pre_delete, sender=KongApi)
-def api_deleted(instance, **_):
-    instance.delete_kong(kong_client_using_settings())
-
-
-class KongPlugin(ManageKongOnSaveMixin,
-                 DeleteKongOnDeleteMixin,
-                 KongObject):
+class KongPlugin(KongObject):
 
     plugin_name = None
     apidata = models.OneToOneField(KongApi, on_delete=models.CASCADE)
@@ -238,9 +225,7 @@ class KongPlugin(ManageKongOnSaveMixin,
         self.kong_id = None
 
 
-class KongConsumer(ManageKongOnSaveMixin,
-                   DeleteKongOnDeleteMixin,
-                   KongObject):
+class KongConsumer(KongObject):
 
     api = models.ForeignKey(KongApi, on_delete=models.CASCADE)
     applicant = models.CharField(max_length=100, blank=False)
@@ -371,6 +356,22 @@ class KongPluginJwt(KongPlugin):
 
     def config(self):
         return {}
+
+
+@receiver(pre_save, sender=KongApi)
+@receiver(pre_save, sender=KongPluginRateLimiting)
+@receiver(pre_save, sender=KongPluginHttpLog)
+@receiver(pre_save, sender=KongPluginJwt)
+def manage_kong_on_save(instance, *_, **__):
+    instance.manage_kong(kong_client_using_settings())
+
+
+@receiver(pre_delete, sender=KongApi)
+@receiver(pre_delete, sender=KongPluginRateLimiting)
+@receiver(pre_delete, sender=KongPluginHttpLog)
+@receiver(pre_delete, sender=KongPluginJwt)
+def delete_kong_on_delete(instance, *_, **__):
+    instance.delete_kong(kong_client_using_settings())
 
 
 @receiver(token_request_accepted, sender=TokenRequest)
