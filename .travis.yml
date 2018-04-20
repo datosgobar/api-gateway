@@ -19,6 +19,7 @@ env:
 - NODE_JS_VERSION=v8.11.1
 
 before_install:
+- sudo service postgresql stop 
 - docker-compose pull
 - docker-compose build
 - docker-compose up -d db kong redis kong_db
