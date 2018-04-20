@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models.signals import pre_delete, pre_save
+from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 
@@ -270,3 +270,30 @@ class KongPluginJwt(KongPlugin):
 
     def config(self):
         return {}
+
+
+class KongPluginAcl(KongPlugin):
+
+    plugin_name = 'acl'
+    jwt = models.OneToOneField(KongPluginJwt, on_delete=models.CASCADE)
+
+    def config(self):
+        return {
+            'whitelist': self.group_name(self.apidata),
+        }
+
+    def is_enabled(self):
+        try:
+            return self.apidata.kongpluginjwt.is_enabled()
+        except KongPluginJwt.DoesNotExist:
+            return False
+
+    @staticmethod
+    def group_name(kong_api):
+        return kong_api.name
+
+
+@receiver(post_save, sender=KongApi)
+def init_acl_plugin(created, instance, *_, **__):
+    if created:
+        KongPluginAcl(apidata=instance).save()
