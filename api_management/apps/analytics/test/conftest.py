@@ -5,7 +5,7 @@ from faker import Faker
 
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.test.support import generate_api_data
-from api_management.apps.analytics.models import GoogleAnalyticsManager
+from api_management.apps.analytics.models import GoogleAnalyticsManager, Query
 from api_management.apps.api_registry.models import KongPluginHttpLog
 
 
@@ -44,7 +44,7 @@ def well_formed_query(api_data):
         "host": faker.domain_name(),
         "uri": faker.uri_path(),
         "querystring": faker.text(),
-        "start_time": faker.iso8601(),
+        "start_time": faker.iso8601() + '-0300',
         "request_time": 0.5,
         "status_code": 200,
         "api_data": api_data.pk,  # Is required!
@@ -67,8 +67,8 @@ def api_data(cfaker, db):  # pylint: disable=unused-argument, invalid-name
 
 
 @pytest.fixture
-def query(mocker, well_formed_query, api_data):
-    query = mocker.stub(name="query-stub")
+def query(well_formed_query, api_data):
+    query = Query()
 
     query.id = Faker().random_number()
     query.ip_address = well_formed_query['ip_address']

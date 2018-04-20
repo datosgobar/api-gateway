@@ -23,6 +23,7 @@ class Query(models.Model):
     status_code = models.IntegerField(blank=True, null=True)
     api_data = models.ForeignKey(KongApi, blank=True, null=True, on_delete=models.PROTECT)
     user_agent = models.TextField()
+    token = models.CharField(max_length=200, null=True)
 
     class Meta:  # pylint: disable=too-few-public-methods
         verbose_name = _("query")
@@ -58,7 +59,11 @@ class GoogleAnalyticsManager:
 
     def send_analytics(self, query):
 
-        cid = query.ip_address + query.user_agent
+        if query.token is None:
+            cid = query.ip_address + query.user_agent
+        else:
+            cid = query.token
+
         cid = hashlib.sha1(cid.encode()).digest()
         cid = str(uuid.UUID(bytes=cid[:16]))
 
