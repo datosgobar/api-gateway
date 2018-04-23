@@ -246,28 +246,26 @@ class KongConsumer(KongObject):
         self.kong_id = False
 
 
-class JwtCredential(models.Model):
+class JwtCredential(KongObject):
 
     consumer = models.OneToOneField(KongConsumer, on_delete=models.CASCADE)
-    kong_id = models.UUIDField(null=True)
     key = models.CharField(max_length=100, null=True)
     secret = models.CharField(max_length=100, null=True)
 
-    def kong_create(self, kong_client):
+    def create_kong(self, kong_client):
         if self.consumer.kong_id is None:
             raise ValidationError('cannot create a credential for a consumer with out kong id')
 
         json = self._send_create(kong_client)
 
-        self.kong_id = json['id']
         self.key = json['key']
         self.secret = json['secret']
-        self.save()
+        return json
 
     def _credential_endpoint(self, kong_client):
-        return '%s%s/%s' % (kong_client.consumers.endpoint,
-                            self.consumer.kong_id,
-                            'jwt')
+        return '%s%s/%s/' % (kong_client.consumers.endpoint,
+                             self.consumer.kong_id,
+                             'jwt')
 
     def _send_create(self, kong_client):
         endpoint = self._credential_endpoint(kong_client)
@@ -277,6 +275,22 @@ class JwtCredential(models.Model):
         if response.status_code != 201:
             raise ConnectionError(json)
         return json
+
+    def delete_kong(self, kong_client):
+        if self.consumer.kong_id is not None:
+            self._send_delete(kong_client)
+
+        self.kong_id = None
+
+    def _send_delete(self, kong_client):
+        endpoint = self._credential_endpoint(kong_client)
+
+        response = requests.delete(endpoint + str(self.kong_id))
+        if response.status_code != 204:
+            raise ConnectionError()
+
+    def update_kong(self, kong_client):
+        return dict(id=self.kong_id)
 
 
 PENDING = "PENDING"
@@ -386,6 +400,8 @@ class KongPluginJwt(KongPlugin):
 @receiver(pre_save, sender=KongPluginRateLimiting)
 @receiver(pre_save, sender=KongPluginHttpLog)
 @receiver(pre_save, sender=KongPluginJwt)
+@receiver(pre_save, sender=KongConsumer)
+@receiver(pre_save, sender=JwtCredential)
 def manage_kong_on_save(instance, *_, **__):
     instance.manage_kong(kong_client_using_settings())
 
@@ -394,6 +410,8 @@ def manage_kong_on_save(instance, *_, **__):
 @receiver(pre_delete, sender=KongPluginRateLimiting)
 @receiver(pre_delete, sender=KongPluginHttpLog)
 @receiver(pre_delete, sender=KongPluginJwt)
+@receiver(pre_delete, sender=KongConsumer)
+@receiver(pre_delete, sender=JwtCredential)
 def delete_kong_on_delete(instance, *_, **__):
     instance.delete_kong(kong_client_using_settings())
 
@@ -408,10 +426,5 @@ def token_request_accepted_handler(instance, *_, **__):
 
     consumer.save()
 
-    JwtCredential(consumer=consumer).save()
-
-
-@receiver(post_save, sender=JwtCredential)
-def jwt_credential_created(created, instance, *_, **__):
-    if created:
-        instance.create_kong(kong_client_using_settings())
+    JwtCredential(enabled=True,
+                  consumer=consumer).save()
