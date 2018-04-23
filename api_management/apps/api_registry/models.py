@@ -264,7 +264,7 @@ class JwtCredential(KongObject):
 
     def _credential_endpoint(self, kong_client):
         return '%s%s/%s/' % (kong_client.consumers.endpoint,
-                             self.consumer.kong_id,
+                             self.consumer.get_kong_id(),
                              'jwt')
 
     def _send_create(self, kong_client):
@@ -285,7 +285,7 @@ class JwtCredential(KongObject):
     def _send_delete(self, kong_client):
         endpoint = self._credential_endpoint(kong_client)
 
-        response = requests.delete(endpoint + str(self.kong_id))
+        response = requests.delete(endpoint + self.get_kong_id())
         if response.status_code != 204:
             raise ConnectionError()
 
