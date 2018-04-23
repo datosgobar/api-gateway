@@ -255,6 +255,31 @@ class JwtCredential(models.Model):
     key = models.CharField(max_length=100, null=True)
     secret = models.CharField(max_length=100, null=True)
 
+    def kong_create(self, kong_client):
+        if self.consumer.kong_id is None:
+            raise ValidationError('cannot create a credential for a consumer with out kong id')
+
+        json = self._send_create(kong_client)
+
+        self.kong_id = json['id']
+        self.key = json['key']
+        self.secret = json['secret']
+        self.save()
+
+    def _credential_endpoint(self, kong_client):
+        return '%s%s/%s' % (kong_client.consumers.endpoint,
+                            self.consumer.kong_id,
+                            'jwt')
+
+    def _send_create(self, kong_client):
+        endpoint = self._credential_endpoint(kong_client)
+
+        response = requests.post(endpoint)
+        json = response.json()
+        if response.status_code != 201:
+            raise ConnectionError(json)
+        return json
+
 
 class TokenRequestState(Enum):
     PENDING = ('Pendiente', )
@@ -390,20 +415,4 @@ def token_request_accepted_handler(instance, *_, **__):
 @receiver(post_save, sender=JwtCredential)
 def jwt_credential_created(created, instance, *_, **__):
     if created:
-        if instance.consumer.kong_id is None:
-            raise ValidationError('cannot create a credential for a consumer with out kong id')
-
-        endpoint = '%s%s/%s' % (kong_client_using_settings().consumers.endpoint,
-                                instance.consumer.kong_id,
-                                'jwt')
-
-        response = requests.post(endpoint)
-        json = response.json()
-
-        if response.status_code != 201:
-            raise ConnectionError(json)
-
-        instance.kong_id = json['id']
-        instance.key = json['key']
-        instance.secret = json['secret']
-        instance.save()
+        instance.create_kong(kong_client_using_settings())
