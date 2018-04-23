@@ -1,5 +1,3 @@
-from enum import Enum
-
 import urllib.parse
 
 from abc import abstractmethod
@@ -281,13 +279,14 @@ class JwtCredential(models.Model):
         return json
 
 
-class TokenRequestState(Enum):
-    PENDING = ('Pendiente', )
-    ACCEPTED = ('Aceptada', )
-    REJECTED = ('Rechazada', )
-
-    def __init__(self, kind_name):
-        self.kind_name = kind_name
+PENDING = "PENDING"
+ACCEPTED = "ACCEPTED"
+REJECTED = "REJECTED"
+TOKEN_REQUEST_STATES = [
+    (PENDING, 'Pendiente'),
+    (ACCEPTED, 'Aceptada'),
+    (REJECTED, 'Rechazada'),
+]
 
 
 class TokenRequest(models.Model):
@@ -297,18 +296,18 @@ class TokenRequest(models.Model):
     contact_email = models.EmailField(blank=False)
     consumer_application = models.CharField(max_length=200, blank=False)
     requests_per_day = models.IntegerField()
-    state = models.CharField(default=TokenRequestState.PENDING.name,
-                             choices=((x.name, x.kind_name) for x in TokenRequestState),
+    state = models.CharField(default=PENDING,
+                             choices=TOKEN_REQUEST_STATES,
                              max_length=20)
 
     def is_pending(self):
-        return TokenRequestState[self.state] == TokenRequestState.PENDING
+        return self.state == PENDING
 
     def accept(self):
         if not self.is_pending():
             raise ValidationError('only pending requests can be accepted')
 
-        self.state = TokenRequestState.ACCEPTED.name
+        self.state = ACCEPTED
         self.save()
 
         token_request_accepted.send(sender=self.__class__, instance=self)
@@ -317,7 +316,7 @@ class TokenRequest(models.Model):
         if not self.is_pending():
             raise ValidationError('only pending requests can be rejected')
 
-        self.state = TokenRequestState.REJECTED.name
+        self.state = REJECTED
         self.save()
 
 
