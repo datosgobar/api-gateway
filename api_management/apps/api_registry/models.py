@@ -2,7 +2,6 @@ import urllib.parse
 
 from abc import abstractmethod
 
-import requests
 
 from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
@@ -17,6 +16,7 @@ from api_management.apps.api_registry.validators import HostsValidator, \
     AlphanumericValidator
 from api_management.apps.api_registry.signals import token_request_accepted
 from api_management.apps.api_registry.helpers import kong_client_using_settings
+from api_management.apps.api_registry.mixins import KongConsumerChildMixin
 
 
 API_GATEWAY_LOG_PLUGIN_NAME = 'api-gateway-httplog'
@@ -206,16 +206,16 @@ class KongPlugin(KongObject):
         pass
 
     def is_enabled(self):
-        return super(KongPlugin, self).is_enabled() and self.apidata.enabled
+        return super(KongPlugin, self).is_enabled() and self.apidata.is_enabled()
 
     def create_kong(self, kong_client):
         return kong_client.plugins.create(self.get_plugin_name(),
-                                          api_name_or_id=str(self.apidata.kong_id),
+                                          api_name_or_id=self.apidata.get_kong_id(),
                                           config=self.config())
 
     def update_kong(self, kong_client):
         return kong_client.plugins.update(self.get_kong_id(),
-                                          api_pk=str(self.apidata.kong_id),
+                                          api_pk=self.apidata.get_kong_id(),
                                           config=self.config())
 
     def delete_kong(self, kong_client):
@@ -246,48 +246,26 @@ class KongConsumer(KongObject):
         self.kong_id = False
 
 
-class JwtCredential(KongObject):
+class JwtCredential(KongConsumerChildMixin, KongObject):
 
     consumer = models.OneToOneField(KongConsumer, on_delete=models.CASCADE)
     key = models.CharField(max_length=100, null=True)
     secret = models.CharField(max_length=100, null=True)
 
     def create_kong(self, kong_client):
-        if self.consumer.kong_id is None:
-            raise ValidationError('cannot create a credential for a consumer with out kong id')
 
-        json = self._send_create(kong_client)
+        json = self.send_create(kong_client, self.consumer, 'jwt')
 
         self.key = json['key']
         self.secret = json['secret']
         return json
 
-    def _credential_endpoint(self, kong_client):
-        return '%s%s/%s/' % (kong_client.consumers.endpoint,
-                             self.consumer.get_kong_id(),
-                             'jwt')
-
-    def _send_create(self, kong_client):
-        endpoint = self._credential_endpoint(kong_client)
-
-        response = requests.post(endpoint)
-        json = response.json()
-        if response.status_code != 201:
-            raise ConnectionError(json)
-        return json
-
     def delete_kong(self, kong_client):
         if self.consumer.kong_id is not None:
-            self._send_delete(kong_client)
+            endpoint = self.endpoint(kong_client, self.consumer, 'jwt') + self.get_kong_id()
+            self.send_delete(endpoint)
 
         self.kong_id = None
-
-    def _send_delete(self, kong_client):
-        endpoint = self._credential_endpoint(kong_client)
-
-        response = requests.delete(endpoint + self.get_kong_id())
-        if response.status_code != 204:
-            raise ConnectionError()
 
     def update_kong(self, kong_client):
         return dict(id=self.kong_id)
@@ -343,7 +321,7 @@ class KongPluginRateLimiting(KongPlugin):
     day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 
     def clean(self):
-        if not self.enabled:
+        if not self.is_enabled():
             return
 
         config = self.config()
@@ -399,11 +377,10 @@ class KongPluginJwt(KongPlugin):
 class KongPluginAcl(KongPlugin):
 
     plugin_name = 'acl'
-    jwt = models.OneToOneField(KongPluginJwt, on_delete=models.CASCADE)
 
     def config(self):
         return {
-            'whitelist': self.group_name(self.apidata),
+            'whitelist': self.group_name(),
         }
 
     def is_enabled(self):
@@ -412,9 +389,25 @@ class KongPluginAcl(KongPlugin):
         except KongPluginJwt.DoesNotExist:
             return False
 
-    @staticmethod
-    def group_name(kong_api):
-        return kong_api.name
+    def group_name(self):
+        return self.apidata.name
+
+    @property
+    def group(self):
+        return AclGroup(self.group_name())
+
+
+# pylint: disable=too-few-public-methods
+class AclGroup(KongConsumerChildMixin):
+
+    def __init__(self, group_name):
+        self.group_name = group_name
+
+    def add_consumer(self, kong_client, kong_consumer):
+
+        data = dict(group=self.group_name)
+
+        self.send_create(kong_client, kong_consumer, 'acls', data=data)
 
 
 @receiver(post_save, sender=KongApi)
@@ -423,12 +416,24 @@ def init_acl_plugin(created, instance, *_, **__):
         KongPluginAcl(apidata=instance).save()
 
 
+@receiver(pre_save, sender=KongPluginJwt)
+def manage_acl(instance, *_, **__):
+    instance.apidata.kongpluginacl.save()
+
+
+@receiver(post_save, sender=KongConsumer)
+def assign_acl_group(created, instance, *_, **__):
+    if created:
+        instance.api.kongpluginacl.group.add_consumer(kong_client_using_settings(), instance)
+
+
 @receiver(pre_save, sender=KongApi)
 @receiver(pre_save, sender=KongPluginRateLimiting)
 @receiver(pre_save, sender=KongPluginHttpLog)
 @receiver(pre_save, sender=KongPluginJwt)
 @receiver(pre_save, sender=KongConsumer)
 @receiver(pre_save, sender=JwtCredential)
+@receiver(pre_save, sender=KongPluginAcl)
 def manage_kong_on_save(instance, *_, **__):
     instance.manage_kong(kong_client_using_settings())
 
@@ -439,6 +444,7 @@ def manage_kong_on_save(instance, *_, **__):
 @receiver(pre_delete, sender=KongPluginJwt)
 @receiver(pre_delete, sender=KongConsumer)
 @receiver(pre_delete, sender=JwtCredential)
+@receiver(pre_delete, sender=KongPluginAcl)
 def delete_kong_on_delete(instance, *_, **__):
     instance.delete_kong(kong_client_using_settings())
 
