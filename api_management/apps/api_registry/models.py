@@ -262,8 +262,7 @@ class JwtCredential(KongConsumerChildMixin, KongObject):
 
     def delete_kong(self, kong_client):
         if self.consumer.kong_id is not None:
-            endpoint = self.endpoint(kong_client, self.consumer, 'jwt') + self.get_kong_id()
-            self.send_delete(endpoint)
+            self.send_delete(kong_client, self.consumer, 'jwt', self.get_kong_id())
 
         self.kong_id = None
 

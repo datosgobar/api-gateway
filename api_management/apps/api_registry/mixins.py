@@ -23,8 +23,10 @@ class KongConsumerChildMixin:
             raise ConnectionError(json)
         return json
 
-    @staticmethod
-    def send_delete(endpoint):
+    def send_delete(self, kong_client, kong_consumer, consumer_attribute, kong_id):
+        endpoint = self.endpoint(kong_client, kong_consumer, consumer_attribute)
+        endpoint = '%s%s/' % (endpoint, kong_id)
+
         response = requests.delete(endpoint)
         if response.status_code != 204:
             raise ConnectionError()
