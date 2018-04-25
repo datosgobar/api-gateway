@@ -263,9 +263,10 @@ class JwtCredential(KongObject):
         return json
 
     def _credential_endpoint(self, kong_client):
-        return '%s%s/%s/' % (kong_client.consumers.endpoint,
-                             self.consumer.get_kong_id(),
-                             'jwt')
+        url = urllib.parse.urljoin(kong_client.consumers.endpoint, self.consumer.get_kong_id())
+        url += '/'
+        url = urllib.parse.urljoin(url, 'jwt/')
+        return url
 
     def _send_create(self, kong_client):
         endpoint = self._credential_endpoint(kong_client)
@@ -424,7 +425,7 @@ def token_request_accepted_handler(instance, *_, **__):
                             applicant=instance.applicant,
                             contact_email=instance.contact_email)
 
-    consumer.save()
+    consumer.save()1
 
     JwtCredential(enabled=True,
                   consumer=consumer).save()
