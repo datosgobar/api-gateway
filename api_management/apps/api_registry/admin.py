@@ -82,7 +82,7 @@ class TokenRequestAdmin(admin.ModelAdmin):
                 token_request.accept()
             except ValidationError:
                 self.message_user(request,
-                                  'solicitud de %s no puede ser acpetada'
+                                  'solicitud de %s no puede ser aceptada'
                                   % token_request.applicant,
                                   messages.WARNING)
 
