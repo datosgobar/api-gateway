@@ -31,7 +31,7 @@ install:
 - npm install
 
 script:
-- scripts/esling.sh
+- scripts/eslint.sh
 - scripts/flake8.sh
 - scripts/jscpd.sh
 - scripts/pylint.sh
