@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
@@ -8,7 +10,7 @@ from .serializers import QuerySerializer
 from .tasks import make_model_object
 
 
-class QueryViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     A viewset that provides `create` action.
 
@@ -24,3 +26,28 @@ class QueryViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def perform_create(self, serializer):
         make_model_object.delay(serializer.data, type(serializer))
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Query.objects.all()
+
+        kong_api_id = self.request.query_params.get('kong_api_id', None)
+        if kong_api_id is not None:
+            queryset = queryset.filter(api_data__id=kong_api_id)
+
+        from_start_time = self.request.query_params.get('from', None)
+        if from_start_time is not None:
+            # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+            from_start_time = datetime.datetime.strptime(from_start_time, '%x %X')
+            queryset = queryset.filter(start_time__gt=from_start_time)
+
+        to_start_time = self.request.query_params.get('to', None)
+        if to_start_time is not None:
+            # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+            to_start_time = datetime.datetime.strptime(to_start_time, '%x %X')
+            queryset = queryset.filter(start_time__lt=to_start_time)
+
+        return queryset
