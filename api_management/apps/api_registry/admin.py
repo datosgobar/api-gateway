@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.checks import messages
+from django.core.exceptions import ValidationError
 
 from .models import KongApi, TokenRequest, KongPluginHttpLog,\
     KongPluginRateLimiting, KongPluginJwt, \
@@ -63,19 +65,7 @@ class TokenRequestAdmin(admin.ModelAdmin):
 
     readonly_fields = ('state', )
 
-    change_form_template = 'token_request_changeform.html'
-
-    def response_change(self, request, obj):
-
-        if "_accept" in request.POST:
-            obj.accept()
-            self.message_user(request, "Solicitud Aceptada")
-
-        if "_reject" in request.POST:
-            obj.reject()
-            self.message_user(request, "Solicitud Rechazada")
-
-        return super(TokenRequestAdmin, self).response_change(request, obj)
+    actions = ['accept', 'reject']
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         if object_id is not None:
@@ -85,6 +75,26 @@ class TokenRequestAdmin(admin.ModelAdmin):
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context,
         )
+
+    def accept(self, request, queryset):
+        for token_request in queryset:
+            try:
+                token_request.accept()
+            except ValidationError:
+                self.message_user(request,
+                                  'solicitud de %s no puede ser acpetada'
+                                  % token_request.applicant,
+                                  messages.WARNING)
+
+    def reject(self, request, queryset):
+        for token_request in queryset:
+            try:
+                token_request.reject()
+            except ValidationError:
+                self.message_user(request,
+                                  'solicitud de %s no puede ser rechazada'
+                                  % token_request.applicant,
+                                  messages.WARNING)
 
 
 class JwtCredentialInline(KongObjectInline):
