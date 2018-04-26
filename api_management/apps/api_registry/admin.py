@@ -9,6 +9,7 @@ from .models import KongApi, TokenRequest, KongPluginHttpLog,\
 
 class KongObjectInline(admin.StackedInline):
     readonly_fields = ('kong_id', )
+    can_delete = False
 
 
 class KongPluginHttpLogInline(KongObjectInline):
