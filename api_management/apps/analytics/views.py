@@ -27,6 +27,7 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
         make_model_object.delay(serializer.data, type(serializer))
 
     def get_queryset(self):
+
         queryset = Query.objects.all()
 
         kong_api_id = self.request.query_params.get('kong_api_id', None)
@@ -35,12 +36,16 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
 
         from_start_time = self.request.query_params.get('from', None)
         if from_start_time is not None:
+
             from_start_time = datetime.datetime.strptime(from_start_time, '%Y-%m-%d')
+
             queryset = queryset.filter(start_time__gt=from_start_time)
 
         to_start_time = self.request.query_params.get('to', None)
         if to_start_time is not None:
+
             to_start_time = datetime.datetime.strptime(to_start_time, '%Y-%m-%d')
+
             queryset = queryset.filter(start_time__lt=to_start_time)
 
         return queryset
