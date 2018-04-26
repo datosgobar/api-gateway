@@ -287,15 +287,6 @@ class JwtCredential(KongConsumerChildMixin, KongObject):
         url = urllib.parse.urljoin(url, 'jwt/')
         return url
 
-    def _send_create(self, kong_client):
-        endpoint = self._credential_endpoint(kong_client)
-
-        response = requests.post(endpoint)
-        json = response.json()
-        if response.status_code != 201:
-            raise ConnectionError(json)
-        return json
-
     def delete_kong(self, kong_client):
         if self.consumer.kong_id is not None:
             self.send_delete(kong_client, self.consumer, 'jwt', self.get_kong_id())
