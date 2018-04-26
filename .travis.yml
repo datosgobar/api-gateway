@@ -12,13 +12,13 @@ services:
 
 language: python
 python:
-- "2.7"
+- "3.6"
 
 env:
-- DJANGO_SETTINGS_MODULE=conf.settings.testing
-- NODE_JS_VERSION=v8.11.1
+- DJANGO_SETTINGS_MODULE=conf.settings.testing NODE_JS_VERSION=v8.11.1
 
 before_install:
+- sudo service postgresql stop
 - docker-compose pull
 - docker-compose build
 - docker-compose up -d db kong redis kong_db
@@ -31,7 +31,7 @@ install:
 - npm install
 
 script:
-- scripts/esling.sh
+- scripts/eslint.sh
 - scripts/flake8.sh
 - scripts/jscpd.sh
 - scripts/pylint.sh

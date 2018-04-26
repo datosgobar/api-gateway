@@ -14,7 +14,6 @@ from django.urls import reverse
 from api_management.apps.api_registry.validators import HostsValidator, \
     UrisValidator, \
     AlphanumericValidator
-from api_management.apps.api_registry.signals import token_request_accepted
 from api_management.apps.api_registry.helpers import kong_client_using_settings
 from api_management.apps.api_registry.mixins import KongConsumerChildMixin
 
@@ -223,7 +222,19 @@ class KongPlugin(KongObject):
         self.kong_id = None
 
 
+# pylint: disable=too-few-public-methods
+class KongConsumerManager(models.Manager):
+
+    def create_from_request(self, token_request):
+        return self.create(enabled=True,
+                           api=token_request.api,
+                           applicant=token_request.applicant,
+                           contact_email=token_request.contact_email)
+
+
 class KongConsumer(KongObject):
+
+    objects = KongConsumerManager()
 
     api = models.ForeignKey(KongApi, on_delete=models.CASCADE)
     applicant = models.CharField(max_length=100, blank=False)
@@ -246,7 +257,17 @@ class KongConsumer(KongObject):
         self.kong_id = False
 
 
+# pylint: disable=too-few-public-methods
+class JwtCredentialManager(models.Manager):
+
+    def create_for_consumer(self, kong_consumer):
+        return self.create(enabled=True,
+                           consumer=kong_consumer)
+
+
 class JwtCredential(KongConsumerChildMixin, KongObject):
+
+    objects = JwtCredentialManager()
 
     consumer = models.OneToOneField(KongConsumer, on_delete=models.CASCADE)
     key = models.CharField(max_length=100, null=True)
@@ -258,6 +279,21 @@ class JwtCredential(KongConsumerChildMixin, KongObject):
 
         self.key = json['key']
         self.secret = json['secret']
+        return json
+
+    def _credential_endpoint(self, kong_client):
+        url = urllib.parse.urljoin(kong_client.consumers.endpoint, self.consumer.get_kong_id())
+        url += '/'
+        url = urllib.parse.urljoin(url, 'jwt/')
+        return url
+
+    def _send_create(self, kong_client):
+        endpoint = self._credential_endpoint(kong_client)
+
+        response = requests.post(endpoint)
+        json = response.json()
+        if response.status_code != 201:
+            raise ConnectionError(json)
         return json
 
     def delete_kong(self, kong_client):
@@ -301,7 +337,7 @@ class TokenRequest(models.Model):
         self.state = ACCEPTED
         self.save()
 
-        token_request_accepted.send(sender=self.__class__, instance=self)
+        self._create_consumer()
 
     def reject(self):
         if not self.is_pending():
@@ -309,6 +345,14 @@ class TokenRequest(models.Model):
 
         self.state = REJECTED
         self.save()
+
+    def _create_consumer(self):
+
+        consumer = KongConsumer.objects.create_from_request(self)
+
+        consumer.save()
+
+        JwtCredential.objects.create_for_consumer(consumer).save()
 
 
 class KongPluginRateLimiting(KongPlugin):
@@ -446,17 +490,3 @@ def manage_kong_on_save(instance, *_, **__):
 @receiver(pre_delete, sender=KongPluginAcl)
 def delete_kong_on_delete(instance, *_, **__):
     instance.delete_kong(kong_client_using_settings())
-
-
-@receiver(token_request_accepted, sender=TokenRequest)
-def token_request_accepted_handler(instance, *_, **__):
-
-    consumer = KongConsumer(enabled=True,
-                            api=instance.api,
-                            applicant=instance.applicant,
-                            contact_email=instance.contact_email)
-
-    consumer.save()
-
-    JwtCredential(enabled=True,
-                  consumer=consumer).save()
