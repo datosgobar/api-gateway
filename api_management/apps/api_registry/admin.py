@@ -1,30 +1,35 @@
 from django.contrib import admin
+from django.core.checks import messages
+from django.core.exceptions import ValidationError
 
-from .models import KongApi, TokenRequest, KongPluginHttpLog, KongPluginRateLimiting, KongPluginJwt
+from .models import KongApi, TokenRequest, KongPluginHttpLog,\
+    KongPluginRateLimiting, KongPluginJwt, \
+    KongConsumer, JwtCredential
 
 
-class PluginDataInline(admin.StackedInline):
+class KongObjectInline(admin.StackedInline):
     readonly_fields = ('kong_id', )
+    can_delete = False
 
 
-class HttpLogDataInline(PluginDataInline):
+class KongPluginHttpLogInline(KongObjectInline):
     model = KongPluginHttpLog
 
 
-class RateLimitingDataInline(PluginDataInline):
+class KongPluginRateLimitingInline(KongObjectInline):
     model = KongPluginRateLimiting
 
 
-class JwtDataInline(PluginDataInline):
+class KongPluginJwtInline(KongObjectInline):
     model = KongPluginJwt
 
 
 @admin.register(KongApi)
 class ApiAdmin(admin.ModelAdmin):
     inlines = [
-        HttpLogDataInline,
-        RateLimitingDataInline,
-        JwtDataInline,
+        KongPluginHttpLogInline,
+        KongPluginRateLimitingInline,
+        KongPluginJwtInline,
     ]
 
     list_display = [
@@ -54,5 +59,68 @@ class ApiAdmin(admin.ModelAdmin):
 class TokenRequestAdmin(admin.ModelAdmin):
     list_display = [
         'api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
+        'state',
     ]
-    fields = ('api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day', )
+    fields = ('api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
+              'state',)
+
+    readonly_fields = ('state', )
+
+    actions = ['accept', 'reject']
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        if object_id is not None:
+            extra_context = extra_context or {}
+        extra_context['is_pending'] = TokenRequest.objects.get(id=object_id).is_pending()
+
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
+        )
+
+    def accept(self, request, queryset):
+        for token_request in queryset:
+            try:
+                token_request.accept()
+            except ValidationError:
+                self.message_user(request,
+                                  'solicitud de %s no puede ser aceptada'
+                                  % token_request.applicant,
+                                  messages.WARNING)
+
+    def reject(self, request, queryset):
+        for token_request in queryset:
+            try:
+                token_request.reject()
+            except ValidationError:
+                self.message_user(request,
+                                  'solicitud de %s no puede ser rechazada'
+                                  % token_request.applicant,
+                                  messages.WARNING)
+
+
+class JwtCredentialInline(KongObjectInline):
+    model = JwtCredential
+
+    readonly_fields = KongObjectInline.readonly_fields + ('key', 'secret', )
+
+    fieldsets = (
+        (None, {
+            'fields': ('kong_id', )
+        }),
+        ('Keys', {
+            'classes': ('collapse',),
+            'fields': ('key', 'secret', ),
+        }),
+    )
+
+
+@admin.register(KongConsumer)
+class KongConsumerAdmin(admin.ModelAdmin):
+
+    list_display = ['api', 'applicant', 'contact_email', 'kong_id']
+
+    exclude = ('enabled', )
+
+    readonly_fields = ('kong_id', )
+
+    inlines = (JwtCredentialInline, )
