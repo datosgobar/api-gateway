@@ -1,9 +1,10 @@
 
 
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, unused-argument
 def test_disabling_an_api_removes_it_from_the_kong_server(api_data,
                                                           kong_client,
-                                                          cfaker):
+                                                          cfaker,
+                                                          db):
     """
         al desactivar una api que tiene kong_id
         se elimina del server de kong
@@ -168,4 +169,4 @@ def test_deleting_and_api_deletes_its_route_to_documentation(api_data, kong_clie
 
     # Verify
     kong_client.apis.delete\
-        .assert_called_once_with(api_data.docs_kong_id)
+        .assert_called_once_with(api_data.get_docs_kong_id())
