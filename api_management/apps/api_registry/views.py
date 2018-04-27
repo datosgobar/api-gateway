@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.views.generic import View
 from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseRedirect
 from .models import KongApi, KongPluginJwt
 from .forms import TokenRequestForm
 
@@ -16,6 +17,13 @@ class DocsView(APIView):
     def get(_, name):
 
         api = get_object_or_404(KongApi, name=name)
+        if api.use_swagger:
+            return DocsView.swager_documentation(api)
+
+        return HttpResponseRedirect(api.documentation_url)
+
+    @staticmethod
+    def swager_documentation(api):
         url = api.documentation_url
 
         if not url:
