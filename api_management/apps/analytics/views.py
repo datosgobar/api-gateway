@@ -9,7 +9,7 @@ from .models import Query
 from .serializers import QuerySerializer
 from .tasks import make_model_object
 from .filters import KongApiIdFilterBackend, \
-    FromBaseDateFilterBackend, ToBaseDateFilterBackend
+    FromDateFilterBackend, ToDateFilterBackend
 
 
 class LimitOffsetPagination(DRFLimitOffsetPagination):
@@ -22,8 +22,8 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
     pagination_class = LimitOffsetPagination
     filter_backends = [
         KongApiIdFilterBackend,
-        FromBaseDateFilterBackend,
-        ToBaseDateFilterBackend,
+        FromDateFilterBackend,
+        ToDateFilterBackend,
     ]
     queryset = Query.objects.all()
     serializer_class = QuerySerializer
