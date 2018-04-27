@@ -4,11 +4,16 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import LimitOffsetPagination as DRFLimitOffsetPagination
 
 from .models import Query
 from .serializers import QuerySerializer
 from .tasks import make_model_object
+
+
+class LimitOffsetPagination(DRFLimitOffsetPagination):
+    default_limit = 10
+    max_limit = 1000
 
 
 class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
