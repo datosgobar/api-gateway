@@ -11,9 +11,13 @@ ssh-add /tmp/build@travis-ci.org
 
 echo "Ejecutando comando de instalación..."
 
+# Actualizo el script de deployment
+
 ssh $DEPLOY_TARGET_USERNAME@$DEPLOY_TARGET_IP -p$DEPLOY_TARGET_SSH_PORT "\
     cd ~/dev/deploy &&\
     git pull"
+
+# Corro el deployment
 
 ssh $DEPLOY_TARGET_USERNAME@$DEPLOY_TARGET_IP -p$DEPLOY_TARGET_SSH_PORT "\
     source ~/dev/venv/bin/activate &&\
