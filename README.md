@@ -1,5 +1,7 @@
 # Kong API Gateway
 
+[![Build Status](https://travis-ci.org/datosgobar/api-gateway.svg?branch=master)](https://travis-ci.org/datosgobar/api-gateway)
+
 Kong es una herramienta para *API Management* que facilita la creación, publicación, mantenimiento, monitoreo y protección de APIs.
 
 ## Índice
