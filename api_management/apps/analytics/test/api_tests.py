@@ -168,12 +168,12 @@ QUERIES_FILTERED = [
     ),
     (
         [QUERY1, QUERY2],
-        {'from': '2018-01-31'},
+        {'from_date': '2018-01-31'},
         [QUERY2]
     ),
     (
         [QUERY1, QUERY2],
-        {'to': '2018-01-31'},
+        {'to_date': '2018-01-31'},
         [QUERY1]
     ),
     (
@@ -183,8 +183,8 @@ QUERIES_FILTERED = [
     ),
     (
         [QUERY1, QUERY2, QUERY3],
-        {'from': '2018-01-31',
-         'to': '2019-01-31'},
+        {'from_date': '2018-01-31',
+         'to_date': '2019-01-31'},
         [QUERY2]
     ),
 ]
