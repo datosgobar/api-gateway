@@ -72,6 +72,7 @@ class KongApi(KongObject):
     preserve_host = models.BooleanField(default=False)
     documentation_url = models.URLField(blank=True)
     docs_kong_id = models.UUIDField(null=True)  # TODO: Refactor, split responsability
+    use_swagger = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -286,15 +287,6 @@ class JwtCredential(KongConsumerChildMixin, KongObject):
         url += '/'
         url = urllib.parse.urljoin(url, 'jwt/')
         return url
-
-    def _send_create(self, kong_client):
-        endpoint = self._credential_endpoint(kong_client)
-
-        response = requests.post(endpoint)
-        json = response.json()
-        if response.status_code != 201:
-            raise ConnectionError(json)
-        return json
 
     def delete_kong(self, kong_client):
         if self.consumer.kong_id is not None:
