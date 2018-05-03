@@ -72,6 +72,7 @@ class KongApi(KongObject):
     preserve_host = models.BooleanField(default=False)
     documentation_url = models.URLField(blank=True)
     docs_kong_id = models.UUIDField(null=True)  # TODO: Refactor, split responsability
+    use_swagger = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

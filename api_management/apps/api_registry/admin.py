@@ -42,7 +42,7 @@ class ApiAdmin(admin.ModelAdmin):
         }),
         ('Advanced', {
             'classes': ('collapse',),
-            'fields': ('hosts', 'strip_uri', 'preserve_host', 'kong_id',),
+            'fields': ('use_swagger', 'hosts', 'strip_uri', 'preserve_host', 'kong_id',),
         }),
     )
 
