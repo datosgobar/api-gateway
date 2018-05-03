@@ -8,13 +8,9 @@ def init_missing_acl(apps, _):
     KongApi = apps.get_model('api_registry', 'KongApi')
     KongPluginAcl = apps.get_model('api_registry', 'KongPluginAcl')
 
-    for kongapi in KongApi.objects.all():
-        try:
-            with transaction.atomic():
-                KongPluginAcl(apidata=kongapi).save()
-        except IntegrityError:
-            pass
-
+    for kongapi in KongApi.objects.filter(kongpluginacl=None):
+        KongPluginAcl(apidata=kongapi).save()
+    
 
 class Migration(migrations.Migration):
 
