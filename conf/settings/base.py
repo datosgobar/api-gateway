@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     "django_rq",
+    'django_filters',
     'axes',
     'admin_honeypot',
 ]

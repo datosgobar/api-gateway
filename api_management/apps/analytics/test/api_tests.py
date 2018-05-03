@@ -1,3 +1,4 @@
+import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
@@ -119,3 +120,106 @@ def test_query_has_api_data_id(staff_user, well_formed_query, api_data, httplogd
 
     query = Query.objects.all().first()
     assert query.api_data.pk == api_data.pk
+
+
+QUERY1 = {"id": 1,
+          "ip_address": "123",
+          "host": "21312",
+          "uri": "21asdas",
+          "api_data": 1,
+          "querystring": "asdds",
+          "start_time": "2017-04-27T10:50:58-03:00",
+          "request_time": "12.0000000000000000000000000",
+          "status_code": 32121,
+          "user_agent": "sadas"}
+
+QUERY2 = {"id": 2,
+          "ip_address": "123",
+          "host": "21312",
+          "uri": "21asdas",
+          "api_data": 1,
+          "querystring": "asdds",
+          "start_time": "2018-04-27T10:50:58-03:00",
+          "request_time": "12.0000000000000000000000000",
+          "status_code": 32121,
+          "user_agent": "sadas"}
+
+QUERY3 = {"id": 3,
+          "ip_address": "123",
+          "host": "21312",
+          "uri": "21asdas",
+          "api_data": 1,
+          "querystring": "asdds",
+          "start_time": "2019-04-27T10:50:58-03:00",
+          "request_time": "12.0000000000000000000000000",
+          "status_code": 32121, "user_agent": "sadas"}
+
+QUERIES_FILTERED = [
+
+    (
+        [],
+        {},
+        [],
+    ),
+    (
+        [QUERY1, QUERY2],
+        {},
+        [QUERY1, QUERY2],
+    ),
+    (
+        [QUERY1, QUERY2],
+        {'from_date': '2018-01-31'},
+        [QUERY2]
+    ),
+    (
+        [QUERY1, QUERY2],
+        {'to_date': '2018-01-31'},
+        [QUERY1]
+    ),
+    (
+        [QUERY1],
+        {'kong_api_id': '1'},
+        []
+    ),
+    (
+        [QUERY1, QUERY2, QUERY3],
+        {'from_date': '2018-01-31',
+         'to_date': '2019-01-31'},
+        [QUERY2]
+    ),
+]
+
+
+# pylint: disable=unused-argument, too-many-arguments
+@pytest.mark.parametrize("queries, filter_applied, expected_results",
+                         QUERIES_FILTERED)
+def test_filter_queries(staff_user,
+                        queries,
+                        filter_applied,
+                        expected_results,
+                        api_data,
+                        httplogdata):
+    """
+    Test al hacer get en el endpoint de queries
+    con parametros de filtrado
+    retorna queries que cumplen
+    con los filtros de forma paginada
+    :return:
+    """
+    # Setup
+    client = APIClient()
+    client.force_authenticate(user=staff_user)
+    for query in queries:
+        query['api_data'] = api_data.id
+        client.post(reverse("query-list"), query, format='json')
+
+    # Exercise
+    response = client.get(reverse("query-list"),
+                          data=filter_applied,
+                          format="json")
+
+    # Verify
+    assert response.status_code == 200
+    response_json = response.json()
+    assert response_json['count'] == len(expected_results)
+    assert response_json['results'] == expected_results
