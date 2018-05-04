@@ -1,9 +1,7 @@
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.permissions import IsAdminUser
-from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination as DRFLimitOffsetPagination
 from django_filters import rest_framework as filters
@@ -40,11 +38,7 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
     def perform_create(self, serializer):
         make_model_object.delay(serializer.data, type(serializer))
 
-
-@api_view(['GET'])
-@renderer_classes([JSONRenderer])
-def query_swagger(request):
-    self = QueryViewSet()
-    meta = self.metadata_class()
-    data = meta.determine_metadata(request, self)
-    return Response(data)
+    def swagger(self, request):
+        meta = self.metadata_class()
+        data = meta.determine_metadata(request, self)
+        return Response(data)

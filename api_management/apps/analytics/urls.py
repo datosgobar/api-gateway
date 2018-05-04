@@ -9,5 +9,6 @@ router.register(r'queries', views.QueryViewSet)
 urlpatterns = router.urls  # pylint: disable=invalid-name
 
 urlpatterns += [
-    url(r'^queries/swagger/$', views.query_swagger, name='api-doc'),
+    url(r'^queries/swagger/$',
+        views.QueryViewSet.as_view({'get': 'swagger'}), name='query-swagger'),
 ]
