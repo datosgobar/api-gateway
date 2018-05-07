@@ -96,7 +96,17 @@ curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=ht
 
 ## Analytics
 
-Los analytics de las apis con logs activados se obtienen haciendo GET `/management/api/analytics/queries/`
+Los analytics de las apis con logs activados se obtienen haciendo GET `/management/api/analytics/queries/`.
+
+Este endpoint requiere autenticacion por token.
+
+Se puede obtener un token con `curl -X POST <kong>/management/api/token/ -d username=<username> -d password=<password>`
+
+Para autenticarse enviar el token en el header `Authorization: Token <token>`.
+
+Se pueden obtener queries con `curl -X GET <kong>/management/api/analytics/queries/ -H 'Authorization: Token <token>'
+`
+
 
 
 | Parametro   | Descripcion                                                     |
