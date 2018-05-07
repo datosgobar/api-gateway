@@ -122,7 +122,7 @@ HTTP 200 OK
             "ip_address": "123.123.123.123",
             "host": "datos.gob.ar",
             "uri": "/series/v1/series/",
-            "api_data": null,
+            "api_data": 1,
             "querystring": "",
             "start_time": "2018-01-05T13:30:00-03:00",
             "request_time": "0.0001220000000000000000000",
