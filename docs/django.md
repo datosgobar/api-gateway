@@ -93,3 +93,42 @@ curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=ht
 * [Pylint](https://pylint.readthedocs.io/en/latest/): `scripts/pylint.sh`
 * [Jscpd](https://github.com/kucherenko/jscpd): `scripts/jscpd.sh`
 * [Eslint](https://eslint.org/): `scripts/eslint.sh`
+
+## Analytics
+
+Los analytics de las apis con logs activados se obtienen haciendo GET `/management/api/analytics/queries/`
+
+
+| Parametro   | Descripcion                                                     |
+| -----------:|:--------------------------------------------------------------- |
+| limit       | Indica tamaño de pagina. Por defecto es `10`. Maximo es `1000`. |
+| offset      | Indica desplazamiento de pagina.                                |
+| kong_api_id | Id de api que se quiere filtrar.                                |
+| from_date   | Filtra queries posteriores a la fecha dada. Formato `YYYY-MM-DD`|
+| to_date     | Filtra queries anteriores a la fecha dada. Formato `YYYY-MM-DD` |
+
+#### Respuesta:
+```
+HTTP 200 OK
+```
+```
+{
+    "count": 2,
+    "next": "http://<kong>/management/api/analytics/queries/?limit=1&offset=1",
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "ip_address": "123.123.123.123",
+            "host": "datos.gob.ar",
+            "uri": "/series/v1/series/",
+            "api_data": null,
+            "querystring": "",
+            "start_time": "2018-01-05T13:30:00-03:00",
+            "request_time": "0.0001220000000000000000000",
+            "status_code": 200,
+            "user_agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0"
+        }
+    ]
+}
+```
