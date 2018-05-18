@@ -144,9 +144,6 @@ class KongApi(KongObject):
                          hosts=self.hosts)
 
     def delete_kong(self, kong_client):
-        for plugin in self.plugins:
-            plugin.kong_id = None
-            plugin.save()
 
         self._delete_docs_api(kong_client)
         self._delete_main_api(kong_client)
@@ -474,11 +471,6 @@ def manage_kong_on_save(instance, *_, **__):
 
 
 @receiver(pre_delete, sender=KongApi)
-@receiver(pre_delete, sender=KongPluginRateLimiting)
-@receiver(pre_delete, sender=KongPluginHttpLog)
-@receiver(pre_delete, sender=KongPluginJwt)
 @receiver(pre_delete, sender=KongConsumer)
-@receiver(pre_delete, sender=JwtCredential)
-@receiver(pre_delete, sender=KongPluginAcl)
 def delete_kong_on_delete(instance, *_, **__):
     instance.delete_kong(kong_client_using_settings())
