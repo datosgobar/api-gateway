@@ -6,12 +6,17 @@ Kong es una herramienta para *API Management* que facilita la creación, publica
 
 ## Índice
 * [Desarrollo](#desarrollo)
-* [Deployment](#deployment)
+* [Uso](#uso)
 * [Contacto](#contacto)
 
 ## Desarrollo
 
-Documentacion de desarrollo [aqui](docs/django.md)
+Documentación de desarrollo [aquí](docs/django.md)
+
+## Uso
+
+Documentación de uso [aquí](docs/usage.md)
+
 
 ## Contacto
 Te invitamos a [crearnos un issue](https://github.com/datosgobar/api-gateway/issues/new?title=Encontre-un-bug-en-api-gateway)
