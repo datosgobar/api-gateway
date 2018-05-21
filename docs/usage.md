@@ -40,10 +40,9 @@ Esto hará que la aplicación devuelva un código HTTP 302, y redireccionará al
 
 ### Modificaciones sobre la llamada
 
-Es posible evitar que el la ***URI* que definimos no llegue como parte de la llamada al **upstream url**.
+Es posible evitar que el la **URI** que definimos no llegue como parte de la llamada al **upstream url**.
 Por ejemplo, pudieramos querer definir una **URI** del estilo `/miapi1`, pero que al servidor solo le llegue lo que
 este después de ese "path". Esto es posible lograrlo al _tildar_ el campo **strip uri** en el panel "advanced".
-Esto hará que al servidor que responde a las llamadas en **upstream url** no le llegue ese "path".
 
 ## Logs
 
