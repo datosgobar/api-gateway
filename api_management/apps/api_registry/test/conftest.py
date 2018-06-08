@@ -43,8 +43,11 @@ def plugins_kong_client(mocker, cfaker):
 
     stub = mocker.stub(name='plugins_kong_client')
 
-    stub.create = mocker.stub(name='plugins_kong_client_list_stub')
+    stub.create = mocker.stub(name='plugins_kong_client_create_stub')
     stub.create.side_effect = create_side_effect
+
+    stub.delete = mocker.stub(name='plugins_kong_client_delete_stub')
+
     stub.list = mocker.stub(name='plugins_kong_client_list_stub')
     stub.list.return_value = []
     return stub
