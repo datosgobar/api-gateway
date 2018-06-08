@@ -4,7 +4,7 @@ from ..models import KongPluginCors
 
 
 @mark.django_db()
-def test_cors_plugin_is_disable_by_default(api_data):
+def test_disabled_by_default(api_data):
     """
         al crear un cors plugin no se activa por default
     """
@@ -17,7 +17,7 @@ def test_cors_plugin_is_disable_by_default(api_data):
 
 
 @mark.django_db()
-def test_cors_plugin_has_all_origins_by_default(api_data, kong_client):
+def test_support_all_origins(api_data, kong_client):
     """
         Se activa cors cuando esta enable
     """
@@ -39,7 +39,7 @@ def test_cors_plugin_has_all_origins_by_default(api_data, kong_client):
 
 
 @mark.django_db()
-def test_cors_plugin_allows_configure_origins(cors_plugin, kong_client, cfaker):
+def test_support_origins_conf(cors_plugin, kong_client):
     """
         Se activa cors cuando esta "enabled"
     """
@@ -54,7 +54,7 @@ def test_cors_plugin_allows_configure_origins(cors_plugin, kong_client, cfaker):
 
 
 @mark.django_db()
-def test_when_cors_is_disabled_removes_from_api(cors_plugin, kong_client, cfaker):
+def test_can_be_removed_from_api(cors_plugin, kong_client):
     """
         Se desactiva cors cuando esta no esta "enabled"
     """
