@@ -1,5 +1,4 @@
 import pytest
-
 from django.conf import settings
 
 from api_management.apps.analytics.test.support import custom_faker
@@ -38,8 +37,14 @@ def apis_kong_client(cfaker, mocker):
 
 
 @pytest.fixture()
-def plugins_kong_client(mocker):
+def plugins_kong_client(mocker, cfaker):
+    def create_side_effect(*args, **kwargs):  # pylint: disable=unused-argument
+        return {'id': cfaker.kong_id()}
+
     stub = mocker.stub(name='plugins_kong_client')
+
+    stub.create = mocker.stub(name='plugins_kong_client_list_stub')
+    stub.create.side_effect = create_side_effect
     stub.list = mocker.stub(name='plugins_kong_client_list_stub')
     stub.list.return_value = []
     return stub
