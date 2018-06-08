@@ -2,6 +2,7 @@ import pytest
 from django.conf import settings
 
 from api_management.apps.analytics.test.support import custom_faker
+from api_management.apps.api_registry.models import KongPluginCors
 from api_management.apps.api_registry.test.support import generate_api_data
 
 
@@ -69,3 +70,15 @@ def kong_traffic_url():
 @pytest.fixture()
 def httplog2_endpoint(cfaker):
     return cfaker.url()
+
+
+@pytest.fixture()
+def cors_plugin(cfaker, api_data):
+    api_data.enabled = True
+    api_data.save()
+
+    cors_plugin = KongPluginCors.objects.get(apidata=api_data)
+    cors_plugin.enabled = True
+    cors_plugin.origins = cfaker.uri()
+
+    return cors_plugin
