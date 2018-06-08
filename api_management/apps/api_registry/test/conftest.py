@@ -75,9 +75,9 @@ def httplog2_endpoint(cfaker):
 @pytest.fixture()
 def cors_plugin(cfaker, api_data):
     api_data.enabled = True
-    api_data.save()
+    api_data.kong_id = cfaker.kong_id()
 
-    cors_plugin = KongPluginCors.objects.get(apidata=api_data)
+    cors_plugin = KongPluginCors(apidata=api_data)
     cors_plugin.enabled = True
     cors_plugin.origins = cfaker.uri()
 

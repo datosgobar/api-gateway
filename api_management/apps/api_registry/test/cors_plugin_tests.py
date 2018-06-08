@@ -8,11 +8,7 @@ def test_disabled_by_default(api_data):
     """
         al crear un cors plugin no se activa por default
     """
-    # Setup
-    api_data.enabled = True
-    api_data.save()
-
-    cors_plugin = KongPluginCors.objects.get(apidata=api_data)
+    cors_plugin = KongPluginCors(apidata=api_data)
     assert cors_plugin.enabled is False
 
 
@@ -23,9 +19,8 @@ def test_support_all_origins(api_data, kong_client):
     """
     # Setup
     api_data.enabled = True
-    api_data.save()
-
-    cors_plugin = KongPluginCors.objects.get(apidata=api_data)
+    api_data.manage_kong(kong_client)
+    cors_plugin = KongPluginCors(apidata=api_data)
     cors_plugin.enabled = True
 
     cors_plugin.manage_kong(kong_client)
