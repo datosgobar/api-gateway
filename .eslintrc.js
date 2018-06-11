@@ -1,12 +1,8 @@
 module.exports = {
     "env": {
-        "browser": true,
-        "jquery": true
+        "browser": true
     },
     "extends": "eslint:recommended",
-    "plugins": [
-        "promise"
-    ],
     "rules": {
         "indent": [
             "error",

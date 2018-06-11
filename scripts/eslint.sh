@@ -4,7 +4,7 @@ DIR=$(dirname "$0")
 cd ${DIR}/..
 
 echo "Running eslint"
-npm run jscpd
+npm run eslint
 echo "eslint OK :)"
 
 
