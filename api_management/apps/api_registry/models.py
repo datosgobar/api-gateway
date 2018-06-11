@@ -171,14 +171,6 @@ class KongApi(KongObject):
         return plugins
 
 
-# pylint: disable=invalid-name
-@receiver(post_save, sender=KongApi)
-def re_create_kong_plugins_when_re_enabling_existing_api(created, instance, *_, **__):
-    if not created:
-        for plugin in instance.plugins:
-            plugin.save()
-
-
 class KongPlugin(KongObject):
     plugin_name = None
     apidata = models.OneToOneField(KongApi, on_delete=models.CASCADE)
@@ -438,10 +430,16 @@ class KongPluginCors(KongPlugin):
 
 
 @receiver(post_save, sender=KongApi)
+def re_enable_kong_plugins(created, instance, *_, **__):
+    if not created:
+        for plugin in instance.plugins:
+            plugin.save()
+
+
+@receiver(post_save, sender=KongApi)
 def init_acl_plugin(created, instance, *_, **__):
     if created:
         KongPluginAcl(apidata=instance).save()
-        KongPluginCors(apidata=instance).save()
 
 
 @receiver(pre_save, sender=KongPluginJwt)
@@ -462,6 +460,7 @@ def assign_acl_group(created, instance, *_, **__):
 @receiver(pre_save, sender=KongConsumer)
 @receiver(pre_save, sender=JwtCredential)
 @receiver(pre_save, sender=KongPluginAcl)
+@receiver(pre_save, sender=KongPluginCors)
 def manage_kong_on_save(instance, *_, **__):
     instance.manage_kong(kong_client_using_settings())
 
