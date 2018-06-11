@@ -5,7 +5,7 @@ from rest_framework import status
 from django.views.generic import View
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
-from .models import KongApi, KongPluginJwt
+from .models import KongApi, KongApiPluginJwt
 from .forms import TokenRequestForm
 
 
@@ -34,8 +34,8 @@ class DocsView(APIView):
                 'api_name': api.name}
 
         try:
-            data['token_required'] = api.kongpluginjwt.enabled
-        except KongPluginJwt.DoesNotExist:
+            data['token_required'] = api.kongapipluginjwt.enabled
+        except KongApiPluginJwt.DoesNotExist:
             data['token_required'] = False
 
         return Response(data, template_name="api_documentation.html")

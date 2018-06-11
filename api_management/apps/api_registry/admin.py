@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.core.checks import messages
 from django.core.exceptions import ValidationError
 
-from .models import KongApi, TokenRequest, KongPluginHttpLog,\
-    KongPluginRateLimiting, KongPluginJwt, \
+from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
+    KongApiPluginRateLimiting, KongApiPluginJwt, \
     KongConsumer, JwtCredential
 
 
@@ -13,15 +13,15 @@ class KongObjectInline(admin.StackedInline):
 
 
 class KongPluginHttpLogInline(KongObjectInline):
-    model = KongPluginHttpLog
+    model = KongApiPluginHttpLog
 
 
 class KongPluginRateLimitingInline(KongObjectInline):
-    model = KongPluginRateLimiting
+    model = KongApiPluginRateLimiting
 
 
 class KongPluginJwtInline(KongObjectInline):
-    model = KongPluginJwt
+    model = KongApiPluginJwt
 
 
 @admin.register(KongApi)

@@ -161,16 +161,16 @@ class KongApi(KongObject):
         plugins = []
 
         try:
-            plugins.append(self.kongpluginhttplog)
-        except KongPluginHttpLog.DoesNotExist:
+            plugins.append(self.kongapipluginhttplog)
+        except KongApiPluginHttpLog.DoesNotExist:
             pass
         try:
-            plugins.append(self.kongpluginratelimiting)
-        except KongPluginRateLimiting.DoesNotExist:
+            plugins.append(self.kongapipluginratelimiting)
+        except KongApiPluginRateLimiting.DoesNotExist:
             pass
         try:
-            plugins.append(self.kongpluginjwt)
-        except KongPluginJwt.DoesNotExist:
+            plugins.append(self.kongapipluginjwt)
+        except KongApiPluginJwt.DoesNotExist:
             pass
 
         return plugins
@@ -184,10 +184,26 @@ def re_create_kong_plugins_when_re_enabling_existing_api(created, instance, *_, 
             plugin.save()
 
 
+class KongApiPlugin(models.Model):
+    parent = models.OneToOneField(KongApi, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+    def create_kong(self, kong_client):
+        return kong_client.plugins.create(self.get_plugin_name(),
+                                          api_name_or_id=self.parent.get_kong_id(),
+                                          config=self.config())
+
+    def update_kong(self, kong_client):
+        return kong_client.plugins.update(self.get_kong_id(),
+                                          api_pk=self.parent.get_kong_id(),
+                                          config=self.config())
+
+
 class KongPlugin(KongObject):
 
     plugin_name = None
-    apidata = models.OneToOneField(KongApi, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -203,17 +219,7 @@ class KongPlugin(KongObject):
         pass
 
     def is_enabled(self):
-        return super(KongPlugin, self).is_enabled() and self.apidata.is_enabled()
-
-    def create_kong(self, kong_client):
-        return kong_client.plugins.create(self.get_plugin_name(),
-                                          api_name_or_id=self.apidata.get_kong_id(),
-                                          config=self.config())
-
-    def update_kong(self, kong_client):
-        return kong_client.plugins.update(self.get_kong_id(),
-                                          api_pk=self.apidata.get_kong_id(),
-                                          config=self.config())
+        return super(KongPlugin, self).is_enabled() and self.parent.is_enabled()
 
     def delete_kong(self, kong_client):
         kong_client.plugins.delete(self.get_kong_id())
@@ -345,12 +351,22 @@ class TokenRequest(models.Model):
 
 
 class KongPluginRateLimiting(KongPlugin):
-
     plugin_name = 'rate-limiting'
     second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+
+    class Meta:
+        abstract = True
+
+    @abstractmethod
+    def update_kong(self, kong_client):
+        pass
+
+    @abstractmethod
+    def create_kong(self, kong_client):
+        pass
 
     def clean(self):
         if not self.is_enabled():
@@ -386,7 +402,11 @@ class KongPluginRateLimiting(KongPlugin):
         return cleaned_config
 
 
-class KongPluginHttpLog(KongPlugin):
+class KongApiPluginRateLimiting(KongApiPlugin, KongPluginRateLimiting):
+    pass
+
+
+class KongApiPluginHttpLog(KongApiPlugin, KongPlugin):
 
     plugin_name = API_GATEWAY_LOG_PLUGIN_NAME
     api_key = models.CharField(max_length=100, blank=False, null=False)
@@ -395,10 +415,10 @@ class KongPluginHttpLog(KongPlugin):
     def config(self):
         return {'token': self.api_key,
                 'endpoint': settings.HTTPLOG2_ENDPOINT,
-                'api_data': self.apidata.pk}
+                'api_data': self.parent.pk}
 
 
-class KongPluginJwt(KongPlugin):
+class KongApiPluginJwt(KongApiPlugin, KongPlugin):
 
     plugin_name = 'jwt'
 
@@ -406,7 +426,7 @@ class KongPluginJwt(KongPlugin):
         return {}
 
 
-class KongPluginAcl(KongPlugin):
+class KongApiPluginAcl(KongApiPlugin, KongPlugin):
 
     plugin_name = 'acl'
 
@@ -417,12 +437,12 @@ class KongPluginAcl(KongPlugin):
 
     def is_enabled(self):
         try:
-            return self.apidata.kongpluginjwt.is_enabled()
-        except KongPluginJwt.DoesNotExist:
+            return self.parent.kongapipluginjwt.is_enabled()
+        except KongApiPluginJwt.DoesNotExist:
             return False
 
     def group_name(self):
-        return self.apidata.name
+        return self.parent.name
 
     @property
     def group(self):
@@ -442,30 +462,52 @@ class AclGroup(KongConsumerChildMixin):
         self.send_create(kong_client, kong_consumer, 'acls', data=data)
 
 
+class KongConsumerPlugin(models.Model):
+    parent = models.OneToOneField(KongConsumer, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+    def create_kong(self, kong_client):
+        return kong_client.plugins.create(self.get_plugin_name(),
+                                          consumer_id=self.parent.get_kong_id(),
+                                          config=self.config())
+
+    def update_kong(self, kong_client):
+        return kong_client.plugins.update(self.get_kong_id(),
+                                          consumer_id=self.parent.get_kong_id(),
+                                          config=self.config())
+
+
+class KongConsumerPluginRateLimiting(KongConsumerPlugin, KongPluginRateLimiting):
+    pass
+
+
 @receiver(post_save, sender=KongApi)
 def init_acl_plugin(created, instance, *_, **__):
     if created:
-        KongPluginAcl(apidata=instance).save()
+        KongApiPluginAcl(parent=instance).save()
 
 
-@receiver(pre_save, sender=KongPluginJwt)
+@receiver(pre_save, sender=KongApiPluginJwt)
 def manage_acl(instance, *_, **__):
-    instance.apidata.kongpluginacl.save()
+    instance.parent.kongapipluginacl.save()
 
 
 @receiver(post_save, sender=KongConsumer)
 def assign_acl_group(created, instance, *_, **__):
     if created:
-        instance.api.kongpluginacl.group.add_consumer(kong_client_using_settings(), instance)
+        instance.api.kongapipluginacl.group.add_consumer(kong_client_using_settings(), instance)
 
 
 @receiver(pre_save, sender=KongApi)
-@receiver(pre_save, sender=KongPluginRateLimiting)
-@receiver(pre_save, sender=KongPluginHttpLog)
-@receiver(pre_save, sender=KongPluginJwt)
+@receiver(pre_save, sender=KongApiPluginRateLimiting)
+@receiver(pre_save, sender=KongApiPluginHttpLog)
+@receiver(pre_save, sender=KongApiPluginJwt)
 @receiver(pre_save, sender=KongConsumer)
 @receiver(pre_save, sender=JwtCredential)
-@receiver(pre_save, sender=KongPluginAcl)
+@receiver(pre_save, sender=KongApiPluginAcl)
+@receiver(pre_save, sender=KongConsumerPluginRateLimiting)
 def manage_kong_on_save(instance, *_, **__):
     instance.manage_kong(kong_client_using_settings())
 
