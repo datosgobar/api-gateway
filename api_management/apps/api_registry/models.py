@@ -222,7 +222,8 @@ class KongPlugin(KongObject):
         return super(KongPlugin, self).is_enabled() and self.parent.is_enabled()
 
     def delete_kong(self, kong_client):
-        kong_client.plugins.delete(self.get_kong_id())
+        if self.parent.kong_id:
+            kong_client.plugins.delete(self.get_kong_id())
         self.kong_id = None
 
 
