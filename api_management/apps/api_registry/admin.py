@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
     KongApiPluginRateLimiting, KongApiPluginJwt, \
-    KongConsumer, JwtCredential
+    KongConsumer, JwtCredential, KongConsumerPluginRateLimiting
 
 
 class KongObjectInline(admin.StackedInline):
@@ -114,6 +114,10 @@ class JwtCredentialInline(KongObjectInline):
     )
 
 
+class KongConsumerPluginRateLimitingInline(KongObjectInline):
+    model = KongConsumerPluginRateLimiting
+
+
 @admin.register(KongConsumer)
 class KongConsumerAdmin(admin.ModelAdmin):
 
@@ -123,4 +127,7 @@ class KongConsumerAdmin(admin.ModelAdmin):
 
     readonly_fields = ('kong_id', )
 
-    inlines = (JwtCredentialInline, )
+    inlines = (
+        JwtCredentialInline,
+        KongConsumerPluginRateLimitingInline,
+    )
