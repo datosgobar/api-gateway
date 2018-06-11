@@ -153,8 +153,12 @@ class KongApi(KongObject):
 
     @property
     def plugins(self):
+        # TODO: No deberian existir siempre?
         plugins = []
-
+        try:
+            plugins.append(self.kongplugincors)
+        except KongPluginCors.DoesNotExist:
+            pass
         try:
             plugins.append(self.kongpluginhttplog)
         except KongPluginHttpLog.DoesNotExist:

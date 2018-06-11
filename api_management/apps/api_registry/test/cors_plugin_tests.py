@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from pytest import mark
 
 from ..models import KongPluginCors
@@ -60,3 +62,26 @@ def test_can_be_removed_from_api(cors_plugin, kong_client):
     cors_plugin.manage_kong(kong_client)
     # Verify
     kong_client.plugins.delete.assert_any_call(plugin_id)
+
+
+@mark.django_db()
+def test_enable_after_creating_api(cors_plugin, kong_client):
+    api_data = cors_plugin.apidata
+    api_data.enabled = False
+    with patch("api_management.apps.api_registry.models.kong_client_using_settings",
+               lambda: kong_client):
+        api_data.save()
+        cors_plugin.save()
+        kong_client.plugins.create.assert_not_called()
+
+    api_data.enabled = True
+    with patch("api_management.apps.api_registry.models.kong_client_using_settings",
+               lambda: kong_client):
+        api_data.save()
+
+    kong_client.plugins.create.assert_any_call(
+        KongPluginCors.plugin_name,
+        api_name_or_id=api_data.kong_id,
+        config={"origins": cors_plugin.origins, }
+
+    )
