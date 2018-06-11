@@ -422,9 +422,21 @@ class KongApiPluginHttpLog(KongApiPlugin, KongPlugin):
 class KongApiPluginJwt(KongApiPlugin, KongPlugin):
 
     plugin_name = 'jwt'
+    free_tier = models.BooleanField(default=False)
+    anonymous_consumer = models.OneToOneField(KongConsumer,
+                                              blank=True,
+                                              null=True,
+                                              on_delete=models.PROTECT)
 
     def config(self):
-        return {}
+        if self.free_tier and self.anonymous_consumer:
+            return {
+                'anonymous': self.anonymous_consumer.kong_id
+            }
+        else:
+            return {
+                'anonymous': "",
+            }
 
 
 class KongApiPluginAcl(KongApiPlugin, KongPlugin):
@@ -488,6 +500,21 @@ class KongConsumerPluginRateLimiting(KongConsumerPlugin, KongPluginRateLimiting)
 def init_acl_plugin(created, instance, *_, **__):
     if created:
         KongApiPluginAcl(parent=instance).save()
+
+
+@receiver(post_save, sender=KongApiPluginJwt)
+def init_anon_user(created, instance, *_, **__):
+    if created:
+        consumer = KongConsumer.objects.create(
+            enabled=True,
+            api=instance.parent,
+            applicant="anonymous",
+            contact_email="anon@anon.com"
+        )
+        consumer.save()
+
+        instance.anonymous_consumer = consumer
+        instance.save()
 
 
 @receiver(pre_save, sender=KongApiPluginJwt)

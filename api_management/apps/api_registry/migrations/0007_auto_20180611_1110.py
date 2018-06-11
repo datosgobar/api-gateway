@@ -65,4 +65,14 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
+        migrations.AddField(
+            model_name='kongapipluginjwt',
+            name='anonymous_consumer',
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='api_registry.KongConsumer'),
+        ),
+        migrations.AddField(
+            model_name='kongapipluginjwt',
+            name='free_tier',
+            field=models.BooleanField(default=False),
+        ),
     ]

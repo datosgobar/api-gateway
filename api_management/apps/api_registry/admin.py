@@ -22,6 +22,9 @@ class KongPluginRateLimitingInline(KongObjectInline):
 
 class KongPluginJwtInline(KongObjectInline):
     model = KongApiPluginJwt
+    exclude = (
+        'anonymous_consumer',
+    )
 
 
 @admin.register(KongApi)
