@@ -10,7 +10,8 @@ from api_management.apps.analytics.test.support import query_dict_response
 faker = Faker()  # pylint: disable=invalid-name
 
 
-def test_analytics_api_valid_query(staff_user, well_formed_query, httplogdata): # pylint: disable=unused-argument
+# pylint: disable=unused-argument
+def test_analytics_api_valid_query(staff_user, well_formed_query, httplogdata):
     """
     Test cuando un staff_user le pega al endpoint de queries
     con un json de query bien formado responde con estado 201
