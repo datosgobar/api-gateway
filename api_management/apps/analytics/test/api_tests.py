@@ -1,12 +1,16 @@
 import pytest
 from django.urls import reverse
+from faker import Faker
 from rest_framework.test import APIClient
 
 from api_management.apps.analytics.models import Query
+from api_management.apps.analytics.test.conftest import query_dict
+from api_management.apps.analytics.test.support import query_dict_response
+
+faker = Faker()  # pylint: disable=invalid-name
 
 
-# pylint: disable=unused-argument
-def test_analytics_api_valid_query(staff_user, well_formed_query, httplogdata):
+def test_analytics_api_valid_query(staff_user, well_formed_query, httplogdata): # pylint: disable=unused-argument
     """
     Test cuando un staff_user le pega al endpoint de queries
     con un json de query bien formado responde con estado 201
@@ -19,7 +23,7 @@ def test_analytics_api_valid_query(staff_user, well_formed_query, httplogdata):
     assert response.status_code == 204
 
 
-def test_analytics_api_invalid_query(staff_user):  # pylint: disable=invalid-name
+def test_analytics_invalid_query(staff_user):
     """
     Test cuando un staff_user le pega al endpoint de queries
     con un json de query con campos flatantes responde con estado 400
@@ -122,37 +126,11 @@ def test_query_has_api_data_id(staff_user, well_formed_query, api_data, httplogd
     assert query.api_data.pk == api_data.pk
 
 
-QUERY1 = {"id": 1,
-          "ip_address": "123",
-          "host": "21312",
-          "uri": "21asdas",
-          "api_data": 1,
-          "querystring": "asdds",
-          "start_time": "2017-04-27T10:50:58-03:00",
-          "request_time": "12.0000000000000000000000000",
-          "status_code": 32121,
-          "user_agent": "sadas"}
+QUERY1 = query_dict(faker, 1, 1, start_time="2017-04-27T10:50:58-03:00")
 
-QUERY2 = {"id": 2,
-          "ip_address": "123",
-          "host": "21312",
-          "uri": "21asdas",
-          "api_data": 1,
-          "querystring": "asdds",
-          "start_time": "2018-04-27T10:50:58-03:00",
-          "request_time": "12.0000000000000000000000000",
-          "status_code": 32121,
-          "user_agent": "sadas"}
+QUERY2 = query_dict(faker, 1, 2, start_time="2018-04-27T10:50:58-03:00")
 
-QUERY3 = {"id": 3,
-          "ip_address": "123",
-          "host": "21312",
-          "uri": "21asdas",
-          "api_data": 1,
-          "querystring": "asdds",
-          "start_time": "2019-04-27T10:50:58-03:00",
-          "request_time": "12.0000000000000000000000000",
-          "status_code": 32121, "user_agent": "sadas"}
+QUERY3 = query_dict(faker, 1, 3, start_time="2019-04-27T10:50:58-03:00")
 
 QUERIES_FILTERED = [
 
@@ -164,17 +142,17 @@ QUERIES_FILTERED = [
     (
         [QUERY1, QUERY2],
         {},
-        [QUERY1, QUERY2],
+        [query_dict_response(QUERY1), query_dict_response(QUERY2)],
     ),
     (
         [QUERY1, QUERY2],
         {'from_date': '2018-01-31'},
-        [QUERY2]
+        [query_dict_response(QUERY2)]
     ),
     (
         [QUERY1, QUERY2],
         {'to_date': '2018-01-31'},
-        [QUERY1]
+        [query_dict_response(QUERY1)]
     ),
     (
         [QUERY1],
@@ -185,7 +163,7 @@ QUERIES_FILTERED = [
         [QUERY1, QUERY2, QUERY3],
         {'from_date': '2018-01-31',
          'to_date': '2019-01-31'},
-        [QUERY2]
+        [query_dict_response(QUERY2)]
     ),
 ]
 
@@ -212,6 +190,8 @@ def test_filter_queries(staff_user,
     for query in queries:
         query['api_data'] = api_data.id
         client.post(reverse("query-list"), query, format='json')
+    for result in expected_results:
+        result['api_data'] = api_data.id
 
     # Exercise
     response = client.get(reverse("query-list"),
@@ -222,4 +202,6 @@ def test_filter_queries(staff_user,
     assert response.status_code == 200
     response_json = response.json()
     assert response_json['count'] == len(expected_results)
+    print(response_json['results'])
+    print(expected_results)
     assert response_json['results'] == expected_results
