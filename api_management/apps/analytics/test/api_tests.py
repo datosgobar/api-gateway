@@ -203,6 +203,4 @@ def test_filter_queries(staff_user,
     assert response.status_code == 200
     response_json = response.json()
     assert response_json['count'] == len(expected_results)
-    print(response_json['results'])
-    print(expected_results)
     assert response_json['results'] == expected_results
