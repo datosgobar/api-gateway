@@ -1,4 +1,4 @@
-def test_query_has_params(query, cfaker):
+def test_query_has_params(query):
     query_string = "empty=&value=1&many=2,3&multiple=1&multiple=2"
     query.querystring = query_string
     assert query.params() == {"empty": "", "value": "1", "many": "2,3", "multiple": "2"}
