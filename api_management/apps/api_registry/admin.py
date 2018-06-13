@@ -4,11 +4,12 @@ from django.core.exceptions import ValidationError
 
 from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
     KongApiPluginRateLimiting, KongApiPluginJwt, \
-    KongConsumer, JwtCredential, KongConsumerPluginRateLimiting
+    KongConsumer, JwtCredential, KongConsumerPluginRateLimiting, \
+    KongPluginCors
 
 
 class KongObjectInline(admin.StackedInline):
-    readonly_fields = ('kong_id', )
+    readonly_fields = ('kong_id',)
     can_delete = False
 
 
@@ -27,9 +28,14 @@ class KongPluginJwtInline(KongObjectInline):
     )
 
 
+class KongPluginCorsInline(KongObjectInline):
+    model = KongPluginCors
+
+
 @admin.register(KongApi)
 class ApiAdmin(admin.ModelAdmin):
     inlines = [
+        KongPluginCorsInline,
         KongPluginHttpLogInline,
         KongPluginRateLimitingInline,
         KongPluginJwtInline,
@@ -67,7 +73,7 @@ class TokenRequestAdmin(admin.ModelAdmin):
     fields = ('api', 'applicant', 'contact_email', 'consumer_application', 'requests_per_day',
               'state',)
 
-    readonly_fields = ('state', )
+    readonly_fields = ('state',)
 
     actions = ['accept', 'reject']
 
@@ -104,15 +110,15 @@ class TokenRequestAdmin(admin.ModelAdmin):
 class JwtCredentialInline(KongObjectInline):
     model = JwtCredential
 
-    readonly_fields = KongObjectInline.readonly_fields + ('key', 'secret', )
+    readonly_fields = KongObjectInline.readonly_fields + ('key', 'secret',)
 
     fieldsets = (
         (None, {
-            'fields': ('kong_id', )
+            'fields': ('kong_id',)
         }),
         ('Keys', {
             'classes': ('collapse',),
-            'fields': ('key', 'secret', ),
+            'fields': ('key', 'secret',),
         }),
     )
 
@@ -123,14 +129,14 @@ class KongConsumerPluginRateLimitingInline(KongObjectInline):
 
 @admin.register(KongConsumer)
 class KongConsumerAdmin(admin.ModelAdmin):
-
     list_display = ['api', 'applicant', 'contact_email', 'kong_id']
 
-    exclude = ('enabled', )
+    exclude = ('enabled',)
 
-    readonly_fields = ('kong_id', )
+    readonly_fields = ('kong_id',)
 
     inlines = (
         JwtCredentialInline,
         KongConsumerPluginRateLimitingInline,
     )
+

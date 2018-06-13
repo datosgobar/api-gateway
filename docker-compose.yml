@@ -18,6 +18,7 @@ services:
       args:
         requirements: requirements/local.txt # Use local requirements!
     environment:
+      PYTHONDONTWRITEBYTECODE: 1
       DATABASE_URL: postgres://development:development@db/development_db
       REDIS_HOST: redis
       KONG_ADMIN_URL: http://kong:8001/

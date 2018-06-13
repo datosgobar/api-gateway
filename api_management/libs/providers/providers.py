@@ -1,4 +1,5 @@
 import string
+import uuid
 
 from faker.providers import BaseProvider
 
@@ -19,11 +20,7 @@ class CustomInfoProvider(BaseProvider):
         """
             Generates a random kong_id
             Example: "14656344-9e38-4315-8ae2-c23551ea3b9d"
+            Sample:  "2a2007a5-660a-403f-bb38-8112b37a59c7"
         :return:
         """
-        chars = []
-        for group in grouping:
-            chars += self.random_sample(elements=valid_elements, length=group)
-            chars += "-"
-        chars.pop()
-        return "".join(chars)
+        return str(uuid.uuid4())

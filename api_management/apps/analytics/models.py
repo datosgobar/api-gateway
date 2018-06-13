@@ -1,14 +1,15 @@
-import uuid
 import hashlib
-
 import re
-import requests
+import uuid
+from urllib.parse import parse_qsl, urlparse
 
+import requests
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+
 from api_management.apps.api_registry.models import KongApi
 
 
@@ -28,6 +29,12 @@ class Query(models.Model):
     class Meta:  # pylint: disable=too-few-public-methods
         verbose_name = _("query")
         verbose_name_plural = _("queries")
+
+    def params(self):
+        return dict(parse_qsl(
+            urlparse("https://example.com/?%s" % self.querystring).query,
+            keep_blank_values=True
+        ))
 
     def __str__(self):
         return 'Query at %s: %s' % (self.start_time, self.uri)
