@@ -2,6 +2,8 @@ import pytest
 
 from django.conf import settings
 
+from kong.structures import ApiData
+
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.test.support import generate_api_data
 
@@ -23,10 +25,16 @@ def api_data(cfaker):
 @pytest.fixture()
 def apis_kong_client(cfaker, mocker):
     def create_side_effect(*args, **kwargs):  # pylint: disable=unused-argument
-        return {'id': cfaker.kong_id()}
+        return ApiData(name=cfaker.api_name(),
+                       upstream_url=cfaker.url(),
+                       uris=cfaker.api_path(),
+                       id=cfaker.kong_id())
 
     def update_side_effect(a_id, *args, **kwargs):  # pylint: disable=unused-argument
-        return {'id': a_id}
+        return ApiData(name=cfaker.api_name(),
+                       upstream_url=cfaker.url(),
+                       uris=cfaker.api_path(),
+                       id=a_id)
 
     stub = mocker.stub(name='apis_kong_client')
     stub.create = mocker.stub(name='apis_kong_client_create_stub')

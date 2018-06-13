@@ -47,7 +47,7 @@ class KongObject(models.Model):
             response = self.update_kong(kong_client)
         else:
             response = self.create_kong(kong_client)
-        self.kong_id = response['id']
+        self.kong_id = response.id
 
     @abstractmethod
     def create_kong(self, kong_client):
@@ -89,13 +89,13 @@ class KongApi(KongObject):
 
     def _create_main_api(self, kong_client):
         response = kong_client \
-            .apis.create(self.name,
+            .apis.create(name=self.name,
                          upstream_url=self.upstream_url,
                          hosts=self.hosts,
                          uris=self._api_uri_pattern(),
                          strip_uri=self.strip_uri,
                          preserve_host=self.preserve_host)
-        self.kong_id = response['id']
+        self.kong_id = response.id
         return response
 
     def _api_uri_pattern(self):
@@ -103,11 +103,11 @@ class KongApi(KongObject):
 
     def _create_docs_api(self, kong_client):
         response = kong_client \
-            .apis.create(self.name + self._docs_suffix(),
+            .apis.create(name=(self.name + self._docs_suffix()),
                          upstream_url=self._docs_upstream(),
                          uris=self._docs_uri_pattern(),
                          hosts=self.hosts)
-        self.docs_kong_id = response['id']
+        self.docs_kong_id = response.id
 
     def get_docs_kong_id(self):
         return str(self.docs_kong_id)
@@ -191,7 +191,7 @@ class KongApiPlugin(models.Model):
         abstract = True
 
     def create_kong(self, kong_client):
-        return kong_client.plugins.create(self.get_plugin_name(),
+        return kong_client.plugins.create(name=self.get_plugin_name(),
                                           api_name_or_id=self.parent.get_kong_id(),
                                           config=self.config())
 
@@ -430,13 +430,15 @@ class KongApiPluginJwt(KongApiPlugin, KongPlugin):
 
     def config(self):
         if self.free_tier and self.anonymous_consumer:
-            return {
-                'anonymous': self.anonymous_consumer.kong_id
+            config = {
+                'anonymous': self.anonymous_consumer.get_kong_id()
             }
         else:
-            return {
+            config = {
                 'anonymous': "",
             }
+
+        return config
 
 
 class KongApiPluginAcl(KongApiPlugin, KongPlugin):
@@ -482,7 +484,7 @@ class KongConsumerPlugin(models.Model):
         abstract = True
 
     def create_kong(self, kong_client):
-        return kong_client.plugins.create(self.get_plugin_name(),
+        return kong_client.plugins.create(name=self.get_plugin_name(),
                                           consumer_id=self.parent.get_kong_id(),
                                           config=self.config())
 
