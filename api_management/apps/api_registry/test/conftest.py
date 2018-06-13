@@ -1,10 +1,10 @@
 import pytest
 from django.conf import settings
 
-from kong.structures import ApiData
+from kong.structures import ApiData, PluginData
 
 from api_management.apps.analytics.test.support import custom_faker
-from api_management.apps.api_registry.models import KongPluginCors
+from api_management.apps.api_registry.models import KongApiPluginCors
 from api_management.apps.api_registry.test.support import generate_api_data
 
 
@@ -48,12 +48,15 @@ def apis_kong_client(cfaker, mocker):
 @pytest.fixture()
 def plugins_kong_client(mocker, cfaker):
     def create_side_effect(*args, **kwargs):  # pylint: disable=unused-argument
-        return {'id': cfaker.kong_id()}
+        return PluginData(name=cfaker.api_name(), id=cfaker.kong_id())
 
     stub = mocker.stub(name='plugins_kong_client')
 
     stub.create = mocker.stub(name='plugins_kong_client_create_stub')
     stub.create.side_effect = create_side_effect
+
+    stub.update = mocker.stub(name='plugins_kong_client_update_stub')
+    stub.update.side_effect = create_side_effect
 
     stub.delete = mocker.stub(name='plugins_kong_client_delete_stub')
 
@@ -85,7 +88,7 @@ def cors_plugin(cfaker, api_data):
     api_data.enabled = True
     api_data.kong_id = cfaker.kong_id()
 
-    cors_plugin = KongPluginCors(apidata=api_data)
+    cors_plugin = KongApiPluginCors(parent=api_data)
     cors_plugin.enabled = True
     cors_plugin.origins = cfaker.uri()
 

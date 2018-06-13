@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
     KongApiPluginRateLimiting, KongApiPluginJwt, \
     KongConsumer, JwtCredential, KongConsumerPluginRateLimiting, \
-    KongPluginCors
+    KongApiPluginCors
 
 
 class KongObjectInline(admin.StackedInline):
@@ -29,7 +29,7 @@ class KongPluginJwtInline(KongObjectInline):
 
 
 class KongPluginCorsInline(KongObjectInline):
-    model = KongPluginCors
+    model = KongApiPluginCors
 
 
 @admin.register(KongApi)
@@ -139,4 +139,3 @@ class KongConsumerAdmin(admin.ModelAdmin):
         JwtCredentialInline,
         KongConsumerPluginRateLimitingInline,
     )
-

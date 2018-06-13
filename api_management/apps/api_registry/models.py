@@ -156,8 +156,8 @@ class KongApi(KongObject):
         # TODO: No deberian existir siempre?
         plugins = []
         try:
-            plugins.append(self.kongplugincors)
-        except KongPluginCors.DoesNotExist:
+            plugins.append(self.kongapiplugincors)
+        except KongApiPluginCors.DoesNotExist:
             pass
         try:
             plugins.append(self.kongapipluginhttplog)
@@ -491,7 +491,7 @@ class KongConsumerPluginRateLimiting(KongConsumerPlugin, KongPluginRateLimiting)
     pass
 
 
-class KongPluginCors(KongPlugin):
+class KongApiPluginCors(KongApiPlugin, KongPlugin):
     plugin_name = "cors"
     origins = models.CharField(max_length=255, blank=False, null=False, default="*")
 
@@ -548,7 +548,7 @@ def assign_acl_group(created, instance, *_, **__):
 @receiver(pre_save, sender=JwtCredential)
 @receiver(pre_save, sender=KongApiPluginAcl)
 @receiver(pre_save, sender=KongConsumerPluginRateLimiting)
-@receiver(pre_save, sender=KongPluginCors)
+@receiver(pre_save, sender=KongApiPluginCors)
 def manage_kong_on_save(instance, *_, **__):
     instance.manage_kong(kong_client_using_settings())
 
