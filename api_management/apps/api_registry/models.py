@@ -410,7 +410,7 @@ class KongApiPluginHttpLog(KongApiPlugin, KongPlugin):
     def config(self):
         return {'token': self.api_key,
                 'endpoint': settings.HTTPLOG2_ENDPOINT,
-                'api_data': self.parent.pk}
+                'api_data': str(self.parent.pk)}
 
 
 class KongApiPluginJwt(KongApiPlugin, KongPlugin):
