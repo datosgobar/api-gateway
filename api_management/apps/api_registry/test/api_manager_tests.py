@@ -36,7 +36,7 @@ def test_enabling_an_api_creates_it_from_the_kong_server(api_data,
 
     # Verify
     kong_client.apis.create\
-        .assert_any_call(api_data.name,
+        .assert_any_call(name=api_data.name,
                          upstream_url=api_data.upstream_url,
                          strip_uri=api_data.strip_uri,
                          hosts=api_data.hosts,
@@ -121,7 +121,7 @@ def test_api_w_preserve_host(cfaker, api_data, kong_client):
 
     # Verify
     kong_client.apis.create\
-        .assert_any_call(api_data.name,
+        .assert_any_call(name=api_data.name,
                          upstream_url=api_data.upstream_url,
                          strip_uri=api_data.strip_uri,
                          hosts=api_data.hosts,
@@ -149,7 +149,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
                                      '/'])
 
     kong_client.apis.create\
-        .assert_any_call(api_data.name,
+        .assert_any_call(name=api_data.name,
                          upstream_url=api_data.upstream_url,
                          uris=api_data.uri + '/(?=.)',
                          hosts=api_data.hosts,
@@ -157,7 +157,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
                          strip_uri=api_data.strip_uri)
 
     kong_client.apis.create\
-        .assert_any_call(api_data.name + '-doc',
+        .assert_any_call(name=api_data.name + '-doc',
                          upstream_url=expected_upstream_url,
                          uris=api_data.uri + '/$',
                          hosts=api_data.hosts)

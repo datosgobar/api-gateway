@@ -59,7 +59,7 @@ class GoogleAnalyticsManager:
             GoogleAnalyticsManager.using_settings().manage_query(query)
 
     def manage_query(self, query):
-        regex = query.api_data.kongpluginhttplog.exclude_regex
+        regex = query.api_data.kongapipluginhttplog.exclude_regex
         if not regex \
                 or re.search(regex, query.uri) is None:
             self.send_analytics(query)

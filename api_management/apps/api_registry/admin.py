@@ -2,9 +2,10 @@ from django.contrib import admin
 from django.core.checks import messages
 from django.core.exceptions import ValidationError
 
-from .models import KongApi, TokenRequest, KongPluginHttpLog, \
-    KongPluginRateLimiting, KongPluginJwt, \
-    KongConsumer, JwtCredential, KongPluginCors
+from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
+    KongApiPluginRateLimiting, KongApiPluginJwt, \
+    KongConsumer, JwtCredential, KongConsumerPluginRateLimiting, \
+    KongApiPluginCors
 
 
 class KongObjectInline(admin.StackedInline):
@@ -13,19 +14,22 @@ class KongObjectInline(admin.StackedInline):
 
 
 class KongPluginHttpLogInline(KongObjectInline):
-    model = KongPluginHttpLog
+    model = KongApiPluginHttpLog
 
 
 class KongPluginRateLimitingInline(KongObjectInline):
-    model = KongPluginRateLimiting
+    model = KongApiPluginRateLimiting
 
 
 class KongPluginJwtInline(KongObjectInline):
-    model = KongPluginJwt
+    model = KongApiPluginJwt
+    exclude = (
+        'anonymous_consumer',
+    )
 
 
 class KongPluginCorsInline(KongObjectInline):
-    model = KongPluginCors
+    model = KongApiPluginCors
 
 
 @admin.register(KongApi)
@@ -119,6 +123,10 @@ class JwtCredentialInline(KongObjectInline):
     )
 
 
+class KongConsumerPluginRateLimitingInline(KongObjectInline):
+    model = KongConsumerPluginRateLimiting
+
+
 @admin.register(KongConsumer)
 class KongConsumerAdmin(admin.ModelAdmin):
     list_display = ['api', 'applicant', 'contact_email', 'kong_id']
@@ -127,4 +135,7 @@ class KongConsumerAdmin(admin.ModelAdmin):
 
     readonly_fields = ('kong_id',)
 
-    inlines = (JwtCredentialInline,)
+    inlines = (
+        JwtCredentialInline,
+        KongConsumerPluginRateLimitingInline,
+    )

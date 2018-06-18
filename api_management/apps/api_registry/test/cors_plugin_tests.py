@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from pytest import mark
 
-from ..models import KongPluginCors
+from ..models import KongApiPluginCors
 
 
 @mark.django_db()
@@ -10,7 +10,7 @@ def test_disabled_by_default(api_data):
     """
         al crear un cors plugin no se activa por default
     """
-    cors_plugin = KongPluginCors(apidata=api_data)
+    cors_plugin = KongApiPluginCors(parent=api_data)
     assert cors_plugin.enabled is False
 
 
@@ -22,14 +22,14 @@ def test_support_all_origins(api_data, kong_client):
     # Setup
     api_data.enabled = True
     api_data.manage_kong(kong_client)
-    cors_plugin = KongPluginCors(apidata=api_data)
+    cors_plugin = KongApiPluginCors(parent=api_data)
     cors_plugin.enabled = True
 
     cors_plugin.manage_kong(kong_client)
 
     # Verify
     kong_client.plugins.create.assert_any_call(
-        cors_plugin.plugin_name,
+        name=cors_plugin.plugin_name,
         api_name_or_id=api_data.kong_id,
         config={"origins": '*', }
     )
@@ -44,8 +44,8 @@ def test_support_origins_conf(cors_plugin, kong_client):
 
     # Verify
     kong_client.plugins.create.assert_any_call(
-        cors_plugin.plugin_name,
-        api_name_or_id=str(cors_plugin.apidata.kong_id),
+        name=cors_plugin.plugin_name,
+        api_name_or_id=str(cors_plugin.parent.kong_id),
         config={"origins": cors_plugin.origins, }
     )
 
@@ -66,7 +66,7 @@ def test_can_be_removed_from_api(cors_plugin, kong_client):
 
 @mark.django_db()
 def test_enable_after_creating_api(cors_plugin, kong_client):
-    api_data = cors_plugin.apidata
+    api_data = cors_plugin.parent
     api_data.enabled = False
     with patch("api_management.apps.api_registry.models.kong_client_using_settings",
                lambda: kong_client):
@@ -80,7 +80,7 @@ def test_enable_after_creating_api(cors_plugin, kong_client):
         api_data.save()
 
     kong_client.plugins.create.assert_any_call(
-        KongPluginCors.plugin_name,
+        name=KongApiPluginCors.plugin_name,
         api_name_or_id=api_data.kong_id,
         config={"origins": cors_plugin.origins, }
 

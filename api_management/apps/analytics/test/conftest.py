@@ -4,7 +4,7 @@ from faker import Faker
 
 from api_management.apps.analytics.models import GoogleAnalyticsManager, Query
 from api_management.apps.analytics.test.support import custom_faker
-from api_management.apps.api_registry.models import KongPluginHttpLog
+from api_management.apps.api_registry.models import KongApiPluginHttpLog
 from api_management.apps.api_registry.test.support import generate_api_data
 
 
@@ -103,11 +103,11 @@ def ga_manager(tracking_id):
 # pylint: disable=unused-argument, invalid-name
 @pytest.fixture
 def httplogdata(mocker, api_data, cfaker, db):
-    httplogdata = KongPluginHttpLog()
+    httplogdata = KongApiPluginHttpLog()
     httplogdata.enabled = True
     httplogdata.exclude_regex = ''
     httplogdata.api_key = ''
-    httplogdata.apidata = api_data
+    httplogdata.parent = api_data
 
     with requests_mock.mock() as rmock:
         rmock.post(requests_mock.ANY,
