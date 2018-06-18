@@ -43,7 +43,11 @@ class KongObject(models.Model):
             response = self.update_kong(kong_client)
         else:
             response = self.create_kong(kong_client)
-        self.kong_id = response.id
+        self.kong_id = self.get_kong_id_from_response(response)
+
+    @staticmethod
+    def get_kong_id_from_response(response):
+        return response.id
 
     @abstractmethod
     def create_kong(self, kong_client):
@@ -295,6 +299,10 @@ class JwtCredential(KongConsumerChildMixin, KongObject):
 
     def update_kong(self, kong_client):
         return dict(id=self.kong_id)
+
+    @staticmethod
+    def get_kong_id_from_response(response):
+        return response['id']
 
 
 PENDING = "PENDING"
