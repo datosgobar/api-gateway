@@ -3,9 +3,9 @@
 ## Alta de una API
 
 Luego de iniciar sesión como administradores, debemos ir a la página de creación de `KongApi`s.
-Al acceder al formularo, sólo tres compos serán requeridos.
+Al acceder al formulario, sólo tres campos serán requeridos.
 
-**name**: Nombre que le daremos a la API internamente. Será unico en el sistema y no podrá cambiarse luego de ingresado.
+**name**: Nombre que le daremos a la API internamente. Será único en el sistema y no podrá cambiarse luego de ingresado.
 Debe ser un valor alfanumérico y solo acepta estos `- _ ~` caracteres especiales.
 Ejemplo: `series-tiempo-testing`
 
@@ -39,7 +39,7 @@ Esto hará que la aplicación devuelva un código HTTP 302, y redireccionará al
 ## Modificaciones sobre la llamada
 
 Es posible evitar que el la **URI** que definimos no llegue como parte de la llamada al **upstream url**.
-Por ejemplo, pudieramos querer definir una **URI** del estilo `/miapi1`, pero que al servidor solo le llegue lo que
+Por ejemplo, pudiéramos querer definir una **URI** del estilo `/miapi1`, pero que al servidor solo le llegue lo que
 este después de ese "path". Esto es posible lograrlo al _tildar_ el campo **strip uri** en el panel "advanced".
 
 ## Logs
@@ -58,7 +58,7 @@ Las llamadas a la aplicación serán registradas bajo la sección "Analytics", e
 Es posible configurar un límite de llamadas (a.k.a. "rate limit") a la API por IP.
 En el panel "Kong plugin rate limiting" podemos ver como hacerlo,
 en el panel "KONG API PLUGIN RATE LIMITINGS".
-Luego de _tildar_ **enabled**, debemos configrar cuales son los limites de llamadas.
+Luego de _tildar_ **enabled**, debemos configurar cuales son los limites de llamadas.
 Los posibles valores configurables son:
 
 - **second**: Llamadas por segundo
@@ -68,37 +68,37 @@ Los posibles valores configurables son:
 
 ### A nivel Consumer
 
-Si estamos usando el plugin de autenticacion por *JWT*, es posible establecer un
+Si estamos usando el plugin de autenticación por *JWT*, es posible establecer un
 límite basado *en cada consumidor*. Este limite su puede configurar en al editar un
-**Kong Consumer**. Ademas si la opcion **Free tier** esta activada, es posible establecer
-un limite unico para todos los usuarios anonimos en conjunto.
-Este limite se establece en el **kong consumer** que se crea automaticamente,
+**Kong Consumer**. Además si la opción **Free tier** esta activada, es posible establecer
+un limite único para todos los usuarios anónimos en conjunto.
+Este limite se establece en el **kong consumer** que se crea automáticamente,
 cuyo *applicant* es *anonymous*.
 
 ## JWT
 
-Es posible requerir la autenticacion para el uso de una aplicacion.
+Es posible requerir la autenticación para el uso de una aplicación.
 Mediante el panel "KONG API PLUGIN JWTS" podemos activar este mecanismo.
-Al activar este plugin, la aplicacion intentara autenticar usuario *por API*, y se
+Al activar este plugin, la aplicación intentara autenticar usuario *por API*, y se
 los identificara como **kong consumers**.
 
-Si la opcion **Free tier** esta activa, los usuarios sin token lograran acceder a la
+Si la opción **Free tier** esta activa, los usuarios sin token lograran acceder a la
 API pero identificados como un *consumer anonimo* (a.k.a. "anonymous consumer").
-En caso contrario a los usuario sin token no se les permitira el accedo a la API.
+En caso contrario a los usuario sin token no se les permitirá el accedo a la API.
 
 Para dar de alta un nuevo **kong consumer** es necesario crear un nuevo **Token requests**.
 Una vez creado, debemos aceptarlo mediante seleccionarlo en la pagina de listado de "token requests"
-y usando la accion *ACCEPT*.
+y usando la acción *ACCEPT*.
 
 Esto nos creara un nuevo **Kong Consumer**.
 
 **NOTA:** Nunca cree un **kong consumer** directamente, solo mediante los **token request**.
 
-En el nuevo **kong consumer** podemos ver una seccion "JWT CREDENTIALS".
+En el nuevo **kong consumer** podemos ver una sección "JWT CREDENTIALS".
 La misma contiene el par *key*/*secret* para las llamada que el cliente necesita hacer.
 
 Suponiendo que las claves son `bOgu3TainXFFOgLi2Q27EE7BRtXIBqdD` y `lR39z3kcMNAHc44NzOgj9CENWndMLYWQ` respectivamente,
-podriamos usar el debugger de https://jwt.io/ o https://github.com/jpadilla/pyjwt para generar el token.
+podríamos usar el debugger de https://jwt.io/ o https://github.com/jpadilla/pyjwt para generar el token.
 
 Al usar https://jwt.io nuestro payload debe lucir (haciendo uso de la "key"):
 
@@ -110,14 +110,14 @@ Al usar https://jwt.io nuestro payload debe lucir (haciendo uso de la "key"):
 
 y en **VERIFY SIGNATURE** ponemos el "secret".
 
-Al usar `pyjwt` podemos generarlo por linea de comando:
+Al usar `pyjwt` podemos generarlo por línea de comando:
 
 ```
 pyjwt --key=lR39z3kcMNAHc44NzOgj9CENWndMLYWQ encode iss=bOgu3TainXFFOgLi2Q27EE7BRtXIBqdD
 # => eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJiT2d1M1RhaW5YRkZPZ0xpMlEyN0VFN0JSdFhJQnFkRCJ9.hxyvLkUYmrlonrFUoQ_Il1Y7RcJXYV5DERHBzR7paa0
 ```
 
-Luego al usar nuestra aplicacion, debemos agregar el "header" **Authorization**:
+Luego al usar nuestra aplicación, debemos agregar el "header" **Authorization**:
 
 ```
 url=http://localhost:8000/series/api/series/?ids=1.1_OGP_D_1993_A_17
