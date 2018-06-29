@@ -232,14 +232,14 @@ class KongPlugin(KongObject):
 # pylint: disable=too-few-public-methods
 class KongConsumerManager(models.Manager):
 
-    ANONYMOUS_CONSUMER_APPLICANT = "anonymous"
-    ANONYMOUS_CONSUMER_EMAIL = "anon@anon.com"
+    anonymous_consumer_applicant = "anonymous"
+    anonymous_consumer_email = "anon@anon.com"
 
     def create_anonymous(self, api):
         return self.create(enabled=True,
                            api=api,
-                           applicant=self.ANONYMOUS_CONSUMER_APPLICANT,
-                           contact_email=self.ANONYMOUS_CONSUMER_EMAIL)
+                           applicant=self.anonymous_consumer_applicant,
+                           contact_email=self.anonymous_consumer_email)
 
     def create_from_request(self, token_request):
         return self.create(enabled=True,
@@ -534,11 +534,8 @@ def init_acl_plugin(created, instance, *_, **__):
 @receiver(post_save, sender=KongApiPluginJwt)
 def init_anon_user(created, instance, *_, **__):
     if created:
-        consumer = KongConsumer.objects.create(
-            enabled=True,
+        consumer = KongConsumer.objects.create_anonymous(
             api=instance.parent,
-            applicant="anonymous",
-            contact_email="anon@anon.com"
         )
         consumer.save()
 
