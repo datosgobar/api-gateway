@@ -6,7 +6,11 @@ def add_missing_consumer(apps, _):
     KongConsumer = apps.get_model('api_registry', 'KongConsumer')
 
     for kongapipluginjwt in KongApiPluginJwt.objects.filter(anonymous_consumer=None):
-        KongConsumer.objects.create_anonymous(kongapipluginjwt.parent).save()
+        KongConsumer.objects.create(enabled=True,
+                                    api=kongapipluginjwt.parent,
+                                    applicant="anonymous",
+                                    contact_email="anon@anon.com")\
+            .save()
 
 
 class Migration(migrations.Migration):
