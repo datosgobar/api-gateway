@@ -233,6 +233,8 @@ class KongPlugin(KongObject):
 # pylint: disable=too-few-public-methods
 class KongConsumerManager(models.Manager):
 
+    use_in_migrations = True
+
     anonymous_consumer_applicant = "anonymous"
     anonymous_consumer_email = "anon@anon.com"
 
