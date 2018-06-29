@@ -1,5 +1,6 @@
 import urllib.parse
 from abc import abstractmethod
+from collections import OrderedDict
 
 from django.conf import settings
 from django.core.exceptions import ValidationError, ImproperlyConfigured
@@ -392,12 +393,12 @@ class KongPluginRateLimiting(KongPlugin):
             prev_v = value
 
     def config(self):
-        config = {'second': self.second,
-                  'minute': self.minute,
-                  'hour': self.hour,
-                  'day': self.day}
+        config = OrderedDict([('second', self.second),
+                              ('minute', self.minute),
+                              ('hour', self.hour),
+                              ('day', self.day)])
 
-        cleaned_config = {}
+        cleaned_config = OrderedDict()
         for key, value in config.items():
             if value:
                 cleaned_config[key] = value
