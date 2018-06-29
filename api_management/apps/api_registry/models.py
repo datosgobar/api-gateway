@@ -232,6 +232,15 @@ class KongPlugin(KongObject):
 # pylint: disable=too-few-public-methods
 class KongConsumerManager(models.Manager):
 
+    ANONYMOUS_CONSUMER_APPLICANT = "anonymous"
+    ANONYMOUS_CONSUMER_EMAIL = "anon@anon.com"
+
+    def create_anonymous(self, api):
+        return self.create(enabled=True,
+                           api=api,
+                           applicant=self.ANONYMOUS_CONSUMER_APPLICANT,
+                           contact_email=self.ANONYMOUS_CONSUMER_EMAIL)
+
     def create_from_request(self, token_request):
         return self.create(enabled=True,
                            api=token_request.api,
