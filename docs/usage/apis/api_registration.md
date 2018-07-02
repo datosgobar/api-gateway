@@ -52,7 +52,7 @@ la [documentación de kong](https://docs.konghq.com/0.12.x/proxy/#the-preserve_h
 
 ## Plugins
 
-- [Cors](plugins/cors.md)
+- Cors
 - [HttpLog](plugins/http_log.md)
 - [Rate-Limiting](plugins/rate_limiting.md)
 - [JWT](plugins/jwt.md)
