@@ -43,9 +43,12 @@ Los consumers anónimos son consumers igual que cualquiera. Por lo cual
 aplican las mismas políticas para ellos como para consumers no anónimos.
 
 #### Conexiones anónimas comparten un mismo consumer anónimo
-A cada conexión se le asigna un consumer en base al token provisto.
-Para mas informacion de autenticacion leer [JWT](jwt.md)
-- De proveer un token válido: se le asigna el consumer correspondiente.
+Al estar activa la opcion JWT, a cada conexión se asigna un consumer en base al token provisto.
+
+- De proveer un token válido: se asigna el consumer correspondiente.
 - De proveer un token invalido: se rechaza la conexión.
-- De no proveer un token: se le asigna el consumer anónimo correspondiente.
-- De no estar activada la configuración **free tier** se rechaza la conexion.
+- De no proveer un token:
+  - Si está activado **free tier**: se asigna el consumer anónimo correspondiente.
+  - Si no está activado **free tier**: se rechaza la conexión.
+
+Para mas informacion de autenticacion leer [JWT](jwt.md)
