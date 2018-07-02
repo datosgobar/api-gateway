@@ -40,9 +40,11 @@ Esto hará que la aplicación devuelva un código HTTP 302, y redireccionará al
 
 ### strip_uri
 
-Es posible evitar que el la **URI** que definimos no llegue como parte de la llamada al **upstream url**.
-Por ejemplo, pudiéramos querer definir una **URI** del estilo `/miapi1`, pero que al servidor solo le llegue lo que
-este después de ese "path". Esto es posible lograrlo al _tildar_ el campo **strip uri** en el panel "advanced".
+Por defecto, se envía a la api una **URI** truncada. Si una api se registra
+con **URI** `/example` esta parte de la **URI** no se envia al backend. <br>
+Si se quiere que esta no sea afectada, la opción **strip uri** bajo la pestaña `advanced` debe ser destildada.
+- con **strip uri**: `/example/resources/` se pasa como `/resources/`
+- sin **strip uri**: `/example/resources/` se pasa como `/example/resources/`
 
 ### preserve_host
 
