@@ -32,6 +32,9 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
     serializer_class = QuerySerializer
     permission_classes = [IsAdminUser, ]
     authentication_classes = [TokenAuthentication, ]
+    ordering_fields = ('id', 'start_time', 'request_time', )
+    ordering = ('id', )
+
 
     def create(self, request, *args, **kwargs):
         super(QueryViewSet, self).create(request, *args, **kwargs)
