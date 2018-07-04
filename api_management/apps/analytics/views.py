@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination as DRFLimitOffsetPagination
+from rest_framework.filters import OrderingFilter
 from django_filters import rest_framework as filters
 
 from api_management.apps.analytics import swaggers
@@ -24,6 +25,7 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
     pagination_class = LimitOffsetPagination
     filter_backends = [
         filters.DjangoFilterBackend,
+        OrderingFilter,
     ]
     filter_class = QueryFilter
     queryset = Query.objects.all()
