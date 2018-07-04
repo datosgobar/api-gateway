@@ -35,7 +35,6 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
     ordering_fields = ('id', 'start_time', 'request_time', )
     ordering = ('id', )
 
-
     def create(self, request, *args, **kwargs):
         super(QueryViewSet, self).create(request, *args, **kwargs)
         return Response(status=status.HTTP_204_NO_CONTENT)
