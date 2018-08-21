@@ -43,6 +43,7 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.3 my_virtualenv`
 1. Crear un archivo `.python-version`: `echo "my_virtualenv" > .python-version`
 1. Instalar los requerimientos: `pip install -r requirements/local.txt`
+1. Copiar el archivo `conf/settings/.env.local` a `conf/settings/.env` (y reemplazar las variables de ser necesario)
 1. Instalar redis: `# apt-get install redis-server`
 
 ### Activar el plugin de httplog2 en Docker
