@@ -16,6 +16,7 @@ env = environ.Env(DEBUG=(bool, False),) # set default values and casting
 
 # SETTINGS_DIR = /conf/settings
 SETTINGS_DIR = environ.Path(__file__) - 1
+environ.Env.read_env(SETTINGS_DIR('.env'))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # ROOT_DIR = /
@@ -45,7 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+]
 
+VENDOR_APPS = [
+    'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -53,10 +57,6 @@ INSTALLED_APPS = [
     'django_filters',
     'axes',
     'admin_honeypot',
-]
-
-VENDOR_APPS = [
-    'django_extensions',
 ]
 
 LOCAL_APPS = [
