@@ -159,7 +159,7 @@ def test_creating_an_api_also_creates_a_route_to_documentation(api_data,
     kong_client.apis.create\
         .assert_any_call(name=api_data.name + '-doc',
                          upstream_url=expected_upstream_url,
-                         uris=api_data.uri + '/$',
+                         uris=api_data.uri + '/?$',
                          hosts=api_data.hosts)
 
 
