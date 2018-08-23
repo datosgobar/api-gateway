@@ -121,7 +121,7 @@ class KongApi(KongObject):
         return urllib.parse.urljoin(settings.KONG_TRAFFIC_URL, doc_endpoint)
 
     def _docs_uri_pattern(self):
-        return self.uri + '/$'
+        return self.uri + '/?$'
 
     def update_kong(self, kong_client):
         self._update_docs_api(kong_client)
