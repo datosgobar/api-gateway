@@ -8,9 +8,9 @@ from .models import Query
 class QueryAdmin(admin.ModelAdmin):
     list_display = [
         'host', 'uri', 'api_data', 'ip_address',
-        'querystring', 'status_code', 'start_time',
+        'querystring', 'status_code', 'start_time', 'x_source'
     ]
-    list_filter = ['status_code', 'api_data', 'start_time', ]
+    list_filter = ['status_code', 'api_data', 'start_time', 'x_source', ]
     search_fields = ['ip_address', 'uri', 'querystring', ]
 
 
