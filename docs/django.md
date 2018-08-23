@@ -109,14 +109,11 @@ Se pueden obtener queries con `curl -X GET <kong>/management/api/analytics/queri
 `
 
 
-
 | Parametro   | Descripcion                                                     |
 | -----------:|:--------------------------------------------------------------- |
-| limit       | Indica tamaño de pagina. Por defecto es `10`. Maximo es `1000`. |
-| offset      | Indica desplazamiento de pagina.                                |
+| cursor      | Indica desplazamiento de pagina por cursor                      |
 | kong_api_id | Id de api que se quiere filtrar.                                |
-| from_date   | Filtra queries posteriores a la fecha dada. Formato `YYYY-MM-DD`|
-| to_date     | Filtra queries anteriores a la fecha dada. Formato `YYYY-MM-DD` |
+
 
 #### Respuesta:
 ```
@@ -124,8 +121,7 @@ HTTP 200 OK
 ```
 ```
 {
-    "count": 2,
-    "next": "http://<kong>/management/api/analytics/queries/?limit=1&offset=1",
+    "next": "http://<kong>/management/api/analytics/queries/?cursor=xxxxxxx",
     "previous": null,
     "results": [
         {
