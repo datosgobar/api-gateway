@@ -1,4 +1,3 @@
-import pytest
 from django.urls import reverse
 from faker import Faker
 from rest_framework.test import APIClient
@@ -167,40 +166,3 @@ QUERIES_FILTERED = [
         [query_dict_response(QUERY2)]
     ),
 ]
-
-
-# pylint: disable=unused-argument, too-many-arguments
-@pytest.mark.parametrize("queries, filter_applied, expected_results",
-                         QUERIES_FILTERED)
-def test_filter_queries(staff_user,
-                        queries,
-                        filter_applied,
-                        expected_results,
-                        api_data,
-                        httplogdata):
-    """
-    Test al hacer get en el endpoint de queries
-    con parametros de filtrado
-    retorna queries que cumplen
-    con los filtros de forma paginada
-    :return:
-    """
-    # Setup
-    client = APIClient()
-    client.force_authenticate(user=staff_user)
-    for query in queries:
-        query['api_data'] = api_data.id
-        client.post(reverse("query-list"), query, format='json')
-    for result in expected_results:
-        result['api_data'] = api_data.id
-
-    # Exercise
-    response = client.get(reverse("query-list"),
-                          data=filter_applied,
-                          format="json")
-
-    # Verify
-    assert response.status_code == 200
-    response_json = response.json()
-    assert response_json['count'] == len(expected_results)
-    assert response_json['results'] == expected_results
