@@ -2,9 +2,9 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view
+from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.pagination import LimitOffsetPagination as DRFLimitOffsetPagination
 from rest_framework.filters import OrderingFilter
 from django_filters import rest_framework as filters
 
@@ -15,14 +15,11 @@ from .tasks import make_model_object
 from .filters import QueryFilter
 
 
-class LimitOffsetPagination(DRFLimitOffsetPagination):
-    default_limit = 10
-    max_limit = 1000
-
-
 class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    class CustomPagination(CursorPagination):
+        page_size = 1000
 
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
     filter_backends = [
         filters.DjangoFilterBackend,
         OrderingFilter,
