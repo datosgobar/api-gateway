@@ -48,6 +48,7 @@ def query_dict(faker_instance, api_data_pk, query_pk=None, start_time=None):
         "api_data": api_data_pk,  # Is required!
         "user_agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:59.0) "
                       "Gecko/20100101 Firefox/59.0",
+        "x_source": "series-tiempo-explorer",
     }
     if query_pk is not None:
         query['id'] = query_pk
@@ -86,6 +87,7 @@ def query(well_formed_query, api_data):
     query.status_code = well_formed_query['status_code']
     query.api_data = api_data
     query.user_agent = well_formed_query['user_agent']
+    query.x_source = "series-tiempo-explorer"
 
     return query
 

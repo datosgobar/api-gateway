@@ -25,6 +25,7 @@ class Query(models.Model):
     api_data = models.ForeignKey(KongApi, blank=True, null=True, on_delete=models.PROTECT)
     user_agent = models.TextField()
     token = models.CharField(max_length=200, null=True)
+    x_source = models.TextField(default="", null=True, blank=True)
 
     class Meta:  # pylint: disable=too-few-public-methods
         verbose_name = _("query")
