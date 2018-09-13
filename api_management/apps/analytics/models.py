@@ -19,7 +19,7 @@ class Query(models.Model):
     host = models.TextField()
     uri = models.TextField()
     querystring = models.TextField(default="", blank=True)
-    start_time = models.DateTimeField()
+    start_time = models.DateTimeField(db_index=True)
     request_time = models.DecimalField(max_digits=30, decimal_places=25)
     status_code = models.IntegerField(blank=True, null=True)
     api_data = models.ForeignKey(KongApi, blank=True, null=True, on_delete=models.PROTECT)
