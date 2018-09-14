@@ -16,15 +16,12 @@ class LargeTablePaginator(Paginator):
         if getattr(self, '_count', None) is not None:
             return self._count
         query = self.object_list.query
-        if not query.where:
-            try:
-                cursor = connection.cursor()
-                cursor.execute("SELECT reltuples FROM pg_class WHERE relname = %s",
-                               [query.model._meta.db_table])
-                self._count = int(cursor.fetchone()[0])
-            except Exception as _:
-                self._count = super(LargeTablePaginator, self)._get_count()
-        else:
+        try:
+            cursor = connection.cursor()
+            cursor.execute("SELECT reltuples FROM pg_class WHERE relname = %s",
+                           [query.model._meta.db_table])
+            self._count = int(cursor.fetchone()[0])
+        except Exception as _:
             self._count = super(LargeTablePaginator, self)._get_count()
         return self._count
     count = property(_get_count)
