@@ -8,6 +8,8 @@ from .models import Query
 
 @admin.register(Query)
 class QueryAdmin(admin.ModelAdmin):
+    change_list_template = 'admin/query_change_list.html'
+
     # Impide hacer un COUNT(*) adicional en el armado de respuesta
     show_full_result_count = False
 
