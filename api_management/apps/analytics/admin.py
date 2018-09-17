@@ -2,7 +2,6 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import admin
 from django.utils import timezone
 from rest_framework.authtoken.admin import TokenAdmin
-from .admin_paginator import LargeTablePaginator
 from .models import Query
 
 
@@ -13,7 +12,6 @@ class QueryAdmin(admin.ModelAdmin):
     # Impide hacer un COUNT(*) adicional en el armado de respuesta
     show_full_result_count = False
 
-    paginator = LargeTablePaginator
     list_filter = ['status_code', 'api_data', 'start_time', 'x_source', ]
     search_fields = ['ip_address', 'uri', 'querystring', ]
     list_display = [
