@@ -7,5 +7,6 @@ django-filter==1.1.0
 
 requests>=2.18.4
 django-axes==4.1.0
+python-dateutil==2.7.3
 git+https://github.com/devartis/django-admin-honeypot.git#egg=django-admin-honeypot
 git+https://github.com/devartis/python-kong-client@v0.1.8#egg=python-kong-client

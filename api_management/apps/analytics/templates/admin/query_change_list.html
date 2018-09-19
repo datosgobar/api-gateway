@@ -1,0 +1,9 @@
+{% extends 'admin/change_list.html' %}
+
+{% load admin_list %}
+{% load i18n %}
+
+{% block pagination %}
+    {% pagination cl %}
+    Los resultados individuales mostrados son sobre la última semana.
+{% endblock %}
