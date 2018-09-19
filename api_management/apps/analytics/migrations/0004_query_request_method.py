@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('analytics', '0003_query_x_source'),
+        ('analytics', '0004_auto_20180913_1026_squashed_0005_auto_20180913_1105'),
     ]
 
     operations = [
