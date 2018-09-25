@@ -53,7 +53,7 @@ def download_csv_view(request, api_name, date):
 
     files = CsvFile.objects.filter(api_name=api_name, file_name=f'analytics_{date}.csv')
     if files.exists() and files.first().file is not None:
-        response['Content-Disposition'] = f"attachment; filename='{date}'"
+        response['Content-Disposition'] = f"attachment; filename='{files.first().file_name}'"
         response.content_type = 'text/csv'
         response.content = files.first().file
     else:
@@ -65,3 +65,5 @@ def download_csv_view(request, api_name, date):
 def generate_csv_view(request, api_name, date):
     csv_generator = CsvGenerator(api_name=api_name, date=date)
     csv_generator.generate()
+
+    return HttpResponse(status=201)

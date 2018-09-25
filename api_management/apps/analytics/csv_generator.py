@@ -3,6 +3,7 @@ import csv
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from api_management.apps.analytics.models import Query, CsvFile
+from django.conf import settings
 
 
 class CsvGenerator:
@@ -14,7 +15,7 @@ class CsvGenerator:
     def generate(self):
         file_name = f'analytics_{self.date}.csv'
 
-        with NamedTemporaryFile(mode='r+', dir='media') as file:
+        with NamedTemporaryFile(mode='r+', dir=settings.MEDIA_ROOT, suffix='.csv') as file:
             writer = csv.writer(file, quoting=csv.QUOTE_ALL)
             field_names = [field.name for field in Query._meta.get_fields()]
             writer.writerow(field_names)
@@ -23,4 +24,4 @@ class CsvGenerator:
                 writer.writerow(attributes)
 
             csv_file = CsvFile(api_name=self.api_name, file_name=file_name, file=File(file))
-            return csv_file.file.path
+            csv_file.save()

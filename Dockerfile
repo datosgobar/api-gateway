@@ -22,6 +22,7 @@ RUN apk add --no-cache python3 imagemagick zlib-dev jpeg-dev build-base postgres
     addgroup -S $APP_USER && \
     adduser -D -H -S $APP_USER $APP_USER && \
     chown $APP_USER:$APP_USER -Rc $BASE_DIR && \
+    chmod 777 $MEDIA_ROOT && \
     python3 -m pip install --no-cache -r $requirements && \
     apk del --no-cache build
 
