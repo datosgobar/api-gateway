@@ -13,7 +13,7 @@ class CsvGenerator:
         self.date = date
 
     def generate(self):
-        file_name = f'analytics_{self.date}.csv'
+        file_name = f'analytics_{self.date.date()}.csv'
 
         with NamedTemporaryFile(mode='r+', dir=settings.MEDIA_ROOT, suffix='.csv') as file:
             writer = csv.writer(file, quoting=csv.QUOTE_ALL)
@@ -23,7 +23,4 @@ class CsvGenerator:
                 attributes = [getattr(query, str(field), None) for field in field_names]
                 writer.writerow(attributes)
 
-            csv_file = CsvFile.objects.update_or_create(api_name=self.api_name,
-                                                        file_name=file_name,
-                                                        defaults={"file": File(file)})
-            csv_file.save()
+            CsvFile.objects.update_or_create(api_name=self.api_name, file_name=file_name, defaults={"file": File(file)})
