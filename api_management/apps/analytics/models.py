@@ -99,4 +99,9 @@ class GoogleAnalyticsManager:
 class CsvFile(models.Model):
     api_name = models.CharField(max_length=30, null=False, blank=False)
     file_name = models.CharField(max_length=100, null=False, blank=False)
-    file = models.FileField(upload_to='analytics/')
+    file = models.FileField(upload_to='media')
+
+
+class CsvAnalyticsGeneratorTask(models.Model):
+    created_at = models.DateTimeField()
+    logs = models.TextField()
