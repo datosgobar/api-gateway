@@ -23,5 +23,7 @@ class CsvGenerator:
                 attributes = [getattr(query, str(field), None) for field in field_names]
                 writer.writerow(attributes)
 
-            csv_file = CsvFile(api_name=self.api_name, file_name=file_name, file=File(file))
+            csv_file = CsvFile.objects.update_or_create(api_name=self.api_name,
+                                                        file_name=file_name,
+                                                        defaults={"file": File(file)})
             csv_file.save()
