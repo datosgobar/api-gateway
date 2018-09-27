@@ -60,10 +60,3 @@ def download_csv_view(request, api_name, date):
         response.status_code = 501
     return response
 
-
-@api_view(['GET'])
-def generate_csv_view(request, api_name, date):
-    csv_generator = CsvGenerator(api_name=api_name, date=date)
-    csv_generator.generate()
-
-    return HttpResponse(status=201)
