@@ -1,6 +1,3 @@
-from datetime import date
-
-from dateutil import relativedelta
 from django_rq import job
 
 from api_management.apps.analytics.csv_generator import CsvGenerator
@@ -15,10 +12,7 @@ def make_model_object(data, serializer_class):
 
 
 @job('generate_analytics', timeout=3600)
-def generate_analytics_dump(date_string=None):
-    if date_string is None:
-        date_string = date.today() - relativedelta.relativedelta(days=1)
-
+def generate_analytics_dump(analytics_date):
     for api in KongApi.objects.all():
-        csv_generator = CsvGenerator(api_name=api.name, date=date_string)
+        csv_generator = CsvGenerator(api_name=api.name, date=analytics_date)
         csv_generator.generate()
