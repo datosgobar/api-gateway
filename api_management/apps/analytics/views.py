@@ -1,20 +1,18 @@
-
 from django.http import HttpResponse
+from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.filters import OrderingFilter
-from django_filters import rest_framework as filters
 
 from api_management.apps.analytics import swaggers
-from api_management.apps.analytics.csv_generator import CsvGenerator
+from .filters import QueryFilter
 from .models import Query, CsvFile
 from .serializers import QuerySerializer
 from .tasks import make_model_object
-from .filters import QueryFilter
 
 
 class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -48,7 +46,7 @@ def query_swagger_view(*_, **__):
 
 
 @api_view(['GET'])
-def download_csv_view(request, api_name, date):
+def download_csv_view(_request, api_name, date):
     response = HttpResponse()
 
     files = CsvFile.objects.filter(api_name=api_name, file_name=f'analytics_{date}.csv')
@@ -59,4 +57,3 @@ def download_csv_view(request, api_name, date):
     else:
         response.status_code = 501
     return response
-

@@ -1,12 +1,13 @@
 import csv
 
+from django.conf import settings
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
+
 from api_management.apps.analytics.models import Query, CsvFile
-from django.conf import settings
 
 
-class CsvGenerator:
+class CsvGenerator:  # pylint: disable=too-few-public-methods
 
     def __init__(self, api_name, date):
         self.api_name = api_name
@@ -23,4 +24,6 @@ class CsvGenerator:
                 attributes = [getattr(query, str(field), None) for field in field_names]
                 writer.writerow(attributes)
 
-            CsvFile.objects.update_or_create(api_name=self.api_name, file_name=file_name, defaults={"file": File(file)})
+            CsvFile.objects.update_or_create(api_name=self.api_name,
+                                             file_name=file_name,
+                                             defaults={"file": File(file)})

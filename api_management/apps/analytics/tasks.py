@@ -1,4 +1,5 @@
 from datetime import date
+
 from dateutil import relativedelta
 from django_rq import job
 
