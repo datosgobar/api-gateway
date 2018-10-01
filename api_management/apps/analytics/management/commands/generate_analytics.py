@@ -41,7 +41,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Generando csv para el día {analytics_date.date()}...")
         try:
             generate_analytics_dump(analytics_date)
-            task.logs += f"Archivo csv de analytics generado correctamente para el día {analytics_date}."
+            task.logs += f"Csv de analytics generado correctamente para el día {analytics_date}."
             task.save()
         except Exception as e:
             task.logs += f"Error generando csv de analytics para el día {analytics_date}: {e}"
