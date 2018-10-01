@@ -28,8 +28,8 @@ class Command(BaseCommand):
 
     def generate_all_analytics(self, from_time, to_time):
         next_date = from_time
+        task = CsvAnalyticsGeneratorTask(created_at=timezone.now())
         while next_date < to_time:
-            task = CsvAnalyticsGeneratorTask(created_at=timezone.now())
             self.generate_analytics(task, next_date)
             next_date = next_date + relativedelta.relativedelta(days=1)
 
