@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 from api_management.apps.analytics import swaggers
+from api_management.apps.api_registry.models import KongApi
 from .filters import QueryFilter
 from .models import Query, CsvFile
 from .serializers import QuerySerializer
@@ -48,6 +49,10 @@ def query_swagger_view(*_, **__):
 @api_view(['GET'])
 def download_csv_view(_request, api_name, date):
     response = HttpResponse()
+
+    if not KongApi.objects.filter(name=api_name).exists():
+        response.status_code = 404
+        return response
 
     files = CsvFile.objects.filter(api_name=api_name, file_name=f'analytics_{date}.csv')
     if files.exists() and files.first().file is not None:
