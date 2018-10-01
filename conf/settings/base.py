@@ -166,6 +166,13 @@ RQ_QUEUES = {
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     },
+
+    'generate_analytics': {
+        'HOST': env('REDIS_HOST', default='localhost'),
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
 }
 
 KONG_TRAFFIC_URL = ""

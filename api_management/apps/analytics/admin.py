@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import admin
 from django.utils import timezone
 from rest_framework.authtoken.admin import TokenAdmin
-from .models import Query
+from .models import Query, CsvAnalyticsGeneratorTask
 
 
 @admin.register(Query)
@@ -27,3 +27,10 @@ class QueryAdmin(admin.ModelAdmin):
 
 
 TokenAdmin.raw_id_fields = ('user',)
+
+
+@admin.register(CsvAnalyticsGeneratorTask)
+class CsvAnalyticsGeneratorTaskAdmin(admin.ModelAdmin):
+    list_display = [
+        'created_at', 'logs'
+    ]

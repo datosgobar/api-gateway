@@ -1,18 +1,19 @@
-
+from django.http import HttpResponse
+from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter
 from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
-from rest_framework.filters import OrderingFilter
-from django_filters import rest_framework as filters
 
 from api_management.apps.analytics import swaggers
-from .models import Query
+from api_management.apps.api_registry.models import KongApi
+from .filters import QueryFilter
+from .models import Query, CsvFile
 from .serializers import QuerySerializer
 from .tasks import make_model_object
-from .filters import QueryFilter
 
 
 class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -43,3 +44,21 @@ class QueryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.Gene
 @api_view(['GET'])
 def query_swagger_view(*_, **__):
     return Response(swaggers.QUERIES)
+
+
+@api_view(['GET'])
+def download_csv_view(_request, api_name, date):
+    response = HttpResponse()
+
+    if not KongApi.objects.filter(name=api_name).exists():
+        response.status_code = 404
+        return response
+
+    files = CsvFile.objects.filter(api_name=api_name, file_name=f'analytics_{date}.csv')
+    if files.exists() and files.first().file is not None:
+        response['Content-Disposition'] = f"attachment; filename='{files.first().file_name}'"
+        response.content_type = 'text/csv'
+        response.content = files.first().file
+    else:
+        response.status_code = 501
+    return response
