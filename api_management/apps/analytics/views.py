@@ -54,9 +54,12 @@ def download_csv_view(_request, api_name, date):
         response.status_code = 404
         return response
 
-    files = CsvFile.objects.filter(api_name=api_name, file_name=f'analytics_{date}.csv')
+    files = CsvFile.objects.filter(api_name=api_name,
+                                   file_name="analytics_{date}.csv".format(date=date))
+
     if files.exists() and files.first().file is not None:
-        response['Content-Disposition'] = f"attachment; filename='{files.first().file_name}'"
+        response['Content-Disposition'] = "attachment;" \
+                                          "filename='{name}'".format(name=files.first().file_name)
         response.content_type = 'text/csv'
         response.content = files.first().file
     else:
