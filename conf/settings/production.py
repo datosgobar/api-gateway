@@ -48,21 +48,9 @@ URLS_PREFIX = env("URLS_PREFIX", default=URLS_PREFIX)
 MEDIA_URL = '/%s/media/' % URLS_PREFIX
 STATIC_URL = '/%s/static/' % URLS_PREFIX
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': env('REDIS_HOST'),
-        'PORT': 6379,
-        'DB': 0,
-        'DEFAULT_TIMEOUT': 360,
-    },
+for key in RQ_QUEUES:
+    RQ_QUEUES[key]['HOST'] = env("REDIS_HOST")
 
-    'create_model': {
-        'HOST': env('REDIS_HOST'),
-        'PORT': 6379,
-        'DB': 0,
-        'DEFAULT_TIMEOUT': 360,
-    },
-}
 HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT",
                         default="%s%s/api/analytics/queries/"
                                 % (KONG_TRAFFIC_URL, URLS_PREFIX))
