@@ -59,7 +59,7 @@ def download_csv_view(_request, api_name, date):
 
     if files.exists() and files.first().file is not None:
         response['Content-Disposition'] = "attachment;" \
-                                          "filename='{name}'".format(name=files.first().file_name)
+                                          "filename={name}".format(name=files.first().file_name)
         response.content_type = 'text/csv'
         response.content = files.first().file
     else:
