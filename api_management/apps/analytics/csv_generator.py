@@ -15,7 +15,7 @@ class CsvGenerator:
         self.date = date
 
     def generate(self):
-        file_name = f'analytics_{self.date.date()}.csv'
+        file_name = "analytics_{date}.csv".format(date=self.date.date())
 
         with NamedTemporaryFile(mode='r+', dir=settings.MEDIA_ROOT, suffix='.csv') as file:
             writer = csv.writer(file, quoting=csv.QUOTE_ALL)
@@ -25,9 +25,7 @@ class CsvGenerator:
                 attributes = [getattr(query, str(field), None) for field in field_names]
                 writer.writerow(attributes)
 
-            CsvFile.objects.update_or_create(api_name=self.api_name,
-                                             file_name=file_name,
-                                             defaults={"file": File(file)})
+            self.create_csv_file(file_name, file)
 
     def all_queries(self):
         min_date = self.date
@@ -36,3 +34,13 @@ class CsvGenerator:
         return Query.objects.filter(uri=self.api_name,
                                     start_time__gte=min_date,
                                     start_time__lt=max_date)
+
+    def create_csv_file(self, file_name, file):
+        csv_file = CsvFile.objects.filter(api_name=self.api_name, file_name=file_name).first()
+        if csv_file is not None:
+            if csv_file.file.name != '':
+                csv_file.file.delete()  # removes from disk
+            csv_file.file = File(file)
+            csv_file.save()
+        else:
+            CsvFile(api_name=self.api_name, file_name=file_name, file=File(file)).save()
