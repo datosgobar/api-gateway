@@ -31,7 +31,7 @@ class CsvGenerator:
         min_date = self.date
         max_date = min_date + relativedelta.relativedelta(days=1)
 
-        return Query.objects.filter(uri=self.api_name,
+        return Query.objects.filter(api_data__name=self.api_name,
                                     start_time__gte=min_date,
                                     start_time__lt=max_date)
 

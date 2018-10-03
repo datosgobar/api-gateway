@@ -50,7 +50,7 @@ class Command(BaseCommand):
     def generate_analytics(self, task, analytics_date):
         self.stdout.write("Generando csv para el día {date}...".format(date=analytics_date.date()))
         try:
-            generate_analytics_dump(analytics_date)
+            generate_analytics_dump.delay(analytics_date)
             task.logs += success_task_log(analytics_date)
             task.save()
         except Exception as e:
