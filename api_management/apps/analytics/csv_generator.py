@@ -22,7 +22,7 @@ class CsvGenerator:
             field_names = [field.name for field in Query._meta.get_fields()]
             writer.writerow(field_names)
             for query in self.all_queries():
-                attributes = [getattr(query, str(field), None) for field in field_names]
+                attributes = [getattr(query, field, None) for field in field_names]
                 writer.writerow(attributes)
 
             self.create_csv_file(file_name, file)
