@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, mixins, status
@@ -47,6 +48,7 @@ def query_swagger_view(*_, **__):
 
 
 @api_view(['GET'])
+@login_required
 def download_csv_view(_request, api_name, date):
     response = HttpResponse()
 
