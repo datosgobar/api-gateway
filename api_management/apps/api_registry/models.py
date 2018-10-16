@@ -528,6 +528,12 @@ class RootKongApi(KongObject):
     def __str__(self):
         return "Root Kong Api"
 
+    # this is to not create multiples RootKongApi models
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if RootKongApi.objects.first() is None:
+            super(RootKongApi, self).save(force_insert, force_update, using, update_fields)
+
     def create_kong(self, kong_client):
         response = kong_client.apis.create(name='root-api',
                                            upstream_url=self.upstream_url,
@@ -597,5 +603,6 @@ def manage_kong_on_save(instance, *_, **__):
 
 @receiver(pre_delete, sender=KongApi)
 @receiver(pre_delete, sender=KongConsumer)
+@receiver(pre_delete, sender=RootKongApi)
 def delete_kong_on_delete(instance, *_, **__):
     instance.delete_kong(kong_client_using_settings())
