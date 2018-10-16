@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.core.checks import messages
 from django.core.exceptions import ValidationError
 
-from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
+from .models import KongApi, TokenRequest, KongApiPluginHttpLog, \
     KongApiPluginRateLimiting, KongApiPluginJwt, \
     KongConsumer, JwtCredential, KongConsumerPluginRateLimiting, \
-    KongApiPluginCors
+    KongApiPluginCors, RootKongApi
 
 
 class KongObjectInline(admin.StackedInline):
@@ -139,3 +139,9 @@ class KongConsumerAdmin(admin.ModelAdmin):
         JwtCredentialInline,
         KongConsumerPluginRateLimitingInline,
     )
+
+
+@admin.register(RootKongApi)
+class RootKongApiAdmin(admin.ModelAdmin):
+    list_display = ['upstream_url', 'hosts']
+    exclude = ['kong_id']
