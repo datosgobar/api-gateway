@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.checks import messages
 from django.core.exceptions import ValidationError
+from solo.admin import SingletonModelAdmin
 
 from .models import KongApi, TokenRequest, KongApiPluginHttpLog, \
     KongApiPluginRateLimiting, KongApiPluginJwt, \
@@ -141,7 +142,8 @@ class KongConsumerAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(RootKongApi)
-class RootKongApiAdmin(admin.ModelAdmin):
-    list_display = ['upstream_url', 'hosts']
+class RootKongAdmin(SingletonModelAdmin):
     exclude = ['kong_id']
+
+
+admin.site.register(RootKongApi, RootKongAdmin)

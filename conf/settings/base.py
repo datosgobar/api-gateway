@@ -57,6 +57,7 @@ VENDOR_APPS = [
     'django_filters',
     'axes',
     'admin_honeypot',
+    'solo.apps.SoloAppConfig',
 ]
 
 LOCAL_APPS = [

@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from solo.models import SingletonModel
 
 from api_management.apps.api_registry.helpers import kong_client_using_settings
 from api_management.apps.api_registry.mixins import KongConsumerChildMixin
@@ -521,18 +522,12 @@ class KongApiPluginCors(KongApiPlugin, KongPlugin):
         }
 
 
-class RootKongApi(KongObject):
+class RootKongApi(SingletonModel, KongObject):
     upstream_url = models.URLField(blank=False)
     hosts = models.CharField(max_length=200, validators=[HostsValidator()], blank=False)
 
     def __str__(self):
         return "Root Kong Api"
-
-    # this is to not create multiples RootKongApi models
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        if RootKongApi.objects.first() is None:
-            super(RootKongApi, self).save(force_insert, force_update, using, update_fields)
 
     def create_kong(self, kong_client):
         response = kong_client.apis.create(name='root-api',
