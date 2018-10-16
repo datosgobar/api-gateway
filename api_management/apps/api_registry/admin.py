@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.core.checks import messages
 from django.core.exceptions import ValidationError
+from solo.admin import SingletonModelAdmin
 
-from .models import KongApi, TokenRequest, KongApiPluginHttpLog,\
+from .models import KongApi, TokenRequest, KongApiPluginHttpLog, \
     KongApiPluginRateLimiting, KongApiPluginJwt, \
     KongConsumer, JwtCredential, KongConsumerPluginRateLimiting, \
-    KongApiPluginCors
+    KongApiPluginCors, RootKongApi
 
 
 class KongObjectInline(admin.StackedInline):
@@ -139,3 +140,10 @@ class KongConsumerAdmin(admin.ModelAdmin):
         JwtCredentialInline,
         KongConsumerPluginRateLimitingInline,
     )
+
+
+class RootKongAdmin(SingletonModelAdmin):
+    exclude = ['kong_id']
+
+
+admin.site.register(RootKongApi, RootKongAdmin)

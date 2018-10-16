@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from solo.models import SingletonModel
 
 from api_management.apps.api_registry.helpers import kong_client_using_settings
 from api_management.apps.api_registry.mixins import KongConsumerChildMixin
@@ -521,6 +522,30 @@ class KongApiPluginCors(KongApiPlugin, KongPlugin):
         }
 
 
+class RootKongApi(SingletonModel, KongObject):
+    upstream_url = models.URLField(blank=False)
+    hosts = models.CharField(max_length=200, validators=[HostsValidator()], blank=False)
+
+    def __str__(self):
+        return "Root Kong Api"
+
+    def create_kong(self, kong_client):
+        response = kong_client.apis.create(name='root-api',
+                                           upstream_url=self.upstream_url,
+                                           hosts=self.hosts)
+        self.kong_id = response.id
+        return response
+
+    def update_kong(self, kong_client):
+        return kong_client.apis.update(self.get_kong_id(),
+                                       upstream_url=self.upstream_url,
+                                       hosts=self.hosts)
+
+    def delete_kong(self, kong_client):
+        kong_client.apis.delete(self.get_kong_id())
+        self.kong_id = None
+
+
 @receiver(post_save, sender=KongApi)
 def re_enable_kong_plugins(created, instance, *_, **__):
     if not created:
@@ -566,11 +591,13 @@ def assign_acl_group(created, instance, *_, **__):
 @receiver(pre_save, sender=KongApiPluginAcl)
 @receiver(pre_save, sender=KongConsumerPluginRateLimiting)
 @receiver(pre_save, sender=KongApiPluginCors)
+@receiver(pre_save, sender=RootKongApi)
 def manage_kong_on_save(instance, *_, **__):
     instance.manage_kong(kong_client_using_settings())
 
 
 @receiver(pre_delete, sender=KongApi)
 @receiver(pre_delete, sender=KongConsumer)
+@receiver(pre_delete, sender=RootKongApi)
 def delete_kong_on_delete(instance, *_, **__):
     instance.delete_kong(kong_client_using_settings())
