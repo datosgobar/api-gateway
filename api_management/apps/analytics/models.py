@@ -9,6 +9,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from solo.models import SingletonModel
 
 from api_management.apps.api_registry.models import KongApi
 
@@ -42,11 +43,24 @@ class Query(models.Model):
         return 'Query at %s: %s' % (self.start_time, self.uri)
 
 
+class GoogleAnalyticsSettings(SingletonModel):
+    ga_id = models.CharField(max_length=100, blank=True, default='',
+                             verbose_name='Google analytics ID')
+
+    def __str__(self):
+        return 'GoogleAnalyticsSettings'
+
+
 class GoogleAnalyticsManager:
 
     @classmethod
     def using_settings(cls):
-        return cls(tracking_id=settings.ANALYTICS_TID)
+        ga_id = ''
+        ga_settings = GoogleAnalyticsSettings.objects.first()
+        if ga_settings is not None:
+            ga_id = ga_settings.ga_id
+
+        return cls(tracking_id=ga_id)
 
     def __init__(self, tracking_id):
         self.session = requests.session()

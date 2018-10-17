@@ -191,7 +191,6 @@ CACHES = {
 }
 
 AXES_CACHE = 'axes_cache'
-ANALYTICS_TID = ''
 HTTPLOG2_ENDPOINT = ""
 
 SESSION_COOKIE_NAME = 'mgmtsessionid'

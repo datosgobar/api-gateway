@@ -54,5 +54,3 @@ for key in RQ_QUEUES:
 HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT",
                         default="%s%s/api/analytics/queries/"
                                 % (KONG_TRAFFIC_URL, URLS_PREFIX))
-
-ANALYTICS_TID = env('ANALYTICS_TID')

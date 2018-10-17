@@ -28,4 +28,3 @@ KONG_ADMIN_URL = env("KONG_ADMIN_URL", default="http://localhost:8001/")
 
 HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT", default="%s%s/api/analytics/queries/"
                                                      % (KONG_TRAFFIC_URL, URLS_PREFIX))
-ANALYTICS_TID = env('ANALYTICS_TID', default='')

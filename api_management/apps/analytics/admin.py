@@ -2,7 +2,9 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import admin
 from django.utils import timezone
 from rest_framework.authtoken.admin import TokenAdmin
-from .models import Query, CsvAnalyticsGeneratorTask
+from solo.admin import SingletonModelAdmin
+
+from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings
 
 
 @admin.register(Query)
@@ -34,3 +36,8 @@ class CsvAnalyticsGeneratorTaskAdmin(admin.ModelAdmin):
     list_display = [
         'created_at', 'logs'
     ]
+
+
+@admin.register(GoogleAnalyticsSettings)
+class GoogleAnalyticsSettingsAdmin(SingletonModelAdmin):
+    list_display = ['ga_id']

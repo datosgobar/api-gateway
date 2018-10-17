@@ -17,5 +17,3 @@ MEDIA_URL = '/%s/media/' % URLS_PREFIX
 STATIC_URL = '/%s/static/' % URLS_PREFIX
 
 HTTPLOG2_ENDPOINT = env("HTTPLOG2_ENDPOINT", default="http://nginx/management/api/analytics/queries/")
-
-ANALYTICS_TID = env('ANALYTICS_TID', default='')
