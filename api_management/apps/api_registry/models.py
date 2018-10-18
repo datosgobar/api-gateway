@@ -532,7 +532,7 @@ class RootKongApi(SingletonModel, KongObject):
     def create_kong(self, kong_client):
         response = kong_client.apis.create(name='root-api',
                                            uris='/?$',
-                                           upstream_url=self.upstream_url,
+                                           upstream_url=reverse('api_registry:root-redirect'),
                                            hosts=self.hosts)
         self.kong_id = response.id
         return response
@@ -540,7 +540,7 @@ class RootKongApi(SingletonModel, KongObject):
     def update_kong(self, kong_client):
         return kong_client.apis.update(self.get_kong_id(),
                                        uris='/?$',
-                                       upstream_url=self.upstream_url,
+                                       upstream_url=reverse('api_registry:root-redirect'),
                                        hosts=self.hosts)
 
     def delete_kong(self, kong_client):
