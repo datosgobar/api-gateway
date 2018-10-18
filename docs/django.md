@@ -115,6 +115,10 @@ Se pueden obtener queries con `curl -X GET <kong>/management/api/analytics/queri
 | kong_api_id | Id de api que se quiere filtrar.                                |
 
 
+#### Generación de CSV de analytics
+
+Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.py generate_analytics` para generar un archivo .csv el cual contiene la información de todas las Query que se hicieron el día anterior. Si se busca generar todos los analytics desde la primer Query realizada, hay que corre el comando `python manage.py generate_analytics --all`. Esto recorre todas las Query de la DB y genera un archivo .csv por día para cada una de ellas. Es un proceso asincrónico, por lo tanto, va a correr cuando los workers estén disponibles más allá de ver el mensaje en pantalla "Generando csv....".
+
 #### Respuesta:
 ```
 HTTP 200 OK
