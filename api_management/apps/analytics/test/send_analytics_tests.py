@@ -55,7 +55,8 @@ def exercise_and_verify_send_analytics(ga_manager, query, token, tracking_id):
                          'cm1': query.start_time,  # Custom Metric
                          'cm2': query.status_code,  # Custom Metric
                          'cd3': query.api_data.name,
-                         'cm3': query.api_data.pk}
+                         'cm3': query.api_data.pk,
+                         'sc': 'start'}
 
         for key, val in expected_data.items():
             expected_data[key] = str(val)

@@ -101,10 +101,10 @@ class GoogleAnalyticsManager:
                 'srt': query.request_time,  # Server Response Time
                 'cm2': query.status_code,  # Custom Metric
                 'cd3': query.api_data.name,
-                'cm3': query.api_data.pk}
+                'cm3': query.api_data.pk,
+                'sc': 'start'}  # each request starts a new session
 
-        response = self.session.post('http://www.google-analytics.com/collect',
-                                     data=data)
+        response = self.session.post('http://www.google-analytics.com/collect', data=data)
         if not response.ok:
             raise ConnectionError(response.content)
 
