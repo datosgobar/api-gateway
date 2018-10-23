@@ -38,7 +38,7 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 1. Crear un super usuario: `docker-compose run --rm django python3 manage.py createsuperuser`
 1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=http://nginx/ -d uris=/management -d strip_uri=false`
 
-## Configuracion Local
+### Configuracion Local
 
 1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.3 my_virtualenv`
 1. Crear un archivo `.python-version`: `echo "my_virtualenv" > .python-version`
@@ -73,21 +73,21 @@ curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=ht
 
 ## Tips:
 
-## Server para desarrollo
+#### Server para desarrollo
 
 * `./manage.py runserver`
 
-## Consola de django
+#### Consola de django
 
 * `./manage.py shell`
 
 * Con Docker: `docker-compose run django python3 manage.py migrate`
 
-## Tests
+#### Tests
 
 * `python manage.py test`
 
-## Correr Lint/Style/CPD
+#### Correr Lint/Style/CPD
 
 
 * [Flake8](http://flake8.pycqa.org/en/latest/index.html): `scripts/flake8.sh`
@@ -95,7 +95,7 @@ curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=ht
 * [Jscpd](https://github.com/kucherenko/jscpd): `scripts/jscpd.sh`
 * [Eslint](https://eslint.org/): `scripts/eslint.sh`
 
-## Analytics
+#### Analytics
 
 Los analytics de las apis con logs activados se obtienen haciendo GET `/management/api/analytics/queries/`.
 
@@ -114,10 +114,6 @@ Se pueden obtener queries con `curl -X GET <kong>/management/api/analytics/queri
 | cursor      | Indica desplazamiento de pagina por cursor                      |
 | kong_api_id | Id de api que se quiere filtrar.                                |
 
-
-#### Generación de CSV de analytics
-
-Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.py generate_analytics` para generar un archivo .csv el cual contiene la información de todas las Query que se hicieron el día anterior. Si se busca generar todos los analytics desde la primer Query realizada, hay que corre el comando `python manage.py generate_analytics --all`. Esto recorre todas las Query de la DB y genera un archivo .csv por día para cada una de ellas. Es un proceso asincrónico, por lo tanto, va a correr cuando los workers estén disponibles más allá de ver el mensaje en pantalla "Generando csv....".
 
 #### Respuesta:
 ```
@@ -143,3 +139,7 @@ HTTP 200 OK
     ]
 }
 ```
+
+#### Generación de CSV de analytics
+
+Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.py generate_analytics` para generar un archivo .csv el cual contiene la información de todas las Query que se hicieron el día anterior. Si se busca generar todos los analytics desde la primer Query realizada, hay que corre el comando `python manage.py generate_analytics --all`. Esto recorre todas las Query de la DB y genera un archivo .csv por día para cada una de ellas. Es un proceso asincrónico, por lo tanto, va a correr cuando los workers estén disponibles más allá de ver el mensaje en pantalla "Generando csv....".
