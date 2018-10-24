@@ -548,7 +548,7 @@ class RootKongApi(SingletonModel, KongObject):
         self.kong_id = None
 
     def root_redirect_url(self):
-        return 'http://' + self.hosts + reverse('root-redirect')
+        return settings.KONG_TRAFFIC_URL + reverse('root-redirect')
 
 
 @receiver(post_save, sender=KongApi)
