@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework.authtoken.admin import TokenAdmin
 from solo.admin import SingletonModelAdmin
 
-from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings
+from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings, ApiSessionSettings
 
 
 @admin.register(Query)
@@ -41,3 +41,8 @@ class CsvAnalyticsGeneratorTaskAdmin(admin.ModelAdmin):
 @admin.register(GoogleAnalyticsSettings)
 class GoogleAnalyticsSettingsAdmin(SingletonModelAdmin):
     list_display = ['ga_id']
+
+
+@admin.register(ApiSessionSettings)
+class ApiSessionSettingsAdmin(SingletonModelAdmin):
+    list_display = ['max_timeout']

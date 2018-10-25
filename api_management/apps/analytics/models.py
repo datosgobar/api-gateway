@@ -4,10 +4,12 @@ import uuid
 from urllib.parse import parse_qsl, urlparse
 
 import requests
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+from redis import Redis
 from solo.models import SingletonModel
 
 from api_management.apps.api_registry.models import KongApi
@@ -64,6 +66,8 @@ class GoogleAnalyticsManager:
     def __init__(self, tracking_id):
         self.session = requests.session()
         self.tracking_id = tracking_id
+        self.redis_client = Redis(host=settings.REDIS_HOST,
+                                  port=settings.REDIS_PORT)
 
     @staticmethod
     @receiver(post_save, sender=Query)
@@ -79,16 +83,10 @@ class GoogleAnalyticsManager:
                 or re.search(regex, query.uri) is None:
             self.send_analytics(query)
 
-    def send_analytics(self, query):
+    def generate_api_session_id(self, query):
+        return query.ip_address + query.api_data.name + query.user_agent
 
-        if query.token is None:
-            cid = query.ip_address + query.user_agent
-        else:
-            cid = query.token
-
-        cid = hashlib.sha1(cid.encode()).digest()
-        cid = str(uuid.UUID(bytes=cid[:16]))
-
+    def generate_payload(self, cid, query):
         data = {'v': 1,  # Protocol Version
                 'cid': cid,  # Client ID
                 'tid': self.tracking_id,  # Tracking ID
@@ -101,8 +99,28 @@ class GoogleAnalyticsManager:
                 'srt': query.request_time,  # Server Response Time
                 'cm2': query.status_code,  # Custom Metric
                 'cd3': query.api_data.name,
-                'cm3': query.api_data.pk,
-                'sc': 'start'}  # each request starts a new session
+                'cm3': query.api_data.pk}
+
+        api_session_id = self.generate_api_session_id(query)
+
+        if not self.redis_client.exists(api_session_id):
+            data['sc'] = 'start'  # this request starts a new session
+
+        min_to_timeout = ApiSessionSettings.get_solo().max_timeout
+        self.redis_client.append(api_session_id, 'start')
+        self.redis_client.expire(api_session_id, min_to_timeout*60)
+
+        return data
+
+    def send_analytics(self, query):
+        if query.token is None:
+            cid = query.ip_address + query.user_agent
+        else:
+            cid = query.token
+
+        cid = hashlib.sha1(cid.encode()).digest()
+        cid = str(uuid.UUID(bytes=cid[:16]))
+        data = self.generate_payload(cid, query)
 
         response = self.session.post('http://www.google-analytics.com/collect', data=data)
         if not response.ok:
@@ -118,3 +136,10 @@ class CsvFile(models.Model):
 class CsvAnalyticsGeneratorTask(models.Model):
     created_at = models.DateTimeField()
     logs = models.TextField()
+
+
+class ApiSessionSettings(SingletonModel):
+    max_timeout = models.IntegerField(default=10, verbose_name='Timeout in minutes')
+
+    def __str__(self):
+        return 'ApiSessionSettings'

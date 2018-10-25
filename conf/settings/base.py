@@ -153,17 +153,20 @@ STATIC_URL = '/static/'
 
 SITE_ID = 1
 
+REDIS_HOST = env('REDIS_HOST', default='localhost')
+REDIS_PORT = 6379
+
 RQ_QUEUES = {
     'default': {
-        'HOST': env('REDIS_HOST', default='localhost'),
-        'PORT': 6379,
+        'HOST': REDIS_HOST,
+        'PORT': REDIS_PORT,
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     },
 
     'create_model': {
-        'HOST': env('REDIS_HOST', default='localhost'),
-        'PORT': 6379,
+        'HOST': REDIS_HOST,
+        'PORT': REDIS_PORT,
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     },
