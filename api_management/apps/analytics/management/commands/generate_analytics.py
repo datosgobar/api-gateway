@@ -10,16 +10,6 @@ def yesterday():
     return timezone.now() - relativedelta.relativedelta(days=1)
 
 
-def error_task_log(analytics_date, exception):
-    return "Error generando csv de analytics para el día {value}: {exception}"\
-        .format(value=analytics_date, exception=exception)
-
-
-def success_task_log(analytics_date):
-    return "Csv de analytics generado correctamente para el día {date}."\
-        .format(date=analytics_date)
-
-
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
@@ -49,11 +39,4 @@ class Command(BaseCommand):
 
     def generate_analytics(self, task, analytics_date):
         self.stdout.write("Generando csv para el día {date}...".format(date=analytics_date.date()))
-        try:
-            generate_analytics_dump.delay(analytics_date)
-            task.logs += success_task_log(analytics_date)
-            task.save()
-        except Exception as e:
-            task.logs += error_task_log(analytics_date, e)
-            task.save()
-            raise e
+        generate_analytics_dump.delay(analytics_date, task)

@@ -137,6 +137,22 @@ class CsvAnalyticsGeneratorTask(models.Model):
     created_at = models.DateTimeField()
     logs = models.TextField()
 
+    def success_task_log(self, api_name, analytics_date):
+        return "({api_name}) Csv de analytics generado correctamente para el día {date}.\n" \
+            .format(api_name=api_name, date=analytics_date)
+
+    def error_task_log(self, api_name, analytics_date, exception):
+        return "({api_name}) Error generando csv de analytics para el día {value}: {exception}\n" \
+            .format(api_name=api_name, value=analytics_date, exception=exception)
+
+    def log_success(self, api_name, analytics_date):
+        self.logs += self.success_task_log(api_name, analytics_date)
+        self.save()
+
+    def log_error(self, api_name, analytics_date, exception):
+        self.logs += self.error_task_log(api_name, analytics_date, exception)
+        self.save()
+
 
 class ApiSessionSettings(SingletonModel):
     max_timeout = models.IntegerField(default=10, verbose_name='Timeout in minutes')
