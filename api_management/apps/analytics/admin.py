@@ -34,7 +34,7 @@ TokenAdmin.raw_id_fields = ('user',)
 @admin.register(CsvAnalyticsGeneratorTask)
 class CsvAnalyticsGeneratorTaskAdmin(admin.ModelAdmin):
     list_display = [
-        'created_at', 'logs'
+        'created_at',
     ]
 
 
