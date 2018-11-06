@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken import views as authtoken_views
 
+admin.autodiscover()
+admin.site.index_template = "custom_index.html"
+
 api_urlpatterns = [
     path('analytics/', include('api_management.apps.analytics.urls')),
     path('registry/', include('api_management.apps.api_registry.urls')),

@@ -80,6 +80,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'conf.urls'
 
+
+def export_vars(_):
+    data = {
+        'API_VERSION': env('API_VERSION', default='local')
+    }
+    return data
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -91,6 +99,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'conf.settings.local.export_vars',
             ],
         },
     },
