@@ -83,7 +83,7 @@ ROOT_URLCONF = 'conf.urls'
 
 def export_vars(_):
     data = {
-        'API_VERSION': env('API_VERSION', default='local')
+        'PROJECT_VERSION': env('PROJECT_VERSION', default='local')
     }
     return data
 
