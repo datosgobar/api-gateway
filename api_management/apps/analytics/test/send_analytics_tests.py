@@ -99,7 +99,8 @@ def generate_default_payload(token, tracking_id, query):
             'cm1': query.start_time,  # Custom Metric
             'cm2': query.status_code,  # Custom Metric
             'cd3': query.api_data.name,
-            'cm3': query.api_data.pk}
+            'cm3': query.api_data.pk,
+            'ua': query.user_agent}
 
 
 def expected_data_with_session(token, tracking_id, query):

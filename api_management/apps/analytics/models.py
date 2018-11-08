@@ -99,7 +99,8 @@ class GoogleAnalyticsManager:
                 'srt': query.request_time,  # Server Response Time
                 'cm2': query.status_code,  # Custom Metric
                 'cd3': query.api_data.name,
-                'cm3': query.api_data.pk}
+                'cm3': query.api_data.pk,
+                'ua': query.user_agent}
 
         api_session_id = self.generate_api_session_id(query)
 
