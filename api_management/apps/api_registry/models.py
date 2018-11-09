@@ -367,11 +367,19 @@ class TokenRequest(models.Model):
 
 
 class KongPluginRateLimiting(KongPlugin):
+    POLICY_LOCAL = 'local'
+    POLICY_CLUSTER = 'cluster'
+    POLICY_CHOICES = (
+        (POLICY_LOCAL, 'local'),
+        (POLICY_CLUSTER, 'cluster'),
+    )
+
     plugin_name = 'rate-limiting'
     second = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     minute = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     hour = models.IntegerField(default=0, validators=[MinValueValidator(0)])
     day = models.IntegerField(default=0, validators=[MinValueValidator(0)])
+    policy = models.CharField(max_length=12, choices=POLICY_CHOICES, default=POLICY_LOCAL)
 
     class Meta:
         abstract = True
@@ -398,7 +406,7 @@ class KongPluginRateLimiting(KongPlugin):
         prev_k = None
         prev_v = 0
         for key, value in config.items():
-            if value < prev_v:
+            if (key != 'policy') and value < prev_v:  # it only checks numbers...
                 raise ValidationError('The limit for %s cannot be lower '
                                       'than the limit for %s' % (key, prev_k))
             prev_k = key
@@ -408,7 +416,8 @@ class KongPluginRateLimiting(KongPlugin):
         config = OrderedDict([('second', self.second),
                               ('minute', self.minute),
                               ('hour', self.hour),
-                              ('day', self.day)])
+                              ('day', self.day),
+                              ('policy', self.policy)])
 
         cleaned_config = OrderedDict()
         for key, value in config.items():
