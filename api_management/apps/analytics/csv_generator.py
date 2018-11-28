@@ -33,7 +33,7 @@ class CsvGenerator:
 
         return Query.objects.filter(api_data__name=self.api_name,
                                     start_time__gte=min_date,
-                                    start_time__lt=max_date)
+                                    start_time__lt=max_date).exclude(request_method='OPTIONS')
 
     def create_csv_file(self, file_name, file):
         csv_file = CsvFile.objects.filter(api_name=self.api_name, file_name=file_name).first()

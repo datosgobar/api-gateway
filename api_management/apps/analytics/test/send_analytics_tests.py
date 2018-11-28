@@ -64,6 +64,15 @@ def test_if_exclude_regex_does_not_matches_query_uri_send_analyitics_you_must(ga
     ga_manager.send_analytics.assert_called_once_with(query)
 
 
+# pylint: disable=invalid-name
+def test_exclude_analytics_for_options_request(ga_manager, query):
+    ga_manager.manage_query = MagicMock()
+
+    query.request_method = 'OPTIONS'
+    ga_manager.prepare_send_analytics(True, query)
+    ga_manager.manage_query.assert_not_called()
+
+
 #  Auxiliary functions:
 def set_up_redis(query):
     redis_client = Redis(host=settings.RQ_QUEUES["default"]["HOST"],
