@@ -6,7 +6,7 @@ Kong es una herramienta para *API Management* que facilita la creación, publica
 
 ### Desarrollo
 
-Documentación de desarrollo [aquí](docs/django.md)
+Documentación de desarrollo [aquí](docs/development.md)
 
 ### Deploy
 El script de deploy se llama `run_deploy.sh`.
@@ -15,7 +15,8 @@ Para el versionado usamos [semver](https://semver.org/).
 
 ### Uso
 
-Documentación de uso [aquí](docs/usage.md)
+- Documentación de uso [aquí](docs/usage.md)
+- Detalles técnicos de uso, tales como información de parámetros o procesos automáticos [aquí](docs/usage/technical_usage.md)
 
 
 ### Contacto
