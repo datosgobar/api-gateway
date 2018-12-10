@@ -2,6 +2,7 @@ from django.utils import timezone
 from django_rq import job
 
 from api_management.apps.analytics.csv_generator import CsvGenerator
+from api_management.apps.analytics.indicator_csv_generator import IndicatorCsvGenerator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask
 from api_management.apps.api_registry.models import KongApi
 
@@ -24,4 +25,15 @@ def generate_analytics_dump(analytics_date, task_logger=None):
             task_logger.log_success(api.name, analytics_date)
         except Exception as exception:
             task_logger.log_error(api.name, analytics_date, exception)
+            raise exception
+
+
+@job('generate_indicators_csv', timeout=3600)
+def generate_indicators_csv():
+    for api in KongApi.objects.all():
+        csv_generator = IndicatorCsvGenerator(api_name=api.name)
+        try:
+            # TODO: Loguear eventos success o error
+            csv_generator.generate()
+        except Exception as exception:
             raise exception

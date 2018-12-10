@@ -67,3 +67,25 @@ def download_csv_view(_request, api_name, date):
     else:
         response.status_code = 501
     return response
+
+
+@api_view(['GET'])
+@login_required
+def download_indicators_csv_view(_request, api_name):
+    response = HttpResponse()
+
+    if not KongApi.objects.filter(name=api_name).exists():
+        response.status_code = 404
+        return response
+
+    files = CsvFile.objects.filter(api_name=api_name,
+                                   file_name="{api}-indicadores.csv".format(api=api_name))
+
+    if files.exists() and files.first().file is not None:
+        response['Content-Disposition'] = "attachment;" \
+                                          "filename={name}".format(name=files.first().file_name)
+        response.content_type = 'text/csv'
+        response.content = files.first().file
+    else:
+        response.status_code = 501
+    return response
