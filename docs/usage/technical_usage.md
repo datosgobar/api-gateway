@@ -51,6 +51,11 @@ HTTP 200 OK
 Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.py generate_analytics` para generar un archivo .csv el cual contiene la información de todas las Query que se hicieron el día anterior. Si se busca generar todos los analytics desde la primer Query realizada, hay que corre el comando `python manage.py generate_analytics --all`. Esto recorre todas las Query de la DB y genera un archivo .csv por día para cada una de ellas. Es un proceso asincrónico, por lo tanto, va a correr cuando los workers estén disponibles más allá de ver el mensaje en pantalla "Generando csv....". Este CSV puede accederse en el endpoint `/management/api/analytics/<kong_api_name>/analytics_<fecha>.csv`, por ejemplo: `/management/api/analytics/series/analytics_2018-06-30.csv`
 
 
+#### Generación de CSV de indicadores por APIs
+
+Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.py generate_indicators` para generar un archivo .csv el cual contiene la información de los indicadores por APIs. Cada row representa un día. Es un proceso asincrónico, por lo tanto, va a correr cuando los workers estén disponibles más allá de ver el mensaje en pantalla "Generando csv....". Este CSV puede accederse en el endpoint `/management/api/analytics/<kong_api_name>_indicadores.csv`, por ejemplo: `/management/api/analytics/series-tiempo-indicadores.csv`
+
+
 #### Kong API: rate limiting
 
 Hay 2 opciones para guardar los _rate limits_ de una API de Kong usados por el plugin KongPluginRateLimiting:
