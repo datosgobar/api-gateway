@@ -56,7 +56,8 @@ def download_csv_view(_request, api_name, date):
         response.status_code = 404
         return response
 
-    files = CsvFile.objects.filter(api_name=api_name,
+    files = CsvFile.objects.filter(type="analytics",
+                                   api_name=api_name,
                                    file_name="analytics_{date}.csv".format(date=date))
 
     if files.exists() and files.first().file is not None:
@@ -78,7 +79,8 @@ def download_indicators_csv_view(_request, api_name):
         response.status_code = 404
         return response
 
-    files = CsvFile.objects.filter(api_name=api_name,
+    files = CsvFile.objects.filter(type="indicators",
+                                   api_name=api_name,
                                    file_name="{api}-indicadores.csv".format(api=api_name))
 
     if files.exists() and files.first().file is not None:
