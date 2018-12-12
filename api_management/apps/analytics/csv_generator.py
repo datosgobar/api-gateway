@@ -113,7 +113,7 @@ def indicator_row_content(queries):
 
     for query in queries:
         session_id = generate_api_session_id(query)
-        if not session_id in unique_session_ids:
+        if session_id not in unique_session_ids:
             unique_session_ids.append(session_id)
 
         if is_mobile(query.user_agent):
