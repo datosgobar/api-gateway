@@ -47,7 +47,8 @@ services:
       - redis
     volumes:
       - ./:/app/code/
-    command: python3 manage.py rqworker default create_model generate_analytics
+      - media:/app/media/
+    command: python3 manage.py rqworker default create_model generate_analytics generate_indicators_csv
   db:
     image: postgres:9.6-alpine
     environment:
