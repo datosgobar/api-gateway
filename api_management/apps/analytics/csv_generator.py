@@ -71,7 +71,7 @@ class AnalyticsCsvGenerator(AbstractCsvGenerator):
         return [field.name for field in Query._meta.get_fields()]
 
     def csv_file_type(self):
-        return "analytics"
+        return CsvFile.TYPE_ANALYTICS
 
     def csv_filename(self):
         return "analytics_{date}.csv".format(date=self.date.date())
@@ -79,7 +79,7 @@ class AnalyticsCsvGenerator(AbstractCsvGenerator):
     def get_csv_file(self, file_name):
         return CsvFile.objects.filter(api_name=self.api_name,
                                       file_name=file_name,
-                                      type="analytics").first()
+                                      type=CsvFile.TYPE_ANALYTICS).first()
 
     def write_content(self, writer, row_titles):
         for query in self.all_queries():
@@ -137,7 +137,7 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                 "consultas_dispositivos_no_moviles", "usuarios_total"]
 
     def csv_file_type(self):
-        return "indicators"
+        return CsvFile.TYPE_INDICATORS
 
     def csv_filename(self):
         return "{name}-indicadores.csv".format(name=self.api_name)
@@ -145,7 +145,7 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
     def get_csv_file(self, file_name):
         return CsvFile.objects.filter(api_name=self.api_name,
                                       file_name=file_name,
-                                      type="indicators").first()
+                                      type=CsvFile.TYPE_INDICATORS).first()
 
     def write_content(self, writer, _row_titles):
         query_time = Query.objects.first().start_time
