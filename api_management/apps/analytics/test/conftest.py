@@ -1,9 +1,12 @@
+from unittest.mock import Mock
+
 import pytest
 import requests_mock
 from faker import Faker
 
 from api_management.apps.analytics.models import GoogleAnalyticsManager, Query
 from api_management.apps.analytics.test.support import custom_faker
+from api_management.apps.api_registry.models import KongApi
 from api_management.apps.api_registry.models import KongApiPluginHttpLog
 from api_management.apps.api_registry.test.support import generate_api_data
 
@@ -118,3 +121,12 @@ def httplogdata(mocker, api_data, cfaker, db):
         httplogdata.save()
 
     return httplogdata
+
+
+@pytest.fixture
+def kong_api():
+    instance = Mock(KongApi)
+    instance.id = 1
+    instance.name = 'series'
+    instance._state = Mock()
+    return instance
