@@ -107,14 +107,12 @@ def next_day_of(a_day):
 
 
 def indicator_row_content(queries):
-    unique_session_ids = []
+    unique_session_ids = set()
     total_mobile = 0
     total_not_mobile = 0
 
     for query in queries:
-        session_id = generate_api_session_id(query)
-        if session_id not in unique_session_ids:
-            unique_session_ids.append(session_id)
+        unique_session_ids.add(generate_api_session_id(query))
 
         if is_mobile(query.user_agent):
             total_mobile = total_mobile + 1

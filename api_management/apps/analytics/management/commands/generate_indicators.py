@@ -13,7 +13,7 @@ def yesterday():
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        if Query.objects.count() == 0:
+        if not Query.objects.count():
             self.stdout.write("No hay queries cargadas.")
             return
 
