@@ -1,3 +1,4 @@
+import abc
 import hashlib
 import re
 import uuid
@@ -56,6 +57,10 @@ def is_options_request(query):
     return query.request_method == 'OPTIONS'
 
 
+def generate_api_session_id(query):
+    return query.ip_address + query.api_data.name + query.user_agent
+
+
 class GoogleAnalyticsManager:
 
     @classmethod
@@ -87,9 +92,6 @@ class GoogleAnalyticsManager:
                 or re.search(regex, query.uri) is None:
             self.send_analytics(query)
 
-    def generate_api_session_id(self, query):
-        return query.ip_address + query.api_data.name + query.user_agent
-
     def generate_payload(self, cid, query):
         data = {'v': 1,  # Protocol Version
                 'cid': cid,  # Client ID
@@ -106,7 +108,7 @@ class GoogleAnalyticsManager:
                 'cm3': query.api_data.pk,
                 'ua': query.user_agent}
 
-        api_session_id = self.generate_api_session_id(query)
+        api_session_id = generate_api_session_id(query)
 
         if not self.redis_client.exists(api_session_id):
             data['sc'] = 'start'  # this request starts a new session
@@ -133,30 +135,63 @@ class GoogleAnalyticsManager:
 
 
 class CsvFile(models.Model):
+    TYPE_ANALYTICS = 'analytics'
+    TYPE_INDICATORS = 'indicators'
+    TYPE_CHOICES = (
+        (TYPE_ANALYTICS, 'analytics'),
+        (TYPE_INDICATORS, 'indicators'),
+    )
+
     api_name = models.CharField(max_length=30, null=False, blank=False)
     file_name = models.CharField(max_length=100, null=False, blank=False)
     file = models.FileField(upload_to='media')
+    type = models.CharField(max_length=30, null=False, blank=False, choices=TYPE_CHOICES)
 
 
-class CsvAnalyticsGeneratorTask(models.Model):
+class CsvGeneratorTaskLogger(models.Model):
     created_at = models.DateTimeField()
     logs = models.TextField()
 
-    def success_task_log(self, api_name, analytics_date):
-        return "({api_name}) Csv de analytics generado correctamente para el día {date}.\n" \
-            .format(api_name=api_name, date=analytics_date)
-
-    def error_task_log(self, api_name, analytics_date, exception):
-        return "({api_name}) Error generando csv de analytics para el día {value}: {exception}\n" \
-            .format(api_name=api_name, value=analytics_date, exception=exception)
+    class Meta:
+        abstract = True
 
     def log_success(self, api_name, analytics_date):
         self.logs += self.success_task_log(api_name, analytics_date)
         self.save()
 
     def log_error(self, api_name, analytics_date, exception):
-        self.logs += self.error_task_log(api_name, analytics_date, exception)
+        self.logs += self.error_task_log(api_name, exception, analytics_date)
         self.save()
+
+    @abc.abstractmethod
+    def success_task_log(self, api_name, analytics_date):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def error_task_log(self, api_name, exception, analytics_date=None):
+        raise NotImplementedError
+
+
+class CsvAnalyticsGeneratorTask(CsvGeneratorTaskLogger):
+
+    def success_task_log(self, api_name, analytics_date):
+        return "({api_name}) Csv de analytics generado correctamente para el día {date}.\n" \
+            .format(api_name=api_name, date=analytics_date)
+
+    def error_task_log(self, api_name, exception, analytics_date=None):
+        return "({api_name}) Error generando csv de analytics para el día {value}: {exception}\n" \
+            .format(api_name=api_name, value=analytics_date, exception=exception)
+
+
+class IndicatorCsvGeneratorTask(CsvGeneratorTaskLogger):
+
+    def success_task_log(self, api_name, analytics_date):
+        return "({api_name}) Csv de indicadores generado correctamente.\n" \
+            .format(api_name=api_name)
+
+    def error_task_log(self, api_name, exception, analytics_date=None):
+        return "({api_name}) Error generando csv de indicadores: {exception}\n" \
+            .format(api_name=api_name, exception=exception)
 
 
 class ApiSessionSettings(SingletonModel):
