@@ -33,7 +33,7 @@ def generate_analytics_dump(analytics_date, task_logger=None):
         generate_csv(csv_generator, task_logger, api.name, analytics_date)
 
 
-@job('generate_indicators_csv', timeout=3600)
+@job('generate_indicators_csv', timeout=7200)
 def generate_indicators_csv(task_logger=None):
     task_logger = task_logger or IndicatorCsvGeneratorTask(created_at=timezone.now())
 
