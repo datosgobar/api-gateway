@@ -75,7 +75,6 @@ def download_csv_view(_request, api_name, date):
 
 
 @api_view(['GET'])
-@login_required
 def download_indicators_csv_view(_request, api_name):
     response = HttpResponse()
 
