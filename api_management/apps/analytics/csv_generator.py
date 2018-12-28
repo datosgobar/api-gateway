@@ -1,13 +1,11 @@
 import abc
 import csv
-from datetime import date
 
-from dateutil import relativedelta
 from django.conf import settings
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
-from api_management.apps.analytics.models import Query, CsvFile, generate_api_session_id
+from api_management.apps.analytics.models import Query, CsvFile, IndicatorMetricsRow, next_day_of
 
 
 def get_csv_writer(file):
@@ -88,41 +86,11 @@ class AnalyticsCsvGenerator(AbstractCsvGenerator):
 
     def all_queries(self):
         min_date = self.date
-        max_date = min_date + relativedelta.relativedelta(days=1)
+        max_date = next_day_of(min_date)
 
         return Query.objects.filter(api_data__name=self.api_name,
                                     start_time__gte=min_date,
                                     start_time__lt=max_date).exclude(request_method='OPTIONS')
-
-
-def is_mobile(user_agent):
-    return "Mobile" in user_agent or \
-           "Android" in user_agent or \
-           "iPhone" in user_agent or \
-           "Slackbot" in user_agent
-
-
-def next_day_of(a_day):
-    return a_day + relativedelta.relativedelta(days=1)
-
-
-def indicator_row_content(queries):
-    unique_session_ids = set()
-    total_mobile = 0
-    total_not_mobile = 0
-
-    for query in queries:
-        unique_session_ids.add(generate_api_session_id(query))
-
-        if is_mobile(query.user_agent):
-            total_mobile = total_mobile + 1
-        else:
-            total_not_mobile = total_not_mobile + 1
-
-    return {'total': total_mobile + total_not_mobile,
-            'total_mobile': total_mobile,
-            'total_not_mobile': total_not_mobile,
-            'total_unique_users': len(unique_session_ids)}
 
 
 class IndicatorCsvGenerator(AbstractCsvGenerator):
@@ -146,24 +114,10 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                                       type=CsvFile.TYPE_INDICATORS).first()
 
     def write_content(self, writer, _row_titles):
-        query_time = Query.objects.first().start_time
-
-        while query_time.date() < date.today():
-            row = []
-            queries = self.all_queries(query_time)
-            total_counts = indicator_row_content(queries)
-
-            row.append(query_time.date())
-            row.append(total_counts.get('total'))
-            row.append(total_counts.get('total_mobile'))
-            row.append(total_counts.get('total_not_mobile'))
-            row.append(total_counts.get('total_unique_users'))
+        for metric_row in IndicatorMetricsRow.objects.filter(api_name=self.api_name):
+            row = [metric_row.date,
+                   metric_row.all_queries,
+                   metric_row.all_mobile,
+                   metric_row.all_not_mobile,
+                   metric_row.total_users]
             writer.writerow(row)
-
-            query_time = next_day_of(query_time)
-
-    def all_queries(self, query_time):
-        return Query.objects.filter(api_data__name=self.api_name,
-                                    start_time__gte=query_time,
-                                    start_time__lt=next_day_of(query_time))\
-                            .exclude(request_method='OPTIONS')

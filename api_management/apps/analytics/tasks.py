@@ -3,6 +3,7 @@ from django_rq import job
 
 from api_management.apps.analytics.csv_generator import AnalyticsCsvGenerator, \
     IndicatorCsvGenerator
+from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
     IndicatorCsvGeneratorTask
 from api_management.apps.api_registry.models import KongApi
@@ -38,5 +39,6 @@ def generate_indicators_csv(task_logger=None):
     task_logger = task_logger or IndicatorCsvGeneratorTask(created_at=timezone.now())
 
     for api in KongApi.objects.all():
+        IndicatorMetricsCalculator(api.name).calculate()
         csv_generator = IndicatorCsvGenerator(api_name=api.name)
         generate_csv(csv_generator, task_logger, api.name, None)
