@@ -5,6 +5,7 @@ import uuid
 from urllib.parse import parse_qsl, urlparse
 
 import requests
+from dateutil import relativedelta
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
@@ -14,6 +15,10 @@ from redis import Redis
 from solo.models import SingletonModel
 
 from api_management.apps.api_registry.models import KongApi
+
+
+def next_day_of(a_day):
+    return a_day + relativedelta.relativedelta(days=1)
 
 
 class Query(models.Model):
@@ -199,3 +204,12 @@ class ApiSessionSettings(SingletonModel):
 
     def __str__(self):
         return 'ApiSessionSettings'
+
+
+class IndicatorMetricsRow(models.Model):
+    api_name = models.CharField(max_length=100, blank=False, null=False)
+    date = models.DateTimeField(blank=True, null=True)
+    all_queries = models.IntegerField(blank=True, null=True)
+    all_mobile = models.IntegerField(blank=True, null=True)
+    all_not_mobile = models.IntegerField(blank=True, null=True)
+    total_users = models.IntegerField(blank=True, null=True)
