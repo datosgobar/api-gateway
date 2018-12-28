@@ -3,8 +3,9 @@ from django_rq import job
 
 from api_management.apps.analytics.csv_generator import AnalyticsCsvGenerator, \
     IndicatorCsvGenerator
+from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
-    IndicatorCsvGeneratorTask, IndicatorMetricsCalculator
+    IndicatorCsvGeneratorTask
 from api_management.apps.api_registry.models import KongApi
 
 

@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from api_management.apps.analytics.models import Query, IndicatorMetricsCalculator
+from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
+from api_management.apps.analytics.models import Query
 from api_management.apps.analytics.test.user_agents import user_agents
 
 
