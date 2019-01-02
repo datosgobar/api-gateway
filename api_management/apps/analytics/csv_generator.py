@@ -8,10 +8,6 @@ from django.core.files.temp import NamedTemporaryFile
 from api_management.apps.analytics.models import Query, CsvFile, IndicatorMetricsRow, next_day_of
 
 
-def get_csv_writer(file):
-    return csv.writer(file, quoting=csv.QUOTE_ALL)
-
-
 class AbstractCsvGenerator:
 
     def __init__(self, api_name):
@@ -37,9 +33,13 @@ class AbstractCsvGenerator:
     def csv_file_type(self):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_csv_writer(self, file):
+        raise NotImplementedError
+
     def generate(self):
         with NamedTemporaryFile(mode='r+', dir=settings.MEDIA_ROOT, suffix='.csv') as file:
-            writer = get_csv_writer(file)
+            writer = self.get_csv_writer(file)
             csv_header = self.row_titles()
             writer.writerow(csv_header)
             self.write_content(writer, csv_header)
@@ -67,6 +67,9 @@ class AnalyticsCsvGenerator(AbstractCsvGenerator):
 
     def row_titles(self):
         return [field.name for field in Query._meta.get_fields()]
+
+    def get_csv_writer(self, file):
+        return csv.writer(file, quoting=csv.QUOTE_ALL)
 
     def csv_file_type(self):
         return CsvFile.TYPE_ANALYTICS
@@ -101,6 +104,9 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
     def row_titles(self):
         return ["indice_tiempo", "consultas_total", "consultas_dispositivos_moviles",
                 "consultas_dispositivos_no_moviles", "usuarios_total"]
+
+    def get_csv_writer(self, file):
+        return csv.writer(file, quoting=csv.QUOTE_NONE)
 
     def csv_file_type(self):
         return CsvFile.TYPE_INDICATORS
