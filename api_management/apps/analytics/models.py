@@ -208,7 +208,7 @@ class ApiSessionSettings(SingletonModel):
 
 class IndicatorMetricsRow(models.Model):
     api_name = models.CharField(max_length=100, blank=False, null=False)
-    date = models.DateTimeField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
     all_queries = models.IntegerField(blank=True, null=True)
     all_mobile = models.IntegerField(blank=True, null=True)
     all_not_mobile = models.IntegerField(blank=True, null=True)
