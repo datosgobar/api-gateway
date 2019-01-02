@@ -35,10 +35,10 @@ def generate_analytics_dump(analytics_date, task_logger=None):
 
 
 @job('generate_indicators_csv', timeout=-1)  # no timeout
-def generate_indicators_csv(task_logger=None):
+def generate_indicators_csv(force, task_logger=None):
     task_logger = task_logger or IndicatorCsvGeneratorTask(created_at=timezone.now())
 
     for api in KongApi.objects.all():
-        IndicatorMetricsCalculator(api.name).calculate()
+        IndicatorMetricsCalculator(api.name).calculate(force)
         csv_generator = IndicatorCsvGenerator(api_name=api.name)
         generate_csv(csv_generator, task_logger, api.name, None)

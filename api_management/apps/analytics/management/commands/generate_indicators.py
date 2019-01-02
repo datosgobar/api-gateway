@@ -17,10 +17,16 @@ class Command(BaseCommand):
             self.stdout.write("No hay queries cargadas.")
             return
 
-        self.generate_indicators_csv()
+        if options.get('all'):
+            self.generate_indicators_csv(force=True)
+        else:
+            self.generate_indicators_csv(force=False)
 
-    def generate_indicators_csv(self):
+    def add_arguments(self, parser):
+        parser.add_argument('--all', default=False, action='store_true')
+
+    def generate_indicators_csv(self, force):
         task = IndicatorCsvGeneratorTask(created_at=timezone.now())
         self.stdout.write("Generando csv de indicadores...")
-        generate_indicators_csv.delay(task)
+        generate_indicators_csv.delay(force, task)
         self.stdout.write("La generación terminó.")

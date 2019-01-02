@@ -37,24 +37,32 @@ class IndicatorMetricsCalculator:
         query_time = Query.objects.first().start_time
         last_row = IndicatorMetricsRow.objects.filter(api_name=self.api_name).last()
         if last_row is not None:
-            query_time = last_row.date
+            query_time = next_day_of(last_row.date)
 
         return query_time
 
-    def calculate(self):
+    def drop_metric_rows(self, force):
+        if force:
+            IndicatorMetricsRow.objects.filter(api_name=self.api_name).delete()
+
+    def calculate_indicators(self, queries, row_date):
+        total_counts = self.indicator_row_content(queries)
+
+        indicator_row = IndicatorMetricsRow(api_name=self.api_name)
+        indicator_row.date = row_date
+        indicator_row.all_queries = total_counts.get('total')
+        indicator_row.all_mobile = total_counts.get('total_mobile')
+        indicator_row.all_not_mobile = total_counts.get('total_not_mobile')
+        indicator_row.total_users = total_counts.get('total_unique_users')
+        indicator_row.save()
+
+    def calculate(self, force):
+        self.drop_metric_rows(force)
         query_time = self.first_query_time()
 
         while query_time.date() < date.today():
             queries = self.all_queries(query_time)
-            total_counts = self.indicator_row_content(queries)
-
-            indicator_row = IndicatorMetricsRow(api_name=self.api_name)
-            indicator_row.date = query_time.date()
-            indicator_row.all_queries = total_counts.get('total')
-            indicator_row.all_mobile = total_counts.get('total_mobile')
-            indicator_row.all_not_mobile = total_counts.get('total_not_mobile')
-            indicator_row.total_users = total_counts.get('total_unique_users')
-            indicator_row.save()
+            self.calculate_indicators(queries, query_time.date())
             query_time = next_day_of(query_time)
 
     def all_queries(self, query_time):
