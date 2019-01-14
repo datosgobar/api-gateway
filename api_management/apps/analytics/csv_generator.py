@@ -103,7 +103,8 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
 
     def row_titles(self):
         return ["indice_tiempo", "consultas_total", "consultas_dispositivos_moviles",
-                "consultas_dispositivos_no_moviles", "usuarios_total"]
+                "consultas_dispositivos_no_moviles", "usuarios_total_historico",
+                "usuarios_total_30_dias", "usuarios_total_90_dias", "usuarios_total_180_dias"]
 
     def get_csv_writer(self, file):
         return csv.writer(file, quoting=csv.QUOTE_NONE)
@@ -125,5 +126,8 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                    metric_row.all_queries,
                    metric_row.all_mobile,
                    metric_row.all_not_mobile,
-                   metric_row.total_users]
+                   metric_row.total_users,
+                   metric_row.total_users_last_30,
+                   metric_row.total_users_last_90,
+                   metric_row.total_users_last_180]
             writer.writerow(row)

@@ -206,6 +206,7 @@ class ApiSessionSettings(SingletonModel):
         return 'ApiSessionSettings'
 
 
+# pylint: disable=too-many-instance-attributes
 class IndicatorMetricsRow(models.Model):
     api_name = models.CharField(max_length=100, blank=False, null=False)
     date = models.DateField(blank=True, null=True)
@@ -213,3 +214,6 @@ class IndicatorMetricsRow(models.Model):
     all_mobile = models.IntegerField(blank=True, null=True)
     all_not_mobile = models.IntegerField(blank=True, null=True)
     total_users = models.IntegerField(blank=True, null=True)
+    total_users_last_30 = models.IntegerField(blank=True, null=True)
+    total_users_last_90 = models.IntegerField(blank=True, null=True)
+    total_users_last_180 = models.IntegerField(blank=True, null=True)

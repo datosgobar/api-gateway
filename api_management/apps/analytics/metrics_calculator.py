@@ -1,5 +1,7 @@
 from datetime import date
 
+from dateutil import relativedelta
+
 from api_management.apps.analytics.models import generate_api_session_id, IndicatorMetricsRow, \
     Query, next_day_of
 
@@ -15,13 +17,26 @@ class IndicatorMetricsCalculator:
                "iPhone" in user_agent or \
                "Slackbot" in user_agent
 
+    def api_session_id_last_days(self, query, days):
+        result = None
+        if query.start_time.date() >= date.today() - relativedelta.relativedelta(days=days):
+            result = generate_api_session_id(query)
+
+        return result
+
     def indicator_row_content(self, queries):
         unique_session_ids = set()
+        unique_session_ids_last_30 = set()
+        unique_session_ids_last_90 = set()
+        unique_session_ids_last_180 = set()
         total_mobile = 0
         total_not_mobile = 0
 
         for query in queries:
             unique_session_ids.add(generate_api_session_id(query))
+            unique_session_ids_last_30.add(self.api_session_id_last_days(query, 30))
+            unique_session_ids_last_90.add(self.api_session_id_last_days(query, 90))
+            unique_session_ids_last_180.add(self.api_session_id_last_days(query, 180))
 
             if self.is_mobile(query.user_agent):
                 total_mobile = total_mobile + 1
@@ -31,7 +46,10 @@ class IndicatorMetricsCalculator:
         return {'total': total_mobile + total_not_mobile,
                 'total_mobile': total_mobile,
                 'total_not_mobile': total_not_mobile,
-                'total_unique_users': len(unique_session_ids)}
+                'total_unique_users': len(unique_session_ids),
+                'total_unique_users_30': len(unique_session_ids_last_30),
+                'total_unique_users_90': len(unique_session_ids_last_90),
+                'total_unique_users_180': len(unique_session_ids_last_180)}
 
     def first_query_time(self):
         query_time = Query.objects.first().start_time.date()
@@ -54,6 +72,9 @@ class IndicatorMetricsCalculator:
         indicator_row.all_mobile = total_counts.get('total_mobile')
         indicator_row.all_not_mobile = total_counts.get('total_not_mobile')
         indicator_row.total_users = total_counts.get('total_unique_users')
+        indicator_row.total_users_last_30 = total_counts.get('total_unique_users_30')
+        indicator_row.total_users_last_90 = total_counts.get('total_unique_users_90')
+        indicator_row.total_users_last_180 = total_counts.get('total_unique_users_180')
         indicator_row.save()
 
     def calculate(self, force):
