@@ -6,6 +6,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from api_management.apps.analytics.models import Query, CsvFile, IndicatorMetricsRow, next_day_of
+from api_management.apps.api_registry.models import KongApiHistoricHits
 
 
 class AbstractCsvGenerator:
@@ -103,7 +104,8 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
 
     def row_titles(self):
         return ["indice_tiempo", "consultas_total", "consultas_dispositivos_moviles",
-                "consultas_dispositivos_no_moviles", "usuarios_total"]
+                "consultas_dispositivos_no_moviles", "usuarios_total",
+                "consultas_acumuladas_total"]
 
     def get_csv_writer(self, file):
         return csv.writer(file, quoting=csv.QUOTE_NONE)
@@ -126,4 +128,11 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                    metric_row.all_mobile,
                    metric_row.all_not_mobile,
                    metric_row.total_users]
+
+            historic_hits = KongApiHistoricHits.objects.filter(kong_id__name=self.api_name).first()
+            if historic_hits is not None:
+                row.append(historic_hits.accumulated_hits + metric_row.all_queries)
+            else:
+                row.append(metric_row.all_queries)
+
             writer.writerow(row)
