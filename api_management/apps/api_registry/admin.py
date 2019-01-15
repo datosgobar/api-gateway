@@ -6,7 +6,7 @@ from solo.admin import SingletonModelAdmin
 from .models import KongApi, TokenRequest, KongApiPluginHttpLog, \
     KongApiPluginRateLimiting, KongApiPluginJwt, \
     KongConsumer, JwtCredential, KongConsumerPluginRateLimiting, \
-    KongApiPluginCors, RootKongApi
+    KongApiPluginCors, RootKongApi, KongApiHistoricHits
 
 
 class KongObjectInline(admin.StackedInline):
@@ -33,6 +33,12 @@ class KongPluginCorsInline(KongObjectInline):
     model = KongApiPluginCors
 
 
+class KongApiHistoricHitsInline(KongObjectInline):
+    model = KongApiHistoricHits
+
+    list_display = ["accumulated_hits"]
+
+
 @admin.register(KongApi)
 class ApiAdmin(admin.ModelAdmin):
     inlines = [
@@ -40,6 +46,7 @@ class ApiAdmin(admin.ModelAdmin):
         KongPluginHttpLogInline,
         KongPluginRateLimitingInline,
         KongPluginJwtInline,
+        KongApiHistoricHitsInline,
     ]
 
     list_display = [
