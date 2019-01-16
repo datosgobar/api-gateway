@@ -560,6 +560,17 @@ class RootKongApi(SingletonModel, KongObject):
         return settings.KONG_TRAFFIC_URL + reverse('root-redirect')
 
 
+class KongApiHistoricHits(models.Model):
+    kong_api = models.OneToOneField(KongApi, on_delete=models.CASCADE)
+    accumulated_hits = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "Consultas históricas"
+
+    def kong_id(self):  # Needed for admin view
+        return self.kong_api.id
+
+
 @receiver(post_save, sender=KongApi)
 def re_enable_kong_plugins(created, instance, *_, **__):
     if not created:

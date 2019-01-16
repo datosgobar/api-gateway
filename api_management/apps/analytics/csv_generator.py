@@ -6,6 +6,7 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from api_management.apps.analytics.models import Query, CsvFile, IndicatorMetricsRow, next_day_of
+from api_management.apps.api_registry.models import KongApiHistoricHits
 
 
 class AbstractCsvGenerator:
@@ -103,7 +104,8 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
 
     def row_titles(self):
         return ["indice_tiempo", "consultas_total", "consultas_dispositivos_moviles",
-                "consultas_dispositivos_no_moviles", "usuarios_total"]
+                "consultas_dispositivos_no_moviles", "usuarios_total",
+                "consultas_acumuladas_total"]
 
     def get_csv_writer(self, file):
         return csv.writer(file, quoting=csv.QUOTE_NONE)
@@ -119,11 +121,25 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                                       file_name=file_name,
                                       type=CsvFile.TYPE_INDICATORS).first()
 
+    def historic_hit_by_api(self):
+        return KongApiHistoricHits.objects.filter(kong_api__name=self.api_name).first()
+
+    def historic_hits(self, all_queries):
+        result = all_queries
+
+        historic_hit = self.historic_hit_by_api()
+        if historic_hit is not None:
+            historic_hit.accumulated_hits += result
+            historic_hit.save()
+            result = historic_hit.accumulated_hits
+
+        return result
+
     def write_content(self, writer, _row_titles):
         for metric_row in IndicatorMetricsRow.objects.filter(api_name=self.api_name):
-            row = [metric_row.date,
-                   metric_row.all_queries,
-                   metric_row.all_mobile,
-                   metric_row.all_not_mobile,
-                   metric_row.total_users]
-            writer.writerow(row)
+            writer.writerow([metric_row.date,
+                             metric_row.all_queries,
+                             metric_row.all_mobile,
+                             metric_row.all_not_mobile,
+                             metric_row.total_users,
+                             self.historic_hits(metric_row.all_queries)])
