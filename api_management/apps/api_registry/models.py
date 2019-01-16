@@ -561,11 +561,14 @@ class RootKongApi(SingletonModel, KongObject):
 
 
 class KongApiHistoricHits(models.Model):
-    kong_id = models.OneToOneField(KongApi, on_delete=models.CASCADE)
+    kong_api = models.OneToOneField(KongApi, on_delete=models.CASCADE)
     accumulated_hits = models.IntegerField(default=0)
 
     def __str__(self):
         return "Consultas históricas"
+
+    def kong_id(self):  # Needed for admin view
+        return self.kong_api.id
 
 
 @receiver(post_save, sender=KongApi)

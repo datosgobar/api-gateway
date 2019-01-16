@@ -122,7 +122,7 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                                       type=CsvFile.TYPE_INDICATORS).first()
 
     def historic_hit_by_api(self):
-        return KongApiHistoricHits.objects.filter(kong_id__name=self.api_name).first()
+        return KongApiHistoricHits.objects.filter(kong_api__name=self.api_name).first()
 
     def historic_hits(self, all_queries):
         result = all_queries

@@ -137,6 +137,6 @@ def historic_hits():
     instance = Mock(KongApiHistoricHits)
     instance.id = 1
     instance._state = Mock()
-    instance.kong_id = kong_api()
+    instance.kong_api = kong_api()
     instance.accumulated_hits = 100
     return instance
