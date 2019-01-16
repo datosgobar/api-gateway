@@ -6,7 +6,7 @@ from faker import Faker
 
 from api_management.apps.analytics.models import GoogleAnalyticsManager, Query
 from api_management.apps.analytics.test.support import custom_faker
-from api_management.apps.api_registry.models import KongApi
+from api_management.apps.api_registry.models import KongApi, KongApiHistoricHits
 from api_management.apps.api_registry.models import KongApiPluginHttpLog
 from api_management.apps.api_registry.test.support import generate_api_data
 
@@ -129,4 +129,14 @@ def kong_api():
     instance.id = 1
     instance.name = 'series'
     instance._state = Mock()
+    return instance
+
+
+@pytest.fixture
+def historic_hits():
+    instance = Mock(KongApiHistoricHits)
+    instance.id = 1
+    instance._state = Mock()
+    instance.kong_id = kong_api()
+    instance.accumulated_hits = 100
     return instance

@@ -121,18 +121,25 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                                       file_name=file_name,
                                       type=CsvFile.TYPE_INDICATORS).first()
 
+    def historic_hit_by_api(self):
+        return KongApiHistoricHits.objects.filter(kong_id__name=self.api_name).first()
+
+    def historic_hits(self, all_queries):
+        result = all_queries
+
+        historic_hit = self.historic_hit_by_api()
+        if historic_hit is not None:
+            historic_hit.accumulated_hits += result
+            historic_hit.save()
+            result = historic_hit.accumulated_hits
+
+        return result
+
     def write_content(self, writer, _row_titles):
         for metric_row in IndicatorMetricsRow.objects.filter(api_name=self.api_name):
-            row = [metric_row.date,
-                   metric_row.all_queries,
-                   metric_row.all_mobile,
-                   metric_row.all_not_mobile,
-                   metric_row.total_users]
-
-            historic_hits = KongApiHistoricHits.objects.filter(kong_id__name=self.api_name).first()
-            if historic_hits is not None:
-                row.append(historic_hits.accumulated_hits + metric_row.all_queries)
-            else:
-                row.append(metric_row.all_queries)
-
-            writer.writerow(row)
+            writer.writerow([metric_row.date,
+                             metric_row.all_queries,
+                             metric_row.all_mobile,
+                             metric_row.all_not_mobile,
+                             metric_row.total_users,
+                             self.historic_hits(metric_row.all_queries)])
