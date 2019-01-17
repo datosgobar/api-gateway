@@ -1,5 +1,6 @@
 import abc
 import csv
+import datetime
 
 from django.conf import settings
 from django.core.files import File
@@ -126,12 +127,13 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
         model, _created = KongApiHistoricHits.objects.get_or_create(kong_api=kong_api)
         return model
 
-    def historic_hits(self, all_queries):
-        historic_hit = self.historic_hit_by_api()
-        historic_hit.accumulated_hits += all_queries
-        historic_hit.save()
+    def total_queries_by_date(self, row_date):
+        return Query.objects.filter(start_time__lt=next_day_of(row_date)).count()
 
-        return historic_hit.accumulated_hits
+    def total_historic_hits(self, row_date):
+        all_queries = self.total_queries_by_date(row_date)
+
+        return self.historic_hit_by_api().accumulated_hits + all_queries
 
     def write_content(self, writer, _row_titles):
         for metric_row in IndicatorMetricsRow.objects.filter(api_name=self.api_name):
@@ -140,4 +142,4 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                              metric_row.all_mobile,
                              metric_row.all_not_mobile,
                              metric_row.total_users,
-                             self.historic_hits(metric_row.all_queries)])
+                             self.total_historic_hits(metric_row.date)])

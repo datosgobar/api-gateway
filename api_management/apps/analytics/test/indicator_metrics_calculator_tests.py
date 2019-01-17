@@ -7,7 +7,6 @@ from api_management.apps.analytics.csv_generator import IndicatorCsvGenerator
 from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import Query
 from api_management.apps.analytics.test.user_agents import user_agents
-from api_management.apps.api_registry.models import KongApiHistoricHits
 
 
 def test_is_mobile():
@@ -36,23 +35,24 @@ def test_indicator_row_content(kong_api):
 
 @pytest.mark.django_db
 def test_historic_hits_default(empty_historic_hits):
-    queries = 50
     csv_generator = IndicatorCsvGenerator(api_name='series')
 
     with patch('api_management.apps.analytics.csv_generator.IndicatorCsvGenerator'
                '.historic_hit_by_api', return_value=empty_historic_hits):
+        with patch('api_management.apps.analytics.csv_generator.IndicatorCsvGenerator'
+                   '.total_queries_by_date', return_value=50):
 
-        assert csv_generator.historic_hits(queries) == 50
-        assert KongApiHistoricHits.objects.count() == 0
+            assert csv_generator.total_historic_hits(datetime(2018, 10, 10)) == 50
 
 
 @pytest.mark.django_db
 def test_historic_hits_with_data(historic_hits):
-    queries = 50
     csv_generator = IndicatorCsvGenerator(api_name='series')
 
     with patch('api_management.apps.analytics.csv_generator.IndicatorCsvGenerator'
                '.historic_hit_by_api', return_value=historic_hits):
+        with patch('api_management.apps.analytics.csv_generator.IndicatorCsvGenerator'
+                   '.total_queries_by_date', return_value=50):
 
-        assert historic_hits.accumulated_hits == 100
-        assert csv_generator.historic_hits(queries) == 150
+            assert historic_hits.accumulated_hits == 100
+            assert csv_generator.total_historic_hits(datetime(2018, 10, 10)) == 150
