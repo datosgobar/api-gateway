@@ -7,7 +7,7 @@ from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCal
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
     IndicatorCsvGeneratorTask
 from api_management.apps.api_registry.models import KongApi
-from api_management.apps.common.utils import as_locale_datetime
+from api_management.apps.common.utils import as_local_datetime
 
 
 @job('create_model')
@@ -28,8 +28,8 @@ def generate_csv(generator, task_logger, api_name, analytics_date=None):
 
 @job('generate_analytics', timeout=3600)
 def generate_analytics_dump(analytics_date, task_logger=None):
-    locale_time = as_locale_datetime(timezone.now())
-    task_logger = task_logger or CsvAnalyticsGeneratorTask(created_at=locale_time)
+    local_time = as_local_datetime(timezone.now())
+    task_logger = task_logger or CsvAnalyticsGeneratorTask(created_at=local_time)
 
     for api in KongApi.objects.all():
         csv_generator = AnalyticsCsvGenerator(api_name=api.name, analytics_date=analytics_date)
@@ -38,8 +38,8 @@ def generate_analytics_dump(analytics_date, task_logger=None):
 
 @job('generate_indicators_csv', timeout=-1)  # no timeout
 def generate_indicators_csv(force, task_logger=None):
-    locale_time = as_locale_datetime(timezone.now())
-    task_logger = task_logger or IndicatorCsvGeneratorTask(created_at=locale_time)
+    local_time = as_local_datetime(timezone.now())
+    task_logger = task_logger or IndicatorCsvGeneratorTask(created_at=local_time)
 
     for api in KongApi.objects.all():
         IndicatorMetricsCalculator(api.name).calculate(force)
