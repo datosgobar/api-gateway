@@ -1,6 +1,5 @@
 import abc
 import csv
-import datetime
 
 from django.conf import settings
 from django.core.files import File
