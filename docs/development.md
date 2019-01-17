@@ -66,6 +66,13 @@ API_TOKEN=ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718
 curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=http://django:8080/api/analytics/queries/ -d config.token=$API_TOKEN
 ```
 
+### Migraciones de la API de Kong
+Casi todos los modelos de la aplicación `api_registry` requieren hacer una migración de las APIs de Kong (con actualizar una API es suficiente). A continuación se listan los encontrados hasta la fecha:
+
+`KongObject`, `KongApi`, `KongApiPlugin`, `KongPlugin`, `KongConsumerManager`, `KongConsumer`, `JwtCredentialManager`, `JwtCredential`, `TokenRequest`, `KongPluginRateLimiting`, `KongApiPluginRateLimiting`, `KongApiPluginHttpLog`, `KongApiPluginJwt`, `KongApiPluginAcl`, `AclGroup`, `KongConsumerPlugin`, `KongConsumerPluginRateLimiting`, `KongApiPluginCors`, `RootKongApi`, 
+
+
+
 ### Git hooks
 
 * Instalar [git-hooks](https://github.com/git-hooks/git-hooks/).
