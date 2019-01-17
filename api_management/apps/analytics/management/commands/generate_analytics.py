@@ -4,10 +4,11 @@ from django.utils import timezone
 
 from api_management.apps.analytics.models import Query, CsvAnalyticsGeneratorTask
 from api_management.apps.analytics.tasks import generate_analytics_dump
+from api_management.apps.common.utils import date_at_midnight
 
 
 def yesterday():
-    return timezone.now() - relativedelta.relativedelta(days=1)
+    return date_at_midnight(timezone.now()) - relativedelta.relativedelta(days=1)
 
 
 class Command(BaseCommand):
@@ -19,7 +20,7 @@ class Command(BaseCommand):
                 self.stdout.write("No hay queries cargadas.")
                 return
 
-            self.generate_all_analytics(first_query.start_time, yesterday())
+            self.generate_all_analytics(date_at_midnight(first_query.start_time), yesterday())
         else:
             self.generate_analytics_once()
 
