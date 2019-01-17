@@ -35,12 +35,15 @@ def test_indicator_row_content(kong_api):
 
 
 @pytest.mark.django_db
-def test_historic_hits_default():
+def test_historic_hits_default(empty_historic_hits):
     queries = 50
-    csv_generator = IndicatorCsvGenerator(api_name='foo')
+    csv_generator = IndicatorCsvGenerator(api_name='series')
 
-    assert csv_generator.historic_hits(queries) == 50
-    assert KongApiHistoricHits.objects.count() == 0
+    with patch('api_management.apps.analytics.csv_generator.IndicatorCsvGenerator'
+               '.historic_hit_by_api', return_value=empty_historic_hits):
+
+        assert csv_generator.historic_hits(queries) == 50
+        assert KongApiHistoricHits.objects.count() == 0
 
 
 @pytest.mark.django_db

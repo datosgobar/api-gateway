@@ -140,3 +140,13 @@ def historic_hits():
     instance.kong_api = kong_api()
     instance.accumulated_hits = 100
     return instance
+
+
+@pytest.fixture
+def empty_historic_hits():
+    instance = Mock(KongApiHistoricHits)
+    instance.id = 2
+    instance._state = Mock()
+    instance.kong_api = kong_api()
+    instance.accumulated_hits = 0
+    return instance
