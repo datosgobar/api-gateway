@@ -120,7 +120,8 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                                       type=CsvFile.TYPE_INDICATORS).first()
 
     def write_content(self, writer, _row_titles):
-        for metric_row in IndicatorMetricsRow.objects.filter(api_name=self.api_name):
+        metric_rows = IndicatorMetricsRow.objects.filter(api_name=self.api_name).order_by('date')
+        for metric_row in metric_rows:
             row = [metric_row.date,
                    metric_row.all_queries,
                    metric_row.all_mobile,
