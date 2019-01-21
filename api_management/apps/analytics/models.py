@@ -213,3 +213,8 @@ class IndicatorMetricsRow(models.Model):
     all_mobile = models.IntegerField(blank=True, null=True)
     all_not_mobile = models.IntegerField(blank=True, null=True)
     total_users = models.IntegerField(blank=True, null=True)
+
+
+class ZipFile(models.Model):
+    file_name = models.CharField(max_length=100, null=False, blank=False)
+    file = models.FileField(upload_to='media')
