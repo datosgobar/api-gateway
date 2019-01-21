@@ -135,10 +135,11 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
         return self.historic_hit_by_api().accumulated_hits + all_queries
 
     def write_content(self, writer, _row_titles):
-        for metric_row in IndicatorMetricsRow.objects.filter(api_name=self.api_name):
-            writer.writerow([metric_row.date,
-                             metric_row.all_queries,
-                             metric_row.all_mobile,
-                             metric_row.all_not_mobile,
-                             metric_row.total_users,
-                             self.total_historic_hits(metric_row.date)])
+        metric_rows = IndicatorMetricsRow.objects.filter(api_name=self.api_name).order_by('date')
+        for metric_row in metric_rows:
+            row = [metric_row.date,
+                   metric_row.all_queries,
+                   metric_row.all_mobile,
+                   metric_row.all_not_mobile,
+                   metric_row.total_users]
+            writer.writerow(row)
