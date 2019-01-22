@@ -20,7 +20,7 @@ class IndicatorMetricsCalculator:
         total_mobile = 0
         total_not_mobile = 0
 
-        for query in queries:
+        for query in (queries or []):
             unique_session_ids.add(generate_api_session_id(query))
 
             if self.is_mobile(query.user_agent):
