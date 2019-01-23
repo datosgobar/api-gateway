@@ -56,7 +56,7 @@ class CsvCompressor:
             self.write_zip(zip_file, csv_file)
 
         zip_file.close()
-        ZipFile(file_name=zip_file_name, file=File(zip_file)).save()
+        ZipFile.objects.update_or_create(file_name=zip_file_name, file=File(zip_file))
 
     def write_zip(self, zip_file, csv_file):
         zip_file.write(csv_file.file.path, arcname=csv_file.file_name)
