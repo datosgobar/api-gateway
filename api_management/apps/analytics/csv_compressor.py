@@ -30,16 +30,19 @@ class CsvCompressor:
     def open_zip(self, file_name):
         return zipfile.ZipFile(file_name, 'w', zipfile.ZIP_DEFLATED)
 
-    def find_zip_file(self, csv_file):
+    def get_or_initialize_zip_file(self, csv_file):
         year = self.years_from_csv_file_name(csv_file)
-        return ZipFile.objects.filter(file_name__contains=str(year)).first()
+        zip_file = ZipFile.objects.filter(file_name__contains=str(year)).first()
+
+        return zip_file or ZipFile(file_name=self.full_zip_name(self.zip_name(year)))
 
     def compress_single_file(self, csv_file):
-        zip_file = self.find_zip_file(csv_file)
-        if zip_file is not None:
-            open_file = self.open_zip(zip_file.file_name)
-            self.write_zip(open_file, csv_file)
-            open_file.close()
+        zip_file = self.get_or_initialize_zip_file(csv_file)
+        open_file = self.open_zip(zip_file.file_name)
+        self.write_zip(open_file, csv_file)
+        open_file.close()
+        zip_file.file = File(open_file)
+        zip_file.save()
 
     def compress_all(self):
         for year in self.csv_range_years():
