@@ -6,7 +6,7 @@ from api_management.apps.analytics.csv_generator import AnalyticsCsvGenerator, \
     IndicatorCsvGenerator
 from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
-    IndicatorCsvGeneratorTask, CsvCompressorTask
+    IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile
 from api_management.apps.api_registry.models import KongApi
 from api_management.apps.common.utils import as_local_datetime
 
@@ -48,16 +48,23 @@ def generate_indicators_csv(force, task_logger=None):
         generate_csv(csv_generator, task_logger, api.name, None)
 
 
+def perform_compression(force, api_name, task_logger, local_time):
+    csv_compressor = CsvCompressor(api_name)
+    try:
+        if force:
+            csv_compressor.compress_all()
+        else:
+            csv_compressor.compress_single_file(CsvFile.objects.last())
+        task_logger.log_success(api_name, local_time)
+    except Exception as exception:
+        task_logger.log_error(api_name, local_time, exception)
+        raise exception
+
+
 @job('compress_csv_files', timeout=3600)
-def compress_csv_files(task_logger=None):
+def compress_csv_files(force, task_logger=None):
     local_time = as_local_datetime(timezone.now())
     task_logger = task_logger or CsvCompressorTask(created_at=local_time)
 
     for api in KongApi.objects.all():
-        csv_compressor = CsvCompressor(api.name)
-        try:
-            csv_compressor.compress_all()
-            task_logger.log_success(api.name, local_time)
-        except Exception as exception:
-            task_logger.log_error(api.name, local_time, exception)
-            raise exception
+        perform_compression(force, api.name, task_logger, local_time)
