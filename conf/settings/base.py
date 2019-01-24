@@ -193,6 +193,13 @@ RQ_QUEUES = {
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     },
+
+    'compress_csv_files': {
+        'HOST': env('REDIS_HOST', default='localhost'),
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
 }
 
 KONG_TRAFFIC_URL = ""

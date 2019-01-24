@@ -199,6 +199,17 @@ class IndicatorCsvGeneratorTask(CsvGeneratorTaskLogger):
             .format(api_name=api_name, exception=exception)
 
 
+class CsvCompressorTask(CsvGeneratorTaskLogger):
+
+    def success_task_log(self, api_name, analytics_date):
+        return "({api_name}) Zip generado correctamente.\n" \
+            .format(api_name=api_name)
+
+    def error_task_log(self, api_name, exception, analytics_date=None):
+        return "({api_name}) Error generando archivo zip: {exception}\n" \
+            .format(api_name=api_name, exception=exception)
+
+
 class ApiSessionSettings(SingletonModel):
     max_timeout = models.IntegerField(default=10, verbose_name='Timeout in minutes')
 
