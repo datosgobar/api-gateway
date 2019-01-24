@@ -5,7 +5,7 @@ from rest_framework.authtoken.admin import TokenAdmin
 from solo.admin import SingletonModelAdmin
 
 from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings, ApiSessionSettings, \
-    IndicatorCsvGeneratorTask
+    IndicatorCsvGeneratorTask, CsvCompressorTask
 
 
 @admin.register(Query)
@@ -41,6 +41,13 @@ class CsvAnalyticsGeneratorTaskAdmin(admin.ModelAdmin):
 
 @admin.register(IndicatorCsvGeneratorTask)
 class IndicatorCsvGeneratorTaskAdmin(admin.ModelAdmin):
+    list_display = [
+        'created_at',
+    ]
+
+
+@admin.register(CsvCompressorTask)
+class CsvCompressorTaskAdmin(admin.ModelAdmin):
     list_display = [
         'created_at',
     ]
