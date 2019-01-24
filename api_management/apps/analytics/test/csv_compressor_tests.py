@@ -32,7 +32,7 @@ def delete_files():
         os.remove(csv_file.file.path)
 
     for zip_file in ZipFile.objects.all():
-        os.remove(zip_file.file_name)
+        os.remove(settings.MEDIA_ROOT + '/' + zip_file.file_name)
 
 
 @pytest.fixture(autouse=True)
@@ -43,14 +43,14 @@ def fixture_func():
 
 @pytest.mark.django_db
 def test_zip_name():
-    assert csv_compressor().zip_name(2018) == 'analytics_2018'
-    assert csv_compressor().zip_name('2018') == 'analytics_2018'
+    assert csv_compressor().zip_name(2018) == 'analytics_2018.zip'
+    assert csv_compressor().zip_name('2018') == 'analytics_2018.zip'
 
 
 @pytest.mark.django_db
-def test_full_zip_name():
+def test_path_to_file():
     full_name = "{path}/analytics_2018.zip".format(path=settings.MEDIA_ROOT)
-    assert csv_compressor().full_zip_name('analytics_2018') == full_name
+    assert csv_compressor().path_to_file('analytics_2018.zip') == full_name
 
 
 @pytest.mark.django_db
