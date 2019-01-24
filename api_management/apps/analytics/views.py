@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from api_management.apps.analytics import swaggers
 from api_management.apps.api_registry.models import KongApi
 from .filters import QueryFilter
-from .models import Query, CsvFile
+from .models import Query, CsvFile, ZipFile
 from .serializers import QuerySerializer
 from .tasks import make_model_object
 
@@ -87,3 +87,24 @@ def download_indicators_csv_view(_request, api_name):
                                    file_name="{api}-indicadores.csv".format(api=api_name))
 
     return make_response_for_file(response, files)
+
+
+@api_view(['GET'])
+def download_zip_view(_request, api_name, date):
+    response = HttpResponse()
+
+    if not KongApi.objects.filter(name=api_name).exists():
+        response.status_code = 404
+        return response
+
+    zip_file = ZipFile.objects.filter(file_name="analytics_{date}.zip".format(date=date)).first()
+
+    if zip_file is not None:
+        response['Content-Disposition'] = "attachment;" \
+                                          "filename={name}".format(name=zip_file.file_name)
+        response.content_type = 'application/zip'
+        response.content = zip_file.file
+    else:
+        response.status_code = 501
+
+    return response
