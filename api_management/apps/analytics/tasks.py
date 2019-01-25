@@ -1,11 +1,12 @@
 from django.utils import timezone
 from django_rq import job
 
+from api_management.apps.analytics.csv_compressor import CsvCompressor
 from api_management.apps.analytics.csv_generator import AnalyticsCsvGenerator, \
     IndicatorCsvGenerator
 from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
-    IndicatorCsvGeneratorTask
+    IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile
 from api_management.apps.api_registry.models import KongApi
 
 
@@ -42,3 +43,24 @@ def generate_indicators_csv(force, task_logger=None):
         IndicatorMetricsCalculator(api.name).calculate(force)
         csv_generator = IndicatorCsvGenerator(api_name=api.name)
         generate_csv(csv_generator, task_logger, api.name, None)
+
+
+def perform_compression(force, api_name, task_logger, local_time):
+    csv_compressor = CsvCompressor(api_name)
+    try:
+        if force:
+            csv_compressor.compress_all()
+        else:
+            csv_compressor.compress_single_file(CsvFile.objects.last())
+        task_logger.log_success(api_name, local_time)
+    except Exception as exception:
+        task_logger.log_error(api_name, local_time, exception)
+        raise exception
+
+
+@job('compress_csv_files', timeout=3600)
+def compress_csv_files(force, task_logger=None):
+    task_logger = task_logger or CsvCompressorTask(created_at=timezone.now())
+
+    for api in KongApi.objects.all():
+        perform_compression(force, api.name, task_logger, timezone.now())

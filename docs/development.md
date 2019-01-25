@@ -38,6 +38,9 @@ Esto significa que todas las configuraciones deberian hacerse por variables de e
 1. Crear un super usuario: `docker-compose run --rm django python3 manage.py createsuperuser`
 1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=http://nginx/ -d uris=/management -d strip_uri=false`
 
+Nota: al cambiar algo del archivo docker-compose.yml hay que correr `docker-compose up --build` para crear las imagenes de vuelta con los cambios aplicados.
+
+
 ### Configuracion Local
 
 1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.3 my_virtualenv`

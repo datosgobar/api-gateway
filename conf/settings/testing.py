@@ -2,6 +2,8 @@ import logging
 
 from .base import *
 
+MEDIA_ROOT = (SETTINGS_DIR - 2)('media/test/')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
