@@ -63,9 +63,8 @@ class CsvCompressor:
 
         open_file.close()
         with open(self.path_to_file(zip_name), 'rb') as file_to_save:
-            zip_from_db = ZipFile.objects.get_or_create(file_name=file_to_save.name)[0]
-            zip_from_db.file = File(file_to_save)
-            zip_from_db.save()
+            ZipFile.objects.update_or_create(file_name=file_to_save.name,
+                                             defaults={'file': File(file_to_save)})
             os.remove(self.path_to_file(zip_name))  # remove zip created with zipfile.ZipFile
 
     def write_zip(self, zip_file, csv_path, csv_name):
