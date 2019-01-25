@@ -20,7 +20,7 @@ class CsvCompressor:
         return "analytics_{year}.zip".format(year=year)
 
     def years_from_csv_file_name(self, csv_file):
-        return csv_file.file_name[10:-10]
+        return csv_file.file_name[10:14]
 
     def year_of_first_csv_file(self):
         return int(self.years_from_csv_file_name(CsvFile.objects.first()))
