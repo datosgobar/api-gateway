@@ -63,8 +63,7 @@ def perform_compression(force, api_name, task_logger, local_time):
 
 @job('compress_csv_files', timeout=3600)
 def compress_csv_files(force, task_logger=None):
-    local_time = as_local_datetime(timezone.now())
-    task_logger = task_logger or CsvCompressorTask(created_at=local_time)
+    task_logger = task_logger or CsvCompressorTask(created_at=timezone.now())
 
     for api in KongApi.objects.all():
-        perform_compression(force, api.name, task_logger, local_time)
+        perform_compression(force, api.name, task_logger, timezone.now())
