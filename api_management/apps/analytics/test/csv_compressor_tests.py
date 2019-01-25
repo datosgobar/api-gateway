@@ -32,7 +32,7 @@ def delete_files():
         os.remove(csv_file.file.path)
 
     for zip_file in ZipFile.objects.all():
-        os.remove(settings.MEDIA_ROOT + '/' + zip_file.file_name)
+        os.remove(zip_file.file.name)
 
 
 @pytest.fixture(autouse=True)

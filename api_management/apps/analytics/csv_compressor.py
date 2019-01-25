@@ -1,3 +1,4 @@
+import os
 import zipfile
 
 from django.conf import settings
@@ -41,8 +42,11 @@ class CsvCompressor:
         open_file = self.open_zip(self.path_to_file(zip_file.file_name))
         self.write_zip(open_file, csv_file.file.path, csv_file.file_name)
         open_file.close()
-        zip_file.file = File(open_file)
-        zip_file.save()
+        with open(self.path_to_file(zip_file.file_name), 'rb') as file_to_save:
+            zip_file.file = File(file_to_save)
+            zip_file.save()
+            # remove zip created with zipfile.ZipFile
+            os.remove(self.path_to_file(zip_file.file_name))
 
     def compress_all(self):
         for year in self.csv_range_years():
@@ -58,7 +62,11 @@ class CsvCompressor:
             self.write_zip(open_file, csv_file.file.path, csv_file.file_name)
 
         open_file.close()
-        ZipFile.objects.update_or_create(file_name=zip_name, file=File(open_file))
+        with open(self.path_to_file(zip_name), 'rb') as file_to_save:
+            zip_from_db = ZipFile.objects.get_or_create(file_name=file_to_save.name)[0]
+            zip_from_db.file = File(file_to_save)
+            zip_from_db.save()
+            os.remove(self.path_to_file(zip_name))  # remove zip created with zipfile.ZipFile
 
     def write_zip(self, zip_file, csv_path, csv_name):
         if not zip_file.namelist():
