@@ -23,10 +23,12 @@ services:
       REDIS_HOST: redis
       KONG_ADMIN_URL: http://kong:8001/
       MEDIA_ROOT: /app/media/
+      ELASTIC_SEARCH_HOST: elasticsearch
       DJANGO_SETTINGS_MODULE: conf.settings.local
     depends_on:
       - db
       - redis
+      - elasticsearch
     volumes:
       - ./:/app/code/
       - static:/app/static/
@@ -43,10 +45,12 @@ services:
       REDIS_HOST: redis
       KONG_ADMIN_URL: http://kong:8001/
       MEDIA_ROOT: /app/media/
+      ELASTIC_SEARCH_HOST: elasticsearch
       DJANGO_SETTINGS_MODULE: conf.settings.local
     depends_on:
       - db
       - redis
+      - elasticsearch
     volumes:
       - ./:/app/code/
       - media:/app/media/
@@ -91,7 +95,13 @@ services:
       POSTGRES_PASSWORD: kong
       POSTGRES_USER: kong
       POSTGRES_DB: kong
-      
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    ports:
+      - "9200:9200"
+    environment:
+      - "http.host=0.0.0.0"
+      - "transport.host=127.0.0.1"
 volumes:
   static: {}
   media: {}

@@ -64,6 +64,7 @@ LOCAL_APPS = [
     'api_management.apps.common',
     'api_management.apps.analytics',
     'api_management.apps.api_registry',
+    'api_management.apps.elastic_search',
 ]
 
 INSTALLED_APPS += VENDOR_APPS + LOCAL_APPS
@@ -224,3 +225,6 @@ SESSION_COOKIE_NAME = 'mgmtsessionid'
 RQ_SHOW_ADMIN_LINK = True
 
 AXES_FAILURE_LIMIT = 10
+
+ELASTIC_SEARCH_HOST = env('ELASTIC_SEARCH_HOST', default='localhost')
+ELASTIC_SEARCH_PORT = 9200
