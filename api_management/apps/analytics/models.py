@@ -229,3 +229,4 @@ class IndicatorMetricsRow(models.Model):
 class ZipFile(models.Model):
     file_name = models.CharField(max_length=100, null=False, blank=False)
     file = models.FileField(upload_to='media')
+    api_name = models.CharField(max_length=30, null=False, blank=False)

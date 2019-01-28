@@ -22,6 +22,7 @@ services:
       DATABASE_URL: postgres://development:development@db/development_db
       REDIS_HOST: redis
       KONG_ADMIN_URL: http://kong:8001/
+      MEDIA_ROOT: /app/media/
       DJANGO_SETTINGS_MODULE: conf.settings.local
     depends_on:
       - db
@@ -41,6 +42,7 @@ services:
       DATABASE_URL: postgres://development:development@db/development_db
       REDIS_HOST: redis
       KONG_ADMIN_URL: http://kong:8001/
+      MEDIA_ROOT: /app/media/
       DJANGO_SETTINGS_MODULE: conf.settings.local
     depends_on:
       - db

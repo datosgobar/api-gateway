@@ -1,8 +1,9 @@
 import logging
+import os
 
 from .base import *
 
-MEDIA_ROOT = (SETTINGS_DIR - 2)('media/test/')
+MEDIA_ROOT = os.path.join((SETTINGS_DIR - 2).__str__(), 'media/test/')
 
 DATABASES = {
     'default': {

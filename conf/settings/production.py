@@ -16,7 +16,6 @@ DATABASES = {
     'default': env.db()
 }
 
-MEDIA_ROOT = env('MEDIA_ROOT')
 STATIC_ROOT = env('STATIC_ROOT')
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 

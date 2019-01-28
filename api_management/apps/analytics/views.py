@@ -97,7 +97,8 @@ def download_zip_view(_request, api_name, date):
         response.status_code = 404
         return response
 
-    zip_file = ZipFile.objects.filter(file_name="analytics_{date}.zip".format(date=date)).first()
+    zip_file = ZipFile.objects.filter(api_name=api_name,
+                                      file_name="analytics_{date}.zip".format(date=date)).first()
 
     if zip_file is not None:
         response['Content-Disposition'] = "attachment;" \

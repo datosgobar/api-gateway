@@ -16,12 +16,12 @@ def csv_compressor():
 
 def get_file_mock(file_name):
     file_mock = mock.MagicMock(spec=File, name='FileMock')
-    file_mock.name = str(settings.MEDIA_ROOT + '/' + file_name)
+    file_mock.name = str(settings.MEDIA_ROOT + file_name)
     return file_mock
 
 
 def create_csv_file(name):
-    with open(str(settings.MEDIA_ROOT + '/' + name), 'r+') as file:
+    with open(str(settings.MEDIA_ROOT + name), 'r+') as file:
         CsvFile(type='analytics', api_name='series', file_name=name, file=File(file)).save()
         return file
 
@@ -49,7 +49,7 @@ def test_zip_name():
 
 @pytest.mark.django_db
 def test_path_to_file():
-    full_name = "{path}/analytics_2018.zip".format(path=settings.MEDIA_ROOT)
+    full_name = "{path}analytics_2018.zip".format(path=settings.MEDIA_ROOT)
     assert csv_compressor().path_to_file('analytics_2018.zip') == full_name
 
 
