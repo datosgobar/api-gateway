@@ -41,7 +41,7 @@ class CsvCompressor:
     def compress_single_file(self, csv_file):
         zip_file = self.get_or_initialize_zip_file(csv_file)
         open_file = self.open_zip(self.path_to_file(zip_file.file_name))
-        self.write_zip(open_file, csv_file.file.path, csv_file.file_name)
+        self.write_zip(open_file, csv_file)
         open_file.close()
         with open(self.path_to_file(zip_file.file_name), 'rb') as file_to_save:
             zip_file.file = File(file_to_save)
@@ -60,7 +60,7 @@ class CsvCompressor:
         open_file = self.open_zip(self.path_to_file(zip_name))
 
         for csv_file in csv_files:
-            self.write_zip(open_file, csv_file.file.path, csv_file.file_name)
+            self.write_zip(open_file, csv_file)
 
         open_file.close()
         with open(self.path_to_file(zip_name), 'rb') as file_to_save:
@@ -69,9 +69,13 @@ class CsvCompressor:
                                              defaults={'file': File(file_to_save)})
             os.remove(self.path_to_file(zip_name))  # remove zip created with zipfile.ZipFile
 
-    def write_zip(self, zip_file, csv_path, csv_name):
+    def can_write_zip(self, csv_file, zipped_files):
+        return csv_file.file.storage.exists(csv_file.file.path) \
+                    and all(name != csv_file.file_name for name in zipped_files)
+
+    def write_zip(self, zip_file, csv_file):
         if not zip_file.namelist():
-            zip_file.write(csv_path, csv_name)
+            zip_file.write(csv_file.file.path, csv_file.file_name)
         else:
-            if all(name != csv_name for name in zip_file.namelist()):
-                zip_file.write(csv_path, csv_name)
+            if self.can_write_zip(csv_file, zip_file.namelist()):
+                zip_file.write(csv_file.file.path, csv_file.file_name)
