@@ -54,7 +54,7 @@ services:
     volumes:
       - ./:/app/code/
       - media:/app/media/
-    command: python3 manage.py rqworker default create_model generate_analytics generate_indicators_csv compress_csv_files
+    command: python3 manage.py rqworker default create_model generate_analytics generate_indicators_csv compress_csv_files index_all
   db:
     image: postgres:9.6-alpine
     environment:
