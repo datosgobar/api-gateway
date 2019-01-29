@@ -9,5 +9,5 @@ CLIENT = connections.create_connection(alias='default', hosts=[settings.ELASTIC_
 
 
 def bulk_index():
-    QueryIndex.init(index='query-index')
+    QueryIndex.init(index='query')
     bulk(client=CLIENT, actions=(index_query(b) for b in Query.objects.all().iterator()))
