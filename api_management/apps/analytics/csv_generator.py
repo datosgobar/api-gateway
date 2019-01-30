@@ -141,5 +141,6 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
                    metric_row.all_queries,
                    metric_row.all_mobile,
                    metric_row.all_not_mobile,
-                   metric_row.total_users]
+                   metric_row.total_users,
+                   self.total_historic_hits(metric_row.date)]
             writer.writerow(row)
