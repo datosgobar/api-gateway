@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import environ
+from django.conf import settings
+from elasticsearch_dsl.connections import connections
 
 env = environ.Env(DEBUG=(bool, False),) # set default values and casting
 
@@ -201,6 +203,13 @@ RQ_QUEUES = {
         'DB': 0,
         'DEFAULT_TIMEOUT': 360,
     },
+
+    'index_all': {
+        'HOST': env('REDIS_HOST', default='localhost'),
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
 }
 
 KONG_TRAFFIC_URL = ""
@@ -228,3 +237,5 @@ AXES_FAILURE_LIMIT = 10
 
 ELASTIC_SEARCH_HOST = env('ELASTIC_SEARCH_HOST', default='localhost')
 ELASTIC_SEARCH_PORT = 9200
+
+connections.create_connection(hosts=[ELASTIC_SEARCH_HOST])
