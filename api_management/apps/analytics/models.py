@@ -15,6 +15,7 @@ from redis import Redis
 from solo.models import SingletonModel
 
 from api_management.apps.api_registry.models import KongApi
+from api_management.apps.elastic_search.models import index_query
 
 
 def next_day_of(a_day):
@@ -48,6 +49,14 @@ class Query(models.Model):
 
     def __str__(self):
         return 'Query at %s: %s' % (self.start_time, self.uri)
+
+    def api_session_id(self):
+        return self.ip_address + self.api_data.name + self.user_agent
+
+
+@receiver(post_save, sender=Query)
+def index_query_instance(instance, **_):
+    index_query(instance)
 
 
 class GoogleAnalyticsSettings(SingletonModel):

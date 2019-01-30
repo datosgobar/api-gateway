@@ -1,9 +1,7 @@
 from elasticsearch_dsl import Keyword, Date, Integer, Ip, Text, Float, Document
 
+
 # pylint: disable=too-few-public-methods
-from api_management.apps.analytics.models import generate_api_session_id
-
-
 class QueryIndex(Document):
     ip_address = Ip()
     host = Keyword()
@@ -20,7 +18,7 @@ class QueryIndex(Document):
     api_session_id = Keyword()
 
     class Index:
-        name = 'query-index'
+        name = 'query'
 
 
 def index_query(query):
@@ -38,7 +36,7 @@ def index_query(query):
         token=query.token,
         x_source=query.x_source,
         request_method=query.request_method,
-        api_session_id=generate_api_session_id(query),
+        api_session_id=query.api_session_id(),
     )
     obj.save()
     return obj.to_dict(include_meta=True)
