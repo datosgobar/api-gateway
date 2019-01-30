@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import environ
-from django.conf import settings
 from elasticsearch_dsl.connections import connections
 
 env = environ.Env(DEBUG=(bool, False),) # set default values and casting
