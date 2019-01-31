@@ -1,8 +1,10 @@
+import datetime
+
 from dateutil import relativedelta
 from django.core.management import BaseCommand
 from django.utils import timezone
 
-from api_management.apps.analytics.models import Query, CsvAnalyticsGeneratorTask
+from api_management.apps.analytics.models import Query, CsvAnalyticsGeneratorTask, next_day_of
 from api_management.apps.analytics.tasks import generate_analytics_dump
 from api_management.apps.common.utils import date_at_midnight
 
@@ -21,11 +23,24 @@ class Command(BaseCommand):
                 return
 
             self.generate_all_analytics(date_at_midnight(first_query.start_time), yesterday())
+        if options.get('date'):
+            self.generate_analytics_by(options.get('date'))
         else:
             self.generate_analytics_once()
 
     def add_arguments(self, parser):
         parser.add_argument('--all', default=False, action='store_true')
+        parser.add_argument('--date')
+
+    def generate_analytics_by(self, a_date):
+        from_time = datetime.datetime.strptime(a_date, "%Y-%m-%d")
+        from_time.replace(hour=0, minute=0)
+        to_time = from_time.replace(hour=23, minute=59)
+        query = Query.objects.filter(start_time__gte=from_time, start_time__lte=to_time).first()
+        if query is not None:
+            self.generate_all_analytics(query.start_time, next_day_of(query.start_time))
+        else:
+            self.stdout.write("No hay queries para ese día.")
 
     def generate_all_analytics(self, from_time, to_time):
         next_date = from_time
