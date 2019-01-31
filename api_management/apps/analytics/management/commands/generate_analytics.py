@@ -24,13 +24,13 @@ class Command(BaseCommand):
 
             self.generate_all_analytics(date_at_midnight(first_query.start_time), yesterday())
         if options.get('date'):
-            self.generate_analytics_by(options.get('date')[0])
+            self.generate_analytics_by(options.get('date'))
         else:
             self.generate_analytics_once()
 
     def add_arguments(self, parser):
         parser.add_argument('--all', default=False, action='store_true')
-        parser.add_argument('--date',  nargs='+')
+        parser.add_argument('--date')
 
     def generate_analytics_by(self, a_date):
         from_time = datetime.datetime.strptime(a_date, "%Y-%m-%d")
