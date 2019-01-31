@@ -15,7 +15,7 @@ from redis import Redis
 from solo.models import SingletonModel
 
 from api_management.apps.api_registry.models import KongApi
-from api_management.apps.elastic_search.models import index_query
+from api_management.apps.analytics.elastic_search.query_index import index_query
 
 
 def next_day_of(a_day):
