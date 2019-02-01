@@ -1,4 +1,5 @@
 import abc
+import datetime
 import hashlib
 import re
 from urllib.parse import parse_qsl, urlparse
@@ -154,6 +155,12 @@ class CsvFile(models.Model):
     file_name = models.CharField(max_length=100, null=False, blank=False)
     file = models.FileField(upload_to='media')
     type = models.CharField(max_length=30, null=False, blank=False, choices=TYPE_CHOICES)
+
+    def years_from_name(self):
+        return self.file_name[10:14]
+
+    def date_from_name(self):
+        return datetime.datetime.strptime(self.file_name[10:20], '%Y-%m-%d')
 
 
 class CsvGeneratorTaskLogger(models.Model):
