@@ -1,12 +1,22 @@
+import pytest
 from django.urls import reverse
 from faker import Faker
+from mock import patch
 from rest_framework.test import APIClient
 
 from api_management.apps.analytics.models import Query
+from api_management.apps.analytics.repositories.query_repository import QueryRepository
 from api_management.apps.analytics.test.conftest import query_dict
 from api_management.apps.analytics.test.support import query_dict_response
 
 faker = Faker()  # pylint: disable=invalid-name
+
+
+@pytest.fixture(scope='session', autouse=True)
+def before_tests():
+    with patch.object(QueryRepository, '_index_to_es') as index_call:
+        yield index_call
+        assert index_call.call_count == 5
 
 
 # pylint: disable=unused-argument

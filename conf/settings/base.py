@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import environ
+from elasticsearch_dsl.connections import connections
 
 env = environ.Env(DEBUG=(bool, False),) # set default values and casting
 
@@ -224,3 +225,7 @@ SESSION_COOKIE_NAME = 'mgmtsessionid'
 RQ_SHOW_ADMIN_LINK = True
 
 AXES_FAILURE_LIMIT = 10
+
+ELASTIC_SEARCH_HOST = env('ELASTIC_SEARCH_HOST', default='localhost')
+
+connections.create_connection(hosts=[ELASTIC_SEARCH_HOST])

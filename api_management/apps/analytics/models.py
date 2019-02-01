@@ -1,9 +1,9 @@
 import abc
 import hashlib
 import re
-import uuid
 from urllib.parse import parse_qsl, urlparse
 
+import uuid
 import requests
 from dateutil import relativedelta
 from django.conf import settings
@@ -48,6 +48,9 @@ class Query(models.Model):
 
     def __str__(self):
         return 'Query at %s: %s' % (self.start_time, self.uri)
+
+    def api_session_id(self):
+        return self.ip_address + self.api_data.name + self.user_agent
 
 
 class GoogleAnalyticsSettings(SingletonModel):
