@@ -1,10 +1,12 @@
 from django.utils import timezone
 from django_rq import job
 
-from api_management.apps.analytics.csv_compressor_and_remover import CsvCompressorAndRemover
-from api_management.apps.analytics.csv_generator import AnalyticsCsvGenerator, \
+from api_management.apps.analytics.csv_analytics.csv_compressor_and_remover \
+    import CsvCompressorAndRemover
+from api_management.apps.analytics.csv_analytics.csv_generator import AnalyticsCsvGenerator, \
     IndicatorCsvGenerator
-from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
+from api_management.apps.analytics.csv_analytics.metrics_calculator \
+    import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
     IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile, CsvCompressorAndRemoverTask
 from api_management.apps.analytics.repositories.query_repository import QueryRepository

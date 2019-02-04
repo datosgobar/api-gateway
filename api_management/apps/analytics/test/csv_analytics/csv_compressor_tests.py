@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.files import File
 from django.utils import timezone
 
-from api_management.apps.analytics.csv_compressor import CsvCompressor
+from api_management.apps.analytics.csv_analytics.csv_compressor import CsvCompressor
 from api_management.apps.analytics.models import CsvFile, ZipFile
 
 

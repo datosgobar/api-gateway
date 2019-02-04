@@ -1,4 +1,4 @@
-from api_management.apps.analytics.csv_compressor import CsvCompressor
+from api_management.apps.analytics.csv_analytics.csv_compressor import CsvCompressor
 from api_management.apps.analytics.exceptions.invalid_csv_file import InvalidCsvFile
 from api_management.apps.analytics.exceptions.invalid_date_range import InvalidDateRange
 from api_management.apps.analytics.models import next_day_of

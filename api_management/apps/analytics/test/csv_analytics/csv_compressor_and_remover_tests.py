@@ -3,7 +3,8 @@ import datetime
 import pytest
 from mock import patch, Mock
 
-from api_management.apps.analytics.csv_compressor_and_remover import CsvCompressorAndRemover
+from api_management.apps.analytics.csv_analytics.csv_compressor_and_remover \
+    import CsvCompressorAndRemover
 from api_management.apps.analytics.exceptions.invalid_csv_file import InvalidCsvFile
 from api_management.apps.analytics.exceptions.invalid_date_range import InvalidDateRange
 from api_management.apps.analytics.models import CsvFile
@@ -17,7 +18,7 @@ def get_csv_file():
                    file=Mock())
 
 
-def test_time_from_first_csv_file_raise_exception():
+def test_time_from_csv_exception():
     with patch.object(CsvFileRepository, 'get_first', return_value=None):
         csv_remover = CsvCompressorAndRemover('series')
 
@@ -32,13 +33,13 @@ def test_time_from_first_csv_file():
         assert csv_remover.time_from_first_csv_file() == datetime.datetime(2018, 12, 20)
 
 
-def test_delete_zipped_files_raise_exception():
+def test_delete_files_exception():
     with patch.object(CsvFileRepository, 'get_first', return_value=get_csv_file()):
         csv_remover = CsvCompressorAndRemover('series')
 
-        d1 = datetime.date(2018, 12, 20)
-        d2 = datetime.date.today()
-        delta = d2 - d1
+        date_1 = datetime.date(2018, 12, 20)
+        date_2 = datetime.date.today()
+        delta = date_2 - date_1
 
         with pytest.raises(InvalidDateRange):
             csv_remover.delete_zipped_files(delta.days+1)
