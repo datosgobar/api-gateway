@@ -4,6 +4,8 @@ import pytest
 from mock import patch, Mock
 
 from api_management.apps.analytics.csv_compressor_and_remover import CsvCompressorAndRemover
+from api_management.apps.analytics.exceptions.invalid_csv_file import InvalidCsvFile
+from api_management.apps.analytics.exceptions.invalid_date_range import InvalidDateRange
 from api_management.apps.analytics.models import CsvFile
 from api_management.apps.analytics.repositories.csv_file_repository import CsvFileRepository
 
@@ -19,7 +21,7 @@ def test_time_from_first_csv_file_raise_exception():
     with patch.object(CsvFileRepository, 'get_first', return_value=None):
         csv_remover = CsvCompressorAndRemover('series')
 
-        with pytest.raises(Exception):
+        with pytest.raises(InvalidCsvFile):
             csv_remover.time_from_first_csv_file()
 
 
@@ -38,7 +40,7 @@ def test_delete_zipped_files_raise_exception():
         d2 = datetime.date.today()
         delta = d2 - d1
 
-        with pytest.raises(Exception):
+        with pytest.raises(InvalidDateRange):
             csv_remover.delete_zipped_files(delta.days+1)
 
 

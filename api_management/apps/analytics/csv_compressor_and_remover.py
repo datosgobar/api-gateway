@@ -1,4 +1,6 @@
 from api_management.apps.analytics.csv_compressor import CsvCompressor
+from api_management.apps.analytics.exceptions.invalid_csv_file import InvalidCsvFile
+from api_management.apps.analytics.exceptions.invalid_date_range import InvalidDateRange
 from api_management.apps.analytics.models import next_day_of
 from api_management.apps.analytics.repositories.csv_file_repository import CsvFileRepository
 from api_management.apps.common.utils import date_at_midnight, last_n_days
@@ -6,12 +8,12 @@ from api_management.apps.common.utils import date_at_midnight, last_n_days
 
 def check_csv_before_delete(csv_file):
     if csv_file is None:
-        raise Exception('CsvFile to be deleted does not exists.')
+        raise InvalidCsvFile()
 
 
 def check_period_before_delete(from_time, to_time):
     if from_time >= to_time:
-        raise Exception('Invalid date to delete files.')
+        raise InvalidDateRange()
 
 
 class CsvCompressorAndRemover(CsvCompressor):
