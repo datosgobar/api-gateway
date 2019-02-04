@@ -44,8 +44,9 @@ def test_delete_zipped_files_raise_exception():
 
 def test_delete_zipped_files():
     with patch.object(CsvFileRepository, 'get_first', return_value=get_csv_file()):
-        csv_remover = CsvCompressorAndRemover('series')
+        with patch.object(CsvFileRepository, 'get_by_file_name', return_value=get_csv_file()):
+            csv_remover = CsvCompressorAndRemover('series')
 
-        with patch.object(CsvFileRepository, 'delete') as delete_call:
-            csv_remover.delete_zipped_files(10)
-            delete_call.assert_called()
+            with patch.object(CsvFileRepository, 'delete') as delete_call:
+                csv_remover.delete_zipped_files(10)
+                delete_call.assert_called()

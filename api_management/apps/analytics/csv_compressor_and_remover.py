@@ -34,5 +34,6 @@ class CsvCompressorAndRemover(CsvCompressor):
         while from_time < to_time:
             str_date = from_time.strftime('%Y-%m-%d')
             file_to_delete = self.csv_file_repository.get_by_file_name(str_date)
-            self.csv_file_repository.delete(file_to_delete)
+            if file_to_delete is not None:
+                self.csv_file_repository.delete(file_to_delete)
             from_time = next_day_of(from_time)
