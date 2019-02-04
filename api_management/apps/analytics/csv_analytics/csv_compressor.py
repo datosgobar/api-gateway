@@ -6,12 +6,14 @@ from django.core.files import File
 from django.utils import timezone
 
 from api_management.apps.analytics.models import CsvFile, ZipFile
+from api_management.apps.analytics.repositories.csv_file_repository import CsvFileRepository
 
 
 class CsvCompressor:
 
     def __init__(self, api_name):
         self.api_name = api_name
+        self.csv_file_repository = CsvFileRepository('analytics', self.api_name)
 
     def path_to_file(self, file_name):
         return "{path}{file_name}".format(path=settings.MEDIA_ROOT, file_name=file_name)
@@ -23,7 +25,7 @@ class CsvCompressor:
         return csv_file.file_name[10:14]
 
     def year_of_first_csv_file(self):
-        return int(self.years_from_csv_file_name(CsvFile.objects.first()))
+        return int(self.years_from_csv_file_name(self.csv_file_repository.get_first()))
 
     def csv_range_years(self):
         return range(self.year_of_first_csv_file(), timezone.now().year + 1)

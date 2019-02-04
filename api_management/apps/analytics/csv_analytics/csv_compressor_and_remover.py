@@ -1,8 +1,6 @@
 from api_management.apps.analytics.csv_analytics.csv_compressor import CsvCompressor
 from api_management.apps.analytics.exceptions.invalid_csv_file import InvalidCsvFile
-from api_management.apps.analytics.exceptions.invalid_date_range import InvalidDateRange
 from api_management.apps.analytics.models import next_day_of
-from api_management.apps.analytics.repositories.csv_file_repository import CsvFileRepository
 from api_management.apps.common.utils import date_at_midnight, last_n_days
 
 
@@ -11,16 +9,7 @@ def check_csv_before_delete(csv_file):
         raise InvalidCsvFile()
 
 
-def check_period_before_delete(from_time, to_time):
-    if from_time >= to_time:
-        raise InvalidDateRange()
-
-
 class CsvCompressorAndRemover(CsvCompressor):
-
-    def __init__(self, api_name):
-        super().__init__(api_name)
-        self.csv_file_repository = CsvFileRepository('analytics', self.api_name)
 
     def time_from_first_csv_file(self):
         csv_file = self.csv_file_repository.get_first()
@@ -31,7 +20,8 @@ class CsvCompressorAndRemover(CsvCompressor):
     def delete_zipped_files(self, days):
         from_time = self.time_from_first_csv_file()
         to_time = date_at_midnight(last_n_days(days))
-        check_period_before_delete(from_time, to_time)
+        if from_time >= to_time:
+            return
 
         while from_time < to_time:
             str_date = from_time.strftime('%Y-%m-%d')

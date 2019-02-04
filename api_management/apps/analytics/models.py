@@ -223,12 +223,12 @@ class CsvCompressorTask(CsvGeneratorTaskLogger):
 class CsvCompressorAndRemoverTask(CsvGeneratorTaskLogger):
 
     def success_task_log(self, api_name, analytics_date):
-        return "({api_name}) Csv borrado correctamente para el día {date}.\n" \
-            .format(api_name=api_name, date=analytics_date)
+        return "({api_name}) Csv borrado correctamente.\n" \
+            .format(api_name=api_name)
 
     def error_task_log(self, api_name, exception, analytics_date=None):
-        return "({api_name}) Error borrado csv para el día {date}: {exception}\n" \
-            .format(api_name=api_name, exception=exception, date=analytics_date)
+        return "({api_name}) Error borrado csv: {exception}\n" \
+            .format(api_name=api_name, exception=exception)
 
     class Meta:
         verbose_name = 'Csv remover task'
