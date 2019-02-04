@@ -12,7 +12,7 @@ class CsvFileRepository:
 
     def get_by_file_name(self, file_name):
         return CsvFile.objects.filter(api_name=self.api_name,
-                                      file_name__contains=file_name)  # from_time.strftime('%Y-%m-%d')
+                                      file_name__contains=file_name)
 
     def delete(self, csv_file):
         if csv_file.file is not None:
