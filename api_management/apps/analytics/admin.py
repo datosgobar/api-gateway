@@ -4,8 +4,8 @@ from django.utils import timezone
 from rest_framework.authtoken.admin import TokenAdmin
 from solo.admin import SingletonModelAdmin
 
-from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings, ApiSessionSettings, \
-    IndicatorCsvGeneratorTask, CsvCompressorTask
+from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings, \
+    ApiSessionSettings, IndicatorCsvGeneratorTask, CsvCompressorAndRemoverTask, CsvCompressorTask
 
 
 @admin.register(Query)
@@ -48,6 +48,13 @@ class IndicatorCsvGeneratorTaskAdmin(admin.ModelAdmin):
 
 @admin.register(CsvCompressorTask)
 class CsvCompressorTaskAdmin(admin.ModelAdmin):
+    list_display = [
+        'created_at',
+    ]
+
+
+@admin.register(CsvCompressorAndRemoverTask)
+class CsvCompressorAndRemoverTaskAdmin(admin.ModelAdmin):
     list_display = [
         'created_at',
     ]

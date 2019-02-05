@@ -1,12 +1,14 @@
 from django.utils import timezone
 from django_rq import job
 
-from api_management.apps.analytics.csv_compressor import CsvCompressor
-from api_management.apps.analytics.csv_generator import AnalyticsCsvGenerator, \
+from api_management.apps.analytics.csv_analytics.csv_compressor_and_remover \
+    import CsvCompressorAndRemover
+from api_management.apps.analytics.csv_analytics.csv_generator import AnalyticsCsvGenerator, \
     IndicatorCsvGenerator
-from api_management.apps.analytics.metrics_calculator import IndicatorMetricsCalculator
+from api_management.apps.analytics.csv_analytics.metrics_calculator \
+    import IndicatorMetricsCalculator
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
-    IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile
+    IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile, CsvCompressorAndRemoverTask
 from api_management.apps.analytics.repositories.query_repository import QueryRepository
 from api_management.apps.api_registry.models import KongApi
 
@@ -46,13 +48,26 @@ def generate_indicators_csv(force, task_logger=None):
         generate_csv(csv_generator, task_logger, api.name, None)
 
 
-def perform_compression(force, api_name, task_logger, local_time):
-    csv_compressor = CsvCompressor(api_name)
+def perform_compress_and_remove(force, api_name, task_logger, local_time):
+    csv_compressor = CsvCompressorAndRemover(api_name)
     try:
         if force:
             csv_compressor.compress_all()
         else:
             csv_compressor.compress_single_file(CsvFile.objects.last())
+
+        task_logger.log_success(api_name, local_time)
+    except Exception as exception:
+        task_logger.log_error(api_name, local_time, exception)
+        raise exception
+
+    delete_zipped_files(csv_compressor, api_name, local_time)
+
+
+def delete_zipped_files(csv_compressor, api_name, local_time):
+    task_logger = CsvCompressorAndRemoverTask(created_at=timezone.now())
+    try:
+        csv_compressor.delete_zipped_files(365*2)
         task_logger.log_success(api_name, local_time)
     except Exception as exception:
         task_logger.log_error(api_name, local_time, exception)
@@ -64,4 +79,4 @@ def compress_csv_files(force, task_logger=None):
     task_logger = task_logger or CsvCompressorTask(created_at=timezone.now())
 
     for api in KongApi.objects.all():
-        perform_compression(force, api.name, task_logger, timezone.now())
+        perform_compress_and_remove(force, api.name, task_logger, timezone.now())

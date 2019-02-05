@@ -1,4 +1,5 @@
 import abc
+import datetime
 import hashlib
 import re
 from urllib.parse import parse_qsl, urlparse
@@ -155,6 +156,12 @@ class CsvFile(models.Model):
     file = models.FileField(upload_to='media')
     type = models.CharField(max_length=30, null=False, blank=False, choices=TYPE_CHOICES)
 
+    def years_from_name(self):
+        return self.file_name[10:14]
+
+    def date_from_name(self):
+        return datetime.datetime.strptime(self.file_name[10:20], '%Y-%m-%d')
+
 
 class CsvGeneratorTaskLogger(models.Model):
     created_at = models.DateTimeField()
@@ -211,6 +218,20 @@ class CsvCompressorTask(CsvGeneratorTaskLogger):
     def error_task_log(self, api_name, exception, analytics_date=None):
         return "({api_name}) Error generando archivo zip: {exception}\n" \
             .format(api_name=api_name, exception=exception)
+
+
+class CsvCompressorAndRemoverTask(CsvGeneratorTaskLogger):
+
+    def success_task_log(self, api_name, analytics_date):
+        return "({api_name}) Tarea de borrado terminada correctamente.\n" \
+            .format(api_name=api_name)
+
+    def error_task_log(self, api_name, exception, analytics_date=None):
+        return "({api_name}) Tarea de borrado terminada con error: {exception}\n" \
+            .format(api_name=api_name, exception=exception)
+
+    class Meta:
+        verbose_name = 'Csv remover task'
 
 
 class ApiSessionSettings(SingletonModel):
