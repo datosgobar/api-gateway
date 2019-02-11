@@ -16,7 +16,7 @@ faker = Faker()  # pylint: disable=invalid-name
 def before_tests():
     with patch.object(QueryRepository, '_index_to_es') as index_call:
         yield index_call
-        # assert index_call.call_count == 5
+        assert index_call.call_count == 5
 
 
 # pylint: disable=unused-argument

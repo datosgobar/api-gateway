@@ -9,7 +9,7 @@ class QueryRepository:
 
     def save(self):
         self._save_to_db()
-        # self._index_to_es()
+        self._index_to_es()
 
     def _save_to_db(self):
         self.query_serializer.is_valid(raise_exception=True)
