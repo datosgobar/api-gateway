@@ -34,7 +34,7 @@ class IndicatorMetricsCalculator:
                 'total_unique_users': len(unique_session_ids)}
 
     def first_query_time(self):
-        query_time = Query.objects.first().start_time.date()
+        query_time = Query.objects.filter(api_data__name=self.api_name).first().start_time.date()
         last_row = IndicatorMetricsRow.objects.filter(api_name=self.api_name).last()
         if last_row is not None:
             query_time = next_day_of(last_row.date)
@@ -57,6 +57,9 @@ class IndicatorMetricsCalculator:
         indicator_row.save()
 
     def calculate(self, force):
+        if Query.objects.filter(api_data__name=self.api_name).count() == 0:
+            return
+
         self.drop_metric_rows(force)
         query_time = self.first_query_time()
 

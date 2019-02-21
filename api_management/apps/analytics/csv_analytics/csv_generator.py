@@ -127,7 +127,8 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
         return model
 
     def total_queries_by_date(self, row_date):
-        return Query.objects.filter(start_time__lt=next_day_of(row_date)).count()
+        return Query.objects.filter(api_data__name=self.api_name,
+                                    start_time__lt=next_day_of(row_date)).count()
 
     def total_historic_hits(self, row_date):
         all_queries = self.total_queries_by_date(row_date)
