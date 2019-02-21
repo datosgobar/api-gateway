@@ -77,9 +77,8 @@ def test_exclude_analytics_for_options_request(ga_manager, query):
 def set_up_redis(query):
     redis_client = Redis(host=settings.RQ_QUEUES["default"]["HOST"],
                          port=settings.RQ_QUEUES["default"]["PORT"])
-    api_session_id = query.ip_address + query.api_data.name + query.user_agent
-    redis_client.append(api_session_id, 'start')
-    redis_client.expire(api_session_id, 10)
+    redis_client.append(query.api_session_id(), 'start')
+    redis_client.expire(query.api_session_id(), 10)
 
 
 def exercise_manage_query(ga_manager, query, regex, uri, httplogdata):

@@ -1,7 +1,6 @@
 from datetime import date
 
-from api_management.apps.analytics.models import generate_api_session_id, IndicatorMetricsRow, \
-    Query, next_day_of
+from api_management.apps.analytics.models import IndicatorMetricsRow, Query, next_day_of
 
 
 class IndicatorMetricsCalculator:
@@ -21,7 +20,7 @@ class IndicatorMetricsCalculator:
         total_not_mobile = 0
 
         for query in (queries or []):
-            unique_session_ids.add(generate_api_session_id(query))
+            unique_session_ids.add(query.api_session_id())
 
             if self.is_mobile(query.user_agent):
                 total_mobile = total_mobile + 1
