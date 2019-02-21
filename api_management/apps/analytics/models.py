@@ -66,10 +66,6 @@ def is_options_request(query):
     return query.request_method == 'OPTIONS'
 
 
-def generate_api_session_id(query):
-    return query.ip_address + query.api_data.name + query.user_agent
-
-
 class GoogleAnalyticsManager:
 
     @classmethod
@@ -117,14 +113,12 @@ class GoogleAnalyticsManager:
                 'cm3': query.api_data.pk,
                 'ua': query.user_agent}
 
-        api_session_id = generate_api_session_id(query)
-
-        if not self.redis_client.exists(api_session_id):
+        if not self.redis_client.exists(query.api_session_id()):
             data['sc'] = 'start'  # this request starts a new session
 
         min_to_timeout = ApiSessionSettings.get_solo().max_timeout
-        self.redis_client.append(api_session_id, 'start')
-        self.redis_client.expire(api_session_id, min_to_timeout*60)
+        self.redis_client.append(query.api_session_id(), 'start')
+        self.redis_client.expire(query.api_session_id(), min_to_timeout*60)
 
         return data
 
