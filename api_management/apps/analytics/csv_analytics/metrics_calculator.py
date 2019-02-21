@@ -57,7 +57,7 @@ class IndicatorMetricsCalculator:
         indicator_row.save()
 
     def calculate(self, force):
-        if Query.objects.filter(api_data__name=self.api_name).count() == 0:
+        if not Query.objects.filter(api_data__name=self.api_name).exists():
             return
 
         self.drop_metric_rows(force)
