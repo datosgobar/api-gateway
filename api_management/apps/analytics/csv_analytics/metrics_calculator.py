@@ -1,6 +1,7 @@
 from datetime import date
 
 from api_management.apps.analytics.models import IndicatorMetricsRow, Query, next_day_of
+from api_management.apps.analytics.repositories.query_repository import QueryRepository
 
 
 class IndicatorMetricsCalculator:
@@ -68,7 +69,6 @@ class IndicatorMetricsCalculator:
             query_time = next_day_of(query_time)
 
     def all_queries(self, query_time):
-        return Query.objects.filter(api_data__name=self.api_name,
-                                    start_time__gte=query_time,
-                                    start_time__lt=next_day_of(query_time))\
-                            .exclude(request_method='OPTIONS')
+        return QueryRepository.all_without_options().filter(api_data__name=self.api_name,
+                                                            start_time__gte=query_time,
+                                                            start_time__lt=next_day_of(query_time))

@@ -1,4 +1,5 @@
 from api_management.apps.analytics.elastic_search.query_index import index_query
+from api_management.apps.analytics.models import Query
 
 
 class QueryRepository:
@@ -18,3 +19,7 @@ class QueryRepository:
 
     def _index_to_es(self):
         index_query(self.query_instance)
+
+    @staticmethod
+    def all_without_options():
+        return Query.objects.exclude(request_method='OPTIONS')
