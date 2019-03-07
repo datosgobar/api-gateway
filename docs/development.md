@@ -58,28 +58,6 @@ La IP de la red interna se puede obtener a través de utilidades del sistema com
 1. Crear un super usuario: `./manage.py createsuperuser`
 
 
-### Activar el plugin de httplog2 en Docker
-
-El plugin se agrega a la imagen de kong modificada, para permitir simular el comportamiento del kong de producción.
-
-Para agregar este plugin a una API, primero debemos generar un token de acceso, y setearlo bajo la variable `API_TOKEN`.
-
-```
-./manage.py drf_create_token <super user name>
-==> Generated token ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718 for user admin
-```
-
-Este mismo token de acceso debe ser seteado bajo las APIs en la sección "KONG API PLUGIN HTTP LOG" del admin, para que funcione el plugin correctamente.
-
-Finalmente debemos hacer la siguiente llamada a la API admin de Kong.
-Debemos conocer previamente el ID de la API (A.K.A. kong_id). Esto se puede obtener haciendo `curl localhost:8001/apis/` y observar el campo `"id"` de la API con `"name": "management"`. Este valor se setea en la variable `API_ID`
-
-```
-API_ID=f9211efa-404f-4e4b-9024-91f58d1041e6
-API_TOKEN=ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718
-curl localhost:8001/apis/$API_ID/plugins/ -d name=api-gateway-httplog -d config.endpoint=$DJANGO_URL/management/api/analytics/queries/ -d config.token=$API_TOKEN
-```
-
 Una vez hecho esto, cada llamada a la API (hecha a través de kong) creará un modelo `Query`.
 
 ### Correr la aplicación
