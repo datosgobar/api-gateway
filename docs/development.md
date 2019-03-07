@@ -4,12 +4,14 @@
 
 ### Requerimientos
 
+El sistema está pensado para correr bajo entornos *nix, en particular Ubuntu 16.04.
+
 Este proyecto require python 3.6.
 Python 3 puede ser instalado con [pyenv](https://github.com/pyenv/pyenv).
 
 1. Usar [pyenv-installer](https://github.com/pyenv/pyenv-installer) para instalar pyenv
 1. Ver las versiones de python disponibles: `pyenv install --list`
-1. Instalar python 3. Ejemplo: `pyenv install 3.6.3` (3.6.3 o mayor)
+1. Instalar python 3. Ejemplo: `pyenv install 3.6.6` (3.6.6 o mayor)
 
 
 Tambien [nodejs](https://nodejs.org/en/) es necesario para usar `eslint` y `jscpd`.
@@ -26,20 +28,25 @@ Opcionalmente se puede usar Docker y Docker Compose para desarrollo.
 Este proyecto adopta [The 12 factor methodology](https://12factor.net/).
 Esto significa que todas las configuraciones deberian hacerse por variables de entorno. [(Factor III)](https://12factor.net/config).
 
-### Desarrollo con Docker
+### Paso previo 
+
+Decidir un puerto bajo el cual correr la aplicación Django. Tanto Django como Kong usan como default el puerto 8000, por lo tanto Django debe correr bajo **otro** puerto arbitrario.
+
+**La aplicación debe correr bajo la red interna obligatoriamente, para que el contenedor de Kong pueda llegar a la aplicación Django local**. Por ejemplo, se puede correr Django como`./manage.py runserver 192.168.1.181 7999`.
+ 
+Para correr los próximos pasos, setear una variable `DJANGO_URL` con la URL (con schema) bajo la cual correrá la aplicación Django. Por ejemplo:
+
+`DJANGO_URL=http://192.168.1.181:7999/`
+
+La IP de la red interna se puede obtener a través de utilidades del sistema como `ip` o `ifconfig`, suele ser `192.168.*.*`.
+
+### Setup de docker
 
 1. Build: `docker-compose build`
 1. Iniciar los servicios: `docker-compose up -d`
 1. Migrar la base de datos de kong: `docker-compose run --rm kong kong migrations up`
 1. Reiniciar kong: `docker-compose restart kong`
-1. Migrar la base de datos: `docker-compose run --rm django python3 manage.py migrate`
-1. "Subir" los archivos estaticos a nginx: `docker-compose run --rm django python3 manage.py collectstatic`
-1. Reiniciar django: `docker-compose restart django nginx`
-1. Crear un super usuario: `docker-compose run --rm django python3 manage.py createsuperuser`
-1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=http://nginx/ -d uris=/management -d strip_uri=false`
-
-Nota: al cambiar algo del archivo docker-compose.yml hay que correr `docker-compose up --build` para crear las imagenes de vuelta con los cambios aplicados.
-
+1. Agregar ruta de api management a kong `curl -X POST localhost:8001/apis -d name=management -d upstream_url=$DJANGO_URL -d uris=/management -d strip_uri=false`
 
 ### Configuracion Local
 
@@ -47,7 +54,9 @@ Nota: al cambiar algo del archivo docker-compose.yml hay que correr `docker-comp
 1. Crear un archivo `.python-version`: `echo "my_virtualenv" > .python-version`
 1. Instalar los requerimientos: `pip install -r requirements/local.txt`
 1. Copiar el archivo `conf/settings/.env.local` a `conf/settings/.env` (y reemplazar las variables de ser necesario)
-1. Instalar redis: `# apt-get install redis-server`
+1. Migrar la base de datos: `./manage.py migrate`
+1. Crear un super usuario: `./manage.py createsuperuser`
+
 
 ### Activar el plugin de httplog2 en Docker
 
@@ -56,18 +65,30 @@ El plugin se agrega a la imagen de kong modificada, para permitir simular el com
 Para agregar este plugin a una API, primero debemos generar un token de acceso.
 
 ```
-docker-compose run django /app/venv/bin/python manage.py drf_create_token admin
+./manage.py drf_create_token <super user name>
 ==> Generated token ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718 for user admin
 ```
 
+Este mismo token de acceso debe ser seteado bajo las APIs en la sección "KONG API PLUGIN HTTP LOG" del admin, para que funcione el plugin correctamente.
+
 Finalmente debemos hacer la siguiente llamada a la API admin de Kong.
-Debemos conocer previamente el ID de la API (A.K.A. kong_id).
+Debemos conocer previamente el ID de la API (A.K.A. kong_id). Esto se puede obtener haciendo `curl localhost:8001/apis/` y observar el campo `"id"` de la API con `"name": "management"`.
 
 ```
 API_ID=f9211efa-404f-4e4b-9024-91f58d1041e6
 API_TOKEN=ea9fa26e47c78d8947cacb5ca5b2fa9c22e56718
-curl localhost:8001/apis/$API_ID/plugins/ -d name=httplog2 -d config.endpoint=http://django:8080/api/analytics/queries/ -d config.token=$API_TOKEN
+curl localhost:8001/apis/$API_ID/plugins/ -d name=api-gateway-httplog -d config.endpoint=$DJANGO_URL/api/analytics/queries/ -d config.token=$API_TOKEN
 ```
+
+Una vez hecho esto, cada llamada a la API (hecha a través de kong) creará un modelo `Query`.
+
+### Correr la aplicación
+
+Finalmente, se puede correr la aplicación con `./manage.py runserver <IP RED INTERNA> <PUERTO>`, y acceder a través de kong en `http://localhost:8000`.
+
+### Workers
+
+Por defecto la configuración local no utiliza workers asincrónicos, pero pueden ser activados seteando `queue['ASYNC'] = True` en el ciclo `for` dentro de `conf/settings/local.py`.
 
 ### Migraciones de la API de Kong
 Casi todos los modelos de la aplicación `api_registry` requieren hacer una migración de las APIs de Kong (con actualizar una API es suficiente). A continuación se listan los encontrados hasta la fecha:

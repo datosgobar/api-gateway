@@ -1,60 +1,6 @@
 version: "3.4"
 
 services:
-  nginx:
-    build:
-      context: nginx/
-    ports:
-      - "8880:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - static:/var/nginx/static
-      - media:/var/nginx/media
-    depends_on:
-      - django
-  django:
-    build:
-      context: .
-      args:
-        requirements: requirements/local.txt # Use local requirements!
-    environment:
-      PYTHONDONTWRITEBYTECODE: 1
-      DATABASE_URL: postgres://development:development@db/development_db
-      REDIS_HOST: redis
-      KONG_ADMIN_URL: http://kong:8001/
-      MEDIA_ROOT: /app/media/
-      ELASTIC_SEARCH_HOST: elasticsearch
-      DJANGO_SETTINGS_MODULE: conf.settings.local
-    depends_on:
-      - db
-      - redis
-      - elasticsearch
-    volumes:
-      - ./:/app/code/
-      - static:/app/static/
-      - media:/app/media/
-    ports:
-      - "8080:8080"
-  rq_worker: # This is a copy of django service
-    build:
-      context: .
-      args:
-        requirements: requirements/local.txt # Use local requirements!
-    environment:
-      DATABASE_URL: postgres://development:development@db/development_db
-      REDIS_HOST: redis
-      KONG_ADMIN_URL: http://kong:8001/
-      MEDIA_ROOT: /app/media/
-      ELASTIC_SEARCH_HOST: elasticsearch
-      DJANGO_SETTINGS_MODULE: conf.settings.local
-    depends_on:
-      - db
-      - redis
-      - elasticsearch
-    volumes:
-      - ./:/app/code/
-      - media:/app/media/
-    command: python3 manage.py rqworker default create_model generate_analytics generate_indicators_csv compress_csv_files
   db:
     image: postgres:9.6-alpine
     environment:
@@ -83,9 +29,9 @@ services:
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_CUSTOM_PLUGINS: api-gateway-httplog
     depends_on:
       - kong_db
-      - nginx
     ports:
       - "8001:8001"
       - "8000:8000"
