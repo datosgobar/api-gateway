@@ -21,7 +21,7 @@ Tambien [nodejs](https://nodejs.org/en/) es necesario para usar `eslint` y `jscp
 1. Usar `npm` para instalar las dependencias: `npm install`
 
 
-Opcionalmente se puede usar Docker y Docker Compose para desarrollo.
+Las dependencias de la aplicación (Elasticsearch, Postgres, Redis, Kong) se manejan a través de Docker y docker-compose.
 
 ### Settings
 
@@ -50,15 +50,13 @@ La IP de la red interna se puede obtener a través de utilidades del sistema com
 
 ### Configuracion Local
 
-1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.3 my_virtualenv`
+1. Crear un "virtualenv" con un nombre descriptivo: `pyenv virtualenv 3.6.6 my_virtualenv`
 1. Crear un archivo `.python-version`: `echo "my_virtualenv" > .python-version`
 1. Instalar los requerimientos: `pip install -r requirements/local.txt`
 1. Copiar el archivo `conf/settings/.env.local` a `conf/settings/.env` (y reemplazar las variables de ser necesario)
 1. Migrar la base de datos: `./manage.py migrate`
 1. Crear un super usuario: `./manage.py createsuperuser`
 
-
-Una vez hecho esto, cada llamada a la API (hecha a través de kong) creará un modelo `Query`.
 
 ### Correr la aplicación
 
