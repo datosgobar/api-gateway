@@ -4,7 +4,7 @@ DIR=$(dirname "$0")
 cd ${DIR}/..
 
 echo "py.test"
-py.test $@
+DJANGO_SETTINGS_MODULE=conf.settings.testing py.test $@
 echo "py.test OK :)"
 
 

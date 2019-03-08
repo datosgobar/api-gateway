@@ -14,5 +14,3 @@ RUN apk add --no-cache git && \
     luarocks install json-lua && \
     cd $API_GATEWAY_PLUING_DIR && luarocks make && \
     apk del --no-cache git
-
-
