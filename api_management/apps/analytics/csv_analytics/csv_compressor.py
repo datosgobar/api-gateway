@@ -16,7 +16,7 @@ class CsvCompressor:
         self.csv_file_repository = CsvFileRepository('analytics', self.api_name)
 
     def path_to_file(self, file_name):
-        return "{path}{file_name}".format(path=settings.MEDIA_ROOT, file_name=file_name)
+        return "{path}/{file_name}".format(path=settings.MEDIA_ROOT, file_name=file_name)
 
     def zip_name(self, year):
         return "analytics_{year}.zip".format(year=year)

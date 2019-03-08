@@ -49,7 +49,7 @@ def test_zip_name():
 
 @pytest.mark.django_db
 def test_path_to_file():
-    full_name = "{path}analytics_2018.zip".format(path=settings.MEDIA_ROOT)
+    full_name = "{path}/analytics_2018.zip".format(path=settings.MEDIA_ROOT)
     assert csv_compressor().path_to_file('analytics_2018.zip') == full_name
 
 
