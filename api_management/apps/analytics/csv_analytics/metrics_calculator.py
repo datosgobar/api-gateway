@@ -1,8 +1,9 @@
 from datetime import date
-from django.db.models import Q
-from elasticsearch_dsl import A
 
-from api_management.apps.analytics.elastic_search.query_index import QueryIndex
+from django.db.models import Q
+
+from api_management.apps.analytics.elastic_search.aggregations import Aggregations
+from api_management.apps.analytics.elastic_search.query_search import QuerySearch
 from api_management.apps.analytics.models import IndicatorMetricsRow, Query, next_day_of
 from api_management.apps.analytics.repositories.query_repository import QueryRepository
 
@@ -24,6 +25,14 @@ class IndicatorMetricsCalculator:
         if force:
             IndicatorMetricsRow.objects.filter(api_name=self.api_name).delete()
 
+    def total_unique_users(self, queries):
+        search = QuerySearch()
+        search.add_terms_filter('_id', queries.values_list('id', flat=True))
+        search.add_aggregation('unique_users', Aggregations.cardinality('api_session_id.keyword'))
+        result = search.execute()
+
+        return result.hits.total
+
     def calculate_indicators(self, row_date):
         queries = self.all_queries(row_date)
         mobile_count = queries.filter(Q(user_agent__icontains="Mobile") |
@@ -36,14 +45,7 @@ class IndicatorMetricsCalculator:
         indicator_row.all_queries = queries.count()
         indicator_row.all_mobile = mobile_count
         indicator_row.all_not_mobile = indicator_row.all_queries - mobile_count
-
-        aggregation = A('cardinality', field='api_session_id.keyword')
-        search = QueryIndex.search(index='query')
-        search.filter('terms', _id=queries.values_list('id', flat=True))
-        search.aggs.bucket('my_agg', aggregation)
-        result = search.execute()
-
-        indicator_row.total_users = result.hits.total
+        indicator_row.total_users = self.total_unique_users(queries)
         indicator_row.save()
 
     def calculate(self, force):
