@@ -1,5 +1,9 @@
 from datetime import date
 
+from django.db.models import Q
+
+from api_management.apps.analytics.elastic_search.aggregations import Aggregations
+from api_management.apps.analytics.elastic_search.query_search import QuerySearch
 from api_management.apps.analytics.models import IndicatorMetricsRow, Query, next_day_of
 from api_management.apps.analytics.repositories.query_repository import QueryRepository
 
@@ -9,30 +13,6 @@ class IndicatorMetricsCalculator:
     def __init__(self, api_name):
         self.api_name = api_name
 
-    def is_mobile(self, user_agent):
-        return "Mobile" in user_agent or \
-               "Android" in user_agent or \
-               "iPhone" in user_agent or \
-               "Slackbot" in user_agent
-
-    def indicator_row_content(self, queries):
-        unique_session_ids = set()
-        total_mobile = 0
-        total_not_mobile = 0
-
-        for query in (queries or []):
-            unique_session_ids.add(query.api_session_id())
-
-            if self.is_mobile(query.user_agent):
-                total_mobile = total_mobile + 1
-            else:
-                total_not_mobile = total_not_mobile + 1
-
-        return {'total': total_mobile + total_not_mobile,
-                'total_mobile': total_mobile,
-                'total_not_mobile': total_not_mobile,
-                'total_unique_users': len(unique_session_ids)}
-
     def first_query_time(self):
         query_time = Query.objects.filter(api_data__name=self.api_name).first().start_time.date()
         last_row = IndicatorMetricsRow.objects.filter(api_name=self.api_name).last()
@@ -41,31 +21,49 @@ class IndicatorMetricsCalculator:
 
         return query_time
 
+    def no_queries(self):
+        return not Query.objects.filter(api_data__name=self.api_name).exists()
+
     def drop_metric_rows(self, force):
         if force:
             IndicatorMetricsRow.objects.filter(api_name=self.api_name).delete()
 
-    def calculate_indicators(self, queries, row_date):
-        total_counts = self.indicator_row_content(queries)
+    def total_mobile_queries(self, queries):
+        return queries.filter(Q(user_agent__icontains="Mobile") |
+                              Q(user_agent__icontains="Android") |
+                              Q(user_agent__icontains="iPhone") |
+                              Q(user_agent__icontains="Slackbot")).count()
+
+    def total_unique_users(self, queries):
+        search = QuerySearch()
+        search.add_terms_filter('_id', list(queries.values_list('id', flat=True)))
+        search.add_aggregation('unique_users', Aggregations.cardinality('api_session_id.keyword'))
+        result = search.execute()
+
+        return result.hits.total
+
+    def calculate_indicators(self, row_date):
+        queries = self.all_queries(row_date)
+        mobile_count = self.total_mobile_queries(queries)
 
         indicator_row = IndicatorMetricsRow(api_name=self.api_name)
         indicator_row.date = row_date
-        indicator_row.all_queries = total_counts.get('total')
-        indicator_row.all_mobile = total_counts.get('total_mobile')
-        indicator_row.all_not_mobile = total_counts.get('total_not_mobile')
-        indicator_row.total_users = total_counts.get('total_unique_users')
+        indicator_row.all_queries = queries.count()
+        indicator_row.all_mobile = mobile_count
+        indicator_row.all_not_mobile = indicator_row.all_queries - mobile_count
+        indicator_row.total_users = self.total_unique_users(queries)
         indicator_row.save()
 
     def calculate(self, force):
-        if not Query.objects.filter(api_data__name=self.api_name).exists():
+        if self.no_queries():
             return
 
         self.drop_metric_rows(force)
-        query_time = self.first_query_time()
+        self.perform_calculate(self.first_query_time())
 
+    def perform_calculate(self, query_time):
         while query_time < date.today():
-            queries = self.all_queries(query_time)
-            self.calculate_indicators(queries, query_time)
+            self.calculate_indicators(query_time)
             query_time = next_day_of(query_time)
 
     def all_queries(self, query_time):
