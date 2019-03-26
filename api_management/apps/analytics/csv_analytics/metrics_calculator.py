@@ -37,10 +37,10 @@ class IndicatorMetricsCalculator:
     def total_unique_users(self, queries):
         search = QuerySearch()
         search.add_terms_filter('_id', list(queries.values_list('id', flat=True)))
-        search.add_aggregation('unique_users', Aggregations.cardinality('api_session_id.keyword'))
+        search.add_aggregation('unique_users', Aggregations.cardinality('api_session_id'))
         result = search.execute()
 
-        return result.hits.total
+        return result.aggregations.unique_users.value
 
     def calculate_indicators(self, row_date):
         queries = self.all_queries(row_date)
