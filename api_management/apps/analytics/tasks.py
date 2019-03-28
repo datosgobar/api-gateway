@@ -1,5 +1,7 @@
 from django.utils import timezone
 from django_rq import job
+from elasticsearch.helpers import bulk
+from elasticsearch_dsl.connections import connections
 
 from api_management.apps.analytics.csv_analytics.csv_compressor_and_remover \
     import CsvCompressorAndRemover
@@ -7,8 +9,9 @@ from api_management.apps.analytics.csv_analytics.csv_generator import AnalyticsC
     IndicatorCsvGenerator
 from api_management.apps.analytics.csv_analytics.metrics_calculator \
     import IndicatorMetricsCalculator
+from api_management.apps.analytics.elastic_search.query_index import QueryIndex, index_query
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
-    IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile, CsvCompressorAndRemoverTask
+    IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile, CsvCompressorAndRemoverTask, Query
 from api_management.apps.analytics.repositories.query_repository import QueryRepository
 from api_management.apps.api_registry.models import KongApi
 
@@ -80,3 +83,11 @@ def compress_csv_files(force, task_logger=None):
 
     for api in KongApi.objects.all():
         perform_compress_and_remove(force, api.name, task_logger, timezone.now())
+
+
+@job('generate_indicators_csv', timeout=-1)  # misma cola que el job generate_indicators_csv
+def index_all():
+    client = connections.get_connection()
+    client.indices.delete(index='query', ignore_unavailable=True)
+    QueryIndex.init(index='query')
+    bulk(client=client, actions=(index_query(b) for b in Query.objects.all().iterator()))
