@@ -14,7 +14,8 @@ class IndicatorMetricsCalculator:
         self.api_name = api_name
 
     def first_query_time(self):
-        query_time = Query.objects.filter(api_data__name=self.api_name).first().start_time.date()
+        query_time = Query.objects.filter(api_data__name=self.api_name)\
+            .order_by('start_time').first().start_time.date()
         last_row = IndicatorMetricsRow.objects.filter(api_name=self.api_name).last()
         if last_row is not None:
             query_time = next_day_of(last_row.date)
