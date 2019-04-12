@@ -35,11 +35,15 @@ class IndicatorMetricsCalculator:
                               Q(user_agent__icontains="iPhone") |
                               Q(user_agent__icontains="Slackbot")).count()
 
-    def total_unique_users(self, queries):
+    def generate_unique_users_query(self, queries):
         search = QuerySearch()
         search.add_terms_filter('_id', list(queries.values_list('id', flat=True)))
         search.add_aggregation('unique_users', Aggregations.cardinality('api_session_id'))
-        result = search.execute()
+
+        return search
+
+    def total_unique_users(self, queries):
+        result = self.generate_unique_users_query(queries).execute()
 
         return result.aggregations.unique_users.value
 
