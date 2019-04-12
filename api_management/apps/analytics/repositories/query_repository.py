@@ -1,5 +1,5 @@
 from api_management.apps.analytics.elastic_search.query_index import index_query
-from api_management.apps.analytics.models import Query
+from api_management.apps.analytics.models import Query, GoogleAnalyticsManager
 
 
 class QueryRepository:
@@ -11,6 +11,10 @@ class QueryRepository:
     def save(self):
         self._save_to_db()
         self._index_to_es()
+        self.send_analytics()
+
+    def send_analytics(self):
+        GoogleAnalyticsManager.prepare_send_analytics(True, self.query_instance)
 
     def _save_to_db(self):
         self.query_serializer.is_valid(raise_exception=True)

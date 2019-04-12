@@ -84,7 +84,6 @@ class GoogleAnalyticsManager:
                                   port=settings.REDIS_PORT)
 
     @staticmethod
-    @receiver(post_save, sender=Query)
     def prepare_send_analytics(created, instance, **_):
         if (not is_options_request(instance)) and created:
             query = instance
