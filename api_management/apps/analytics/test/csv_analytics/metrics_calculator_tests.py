@@ -39,6 +39,7 @@ def test_first_query_time(*_args):
 def test_total_unique_users_query():
     calculator = create_queries_and_calculator()
 
+    expected_ids = [q.id for q in Query.objects.filter(api_data__name='series')]
     expected_query_search = {
         'aggs': {
             'unique_users': {
@@ -49,7 +50,7 @@ def test_total_unique_users_query():
             'bool': {
                 'filter': [
                     {
-                        'terms': {'_id': [q.id for q in Query.objects.all()]}
+                        'terms': {'_id': expected_ids}
                     }
                 ]
             }
