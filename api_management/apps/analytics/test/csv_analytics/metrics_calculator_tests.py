@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from dateutil import relativedelta
 from django.utils import timezone
@@ -60,3 +62,17 @@ def test_total_unique_users_query():
     es_query = calculator.generate_unique_users_query(Query.objects.all())
 
     assert es_query.search.to_dict() == expected_query_search
+
+
+@patch.object(IndicatorMetricsCalculator, 'no_queries', return_value=False)
+@patch.object(IndicatorMetricsCalculator, 'perform_calculate')
+@patch.object(IndicatorMetricsCalculator, 'first_query_time')
+def test_force_calculate(*_args):
+    with patch.object(IndicatorMetricsCalculator, 'drop_metric_rows') as drop_metrics_call:
+        calculator = IndicatorMetricsCalculator('series')
+
+        calculator.calculate(True)
+        drop_metrics_call.assert_called_with(True)
+
+        calculator.calculate(False)
+        drop_metrics_call.assert_called_with(False)
