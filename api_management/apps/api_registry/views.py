@@ -2,10 +2,14 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import View
 from rest_framework import status
+from rest_framework.generics import UpdateAPIView
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAdminUser
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api_management.apps.api_registry.serializers import KongApiSerializer
 from .forms import TokenRequestForm
 from .models import KongApi, KongApiPluginJwt, RootKongApi
 
@@ -65,6 +69,14 @@ class TokenRequestView(View):
         token_request.save()
 
         return render(request, 'token_request_success.html', {})
+
+
+class UpdateKongAPIView(UpdateAPIView):
+    serializer_class = KongApiSerializer
+    queryset = KongApi.objects.all()
+    permission_classes = [IsAdminUser, ]
+    authentication_classes = [TokenAuthentication, ]
+    lookup_field = 'name'
 
 
 def root_redirect(_request):
