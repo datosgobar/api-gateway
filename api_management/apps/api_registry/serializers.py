@@ -7,5 +7,5 @@ class KongApiSerializer(serializers.ModelSerializer):
     class Meta:
         model = KongApi
         fields = (
-            'name', 'upstream_url', 'uri'
+            'name', 'upstream_url', 'uri', 'documentation_url'
         )
