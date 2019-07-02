@@ -35,8 +35,8 @@ class DocsViewTests(APITestCase):
             is_staff=False)
         self.admin_token = Token.objects.create(user=admin_user)
         self.regular_token = Token.objects.create(user=regular_user)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' +
-                                                   self.admin_token.key)
+        self.client.credentials(HTTP_AUTHORIZATION=
+                                'Token ' + self.admin_token.key)
 
     def test_put_method_complete_update(self):
         response = self.client.put(self.url, self.request_data, format='json')
@@ -46,7 +46,7 @@ class DocsViewTests(APITestCase):
         self.assertEqual('http://full.url.com',
                          KongApi.objects.get().upstream_url)
         self.assertEqual('/update_uri', KongApi.objects.get().uri)
-        self.assertEqual('http://docs.url.com',
+        self.assertEqual('http://new.docs.com',
                          KongApi.objects.get().documentation_url)
 
     def test_patch_method_partial_update(self):
@@ -79,8 +79,8 @@ class DocsViewTests(APITestCase):
         self.assertEqual(status.HTTP_401_UNAUTHORIZED, response.status_code)
 
     def test_forbidden_access_non_admin_users(self):
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' +
-                                                   self.regular_token.key)
+        self.client.credentials(HTTP_AUTHORIZATION=
+                                'Token ' + self.regular_token.key)
         partial_data = {'upstream_url': 'http://patch.url.com'}
         response = self.client.patch(self.url, partial_data, format='json')
         self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
