@@ -7,5 +7,5 @@ urlpatterns = [
     url(r'^docs/(?P<name>.+)/$', DocsView.as_view(), name='api-doc'),
     url(r'^token-request/(?P<name>.+)/$', TokenRequestView.as_view(), name='token-request'),
     url(r'^root_url/$', root_redirect, name='root-redirect'),
-    url(r'^edit/(?P<name>.+)/$', UpdateKongAPIView.as_view(), name='api-update')
+    url(r'^kongapi/edit/(?P<name>.+)/$', UpdateKongAPIView.as_view(), name='api-edit')
 ]
