@@ -234,4 +234,4 @@ connections.create_connection(hosts=[ELASTIC_SEARCH_HOST])
 EMAIL_BACKEND = 'des.backends.ConfiguredEmailBackend'
 
 LOGIN_URL = 'admin:login'
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='webmaster@localhost.com')
