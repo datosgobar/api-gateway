@@ -12,4 +12,4 @@ git+https://github.com/devartis/python-kong-client@v0.1.8#egg=python-kong-client
 elasticsearch-dsl>=6.0.0,<7.0.0
 django-rq>=1.3.1
 rq==1.0
-
+django-des==2.4.1

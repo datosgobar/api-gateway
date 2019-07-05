@@ -59,6 +59,7 @@ VENDOR_APPS = [
     'axes',
     'admin_honeypot',
     'solo.apps.SoloAppConfig',
+    'des',
 ]
 
 LOCAL_APPS = [
@@ -229,3 +230,8 @@ AXES_FAILURE_LIMIT = 10
 ELASTIC_SEARCH_HOST = env('ELASTIC_SEARCH_HOST', default='localhost')
 
 connections.create_connection(hosts=[ELASTIC_SEARCH_HOST])
+
+EMAIL_BACKEND = 'des.backends.ConfiguredEmailBackend'
+
+LOGIN_URL = 'admin:login'
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')

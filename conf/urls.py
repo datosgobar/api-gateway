@@ -16,10 +16,13 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from rest_framework.authtoken import views as authtoken_views
+from des import urls as des_urls
 
 admin.autodiscover()
 admin.site.index_template = "custom_index.html"
+admin.site.login_template = 'login.html'
 
 api_urlpatterns = [
     path('analytics/', include('api_management.apps.analytics.urls')),
@@ -28,10 +31,15 @@ api_urlpatterns = [
 ]
 
 urls = [
-    path('admin/', include(('admin_honeypot.urls', 'honey'), namespace='admin_honeypot')),
     path('ingresar/', admin.site.urls),
     path('api/', include(api_urlpatterns)),
     path('django-rq/', include('django_rq.urls')),
+    path('django-des/', include(des_urls)),
+    path('password_reset/', auth_views.PasswordResetView.as_view(), name='admin_password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    path('password_reset/confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password_reset/complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('admin/', include(('admin_honeypot.urls', 'honey'), namespace='admin_honeypot')),
 ]
 
 if settings.URLS_PREFIX:
