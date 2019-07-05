@@ -35,11 +35,18 @@ urls = [
     path('api/', include(api_urlpatterns)),
     path('django-rq/', include('django_rq.urls')),
     path('django-des/', include(des_urls)),
-    path('password_reset/', auth_views.PasswordResetView.as_view(), name='admin_password_reset'),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password_reset/confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('password_reset/complete/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('admin/', include(('admin_honeypot.urls', 'honey'), namespace='admin_honeypot')),
+    path('password_reset/', auth_views.PasswordResetView.as_view(),
+         name='admin_password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(),
+         name='password_reset_done'),
+    path('password_reset/confirm/<uidb64>/<token>/',
+         auth_views.PasswordResetConfirmView.as_view(),
+         name='password_reset_confirm'),
+    path('password_reset/complete/',
+         auth_views.PasswordResetCompleteView.as_view(),
+         name='password_reset_complete'),
+    path('admin/', include(('admin_honeypot.urls', 'honey'),
+                           namespace='admin_honeypot')),
 ]
 
 if settings.URLS_PREFIX:
