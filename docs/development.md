@@ -57,6 +57,9 @@ La IP de la red interna se puede obtener a través de utilidades del sistema com
 1. Migrar la base de datos: `./manage.py migrate`
 1. Crear un super usuario: `./manage.py createsuperuser`
 
+### Plugins
+
+Para mapear plugins a una serie se puede hacer desde la configuracion de la misma desde el Admin. En ella se encuentra la configuracion para cada plugin disponible, por ejemplo para activar Analytics a una serie se hace activando "Kong Api plugin http log" agregandole, en el campo "Api Key", el Token de acceso.
 
 ### Correr la aplicación
 
