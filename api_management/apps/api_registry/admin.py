@@ -148,6 +148,11 @@ class KongConsumerAdmin(admin.ModelAdmin):
         KongConsumerPluginRateLimitingInline,
     )
 
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.enabled = True
+        super(KongConsumerAdmin, self).save_model(request, obj, form, change)
+
 
 class RootKongAdmin(SingletonModelAdmin):
     exclude = ['kong_id']
