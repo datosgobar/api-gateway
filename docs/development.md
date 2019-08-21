@@ -63,7 +63,7 @@ Para mapear plugins a una serie se puede hacer desde la configuracion de la mism
 
 ### Correr la aplicación
 
-Finalmente, se puede correr la aplicación con `./manage.py runserver <IP RED INTERNA> <PUERTO>`, y acceder a través de kong en `http://localhost:8000`.
+Finalmente, se puede correr la aplicación con `./manage.py runserver <IP RED INTERNA> <PUERTO>`, y acceder a través de kong en `http://localhost:8000/management/ingresar`.
 
 ### Workers
 
