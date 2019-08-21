@@ -9,5 +9,5 @@ class QuerySerializer(serializers.ModelSerializer):
         fields = (
             'id', 'ip_address', 'host', 'uri', 'api_data',
             'querystring', 'start_time', 'request_time', 'status_code',
-            'user_agent', 'params', 'x_source', 'request_method'
+            'user_agent', 'params', 'x_source', 'request_method', 'referer'
         )
