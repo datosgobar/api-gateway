@@ -89,4 +89,4 @@ def index_all():
     client.indices.delete(index='query', ignore_unavailable=True)
     QueryIndex.init(index='query')
     bulk(client=client,
-         actions=(QueryIndex.new_from_query(b) for b in Query.objects.all().iterator()))
+         actions=(index_query(b) for b in Query.objects.all().iterator()))
