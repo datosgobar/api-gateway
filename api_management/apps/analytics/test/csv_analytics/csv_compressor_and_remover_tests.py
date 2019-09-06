@@ -1,7 +1,6 @@
 import datetime
-
-import pytest
 from mock import patch, Mock
+import pytest
 
 from api_management.apps.analytics.csv_analytics.csv_compressor_and_remover \
     import CsvCompressorAndRemover

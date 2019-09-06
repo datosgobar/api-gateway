@@ -1,7 +1,7 @@
+from mock import patch
 import pytest
 from django.urls import reverse
 from faker import Faker
-from mock import patch
 from rest_framework.test import APIClient
 
 from api_management.apps.analytics.models import Query
