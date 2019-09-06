@@ -6,7 +6,6 @@ from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 
 from api_management.apps.analytics.models import Query, CsvFile, IndicatorMetricsRow, next_day_of
-from api_management.apps.analytics.repositories.query_repository import QueryRepository
 from api_management.apps.api_registry.models import KongApiHistoricHits, KongApi
 
 
@@ -93,9 +92,9 @@ class AnalyticsCsvGenerator(AbstractCsvGenerator):
         min_date = self.date
         max_date = next_day_of(min_date)
 
-        return QueryRepository.all_without_options().filter(api_data__name=self.api_name,
-                                                            start_time__gte=min_date,
-                                                            start_time__lt=max_date)
+        return Query.objects.all_without_options().filter(api_data__name=self.api_name,
+                                                          start_time__gte=min_date,
+                                                          start_time__lt=max_date)
 
 
 class IndicatorCsvGenerator(AbstractCsvGenerator):
@@ -128,9 +127,9 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
         return model
 
     def total_queries_by_date(self, row_date):
-        return QueryRepository\
-            .all_without_options()\
-            .filter(api_data__name=self.api_name, start_time__lt=next_day_of(row_date))\
+        return Query.objects \
+            .all_without_options() \
+            .filter(api_data__name=self.api_name, start_time__lt=next_day_of(row_date)) \
             .count()
 
     def total_historic_hits(self, row_date):

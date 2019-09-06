@@ -4,7 +4,9 @@ import pytest
 import requests_mock
 from faker import Faker
 
-from api_management.apps.analytics.models import GoogleAnalyticsManager, Query
+from api_management.apps.analytics.models import Query
+from api_management.apps.analytics.google_analytics.google_analytics_manager \
+    import GoogleAnalyticsManager
 from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.models import KongApi, KongApiHistoricHits
 from api_management.apps.api_registry.models import KongApiPluginHttpLog
