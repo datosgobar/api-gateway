@@ -86,7 +86,8 @@ def download_indicators_csv_view(_request, api_endpoint):
 
     files = CsvFile.objects.filter(type="indicators",
                                    api_name=api_name,
-                                   file_name="indicadores-{endpoint}.csv".format(endpoint=api_endpoint))
+                                   file_name="indicadores-{endpoint}.csv".format(
+                                       endpoint=api_endpoint))
 
     return make_response_for_file(response, files)
 
