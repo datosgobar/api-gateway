@@ -75,16 +75,18 @@ def download_csv_view(_request, api_name, date):
 
 
 @api_view(['GET'])
-def download_indicators_csv_view(_request, api_name):
+def download_indicators_csv_view(_request, api_endpoint):
     response = HttpResponse()
 
-    if not KongApi.objects.filter(name=api_name).exists():
+    if not KongApi.objects.filter(uri=api_endpoint).exists():
         response.status_code = 404
         return response
 
+    api_name = KongApi.objects.get(uri=api_endpoint).name
+
     files = CsvFile.objects.filter(type="indicators",
                                    api_name=api_name,
-                                   file_name="{api}-indicadores.csv".format(api=api_name))
+                                   file_name="indicadores-{endpoint}.csv".format(endpoint=api_endpoint))
 
     return make_response_for_file(response, files)
 
