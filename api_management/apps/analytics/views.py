@@ -47,10 +47,11 @@ def query_swagger_view(*_, **__):
     return Response(swaggers.QUERIES)
 
 
-def make_response_for_file(response, files):
+def make_response_for_file(response, files, filename=None):
     if files.exists() and files.first().file is not None:
+        name = filename if filename else files.first().file_name
         response['Content-Disposition'] = "attachment;" \
-                                          "filename={name}".format(name=files.first().file_name)
+                                          "filename={name}".format(name=name)
         response.content_type = 'text/csv'
         response.content = files.first().file
     else:
@@ -78,18 +79,18 @@ def download_csv_view(_request, api_name, date):
 def download_indicators_csv_view(_request, api_endpoint):
     response = HttpResponse()
 
-    if not KongApi.objects.filter(uri=api_endpoint).exists():
+    api_name = KongApi.objects.get(uri=api_endpoint).name
+
+    if not KongApi.objects.filter(uri=api_name).exists():
         response.status_code = 404
         return response
 
-    api_name = KongApi.objects.get(uri=api_endpoint).name
-
     files = CsvFile.objects.filter(type="indicators",
                                    api_name=api_name,
-                                   file_name="indicadores-{endpoint}.csv".format(
-                                       endpoint=api_endpoint))
+                                   file_name="{api}-indicadores.csv".format(api=api_name))
+    filename = f'indicadores-{api_endpoint}.csv'
 
-    return make_response_for_file(response, files)
+    return make_response_for_file(response, files, filename)
 
 
 @api_view(['GET'])

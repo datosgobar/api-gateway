@@ -115,8 +115,7 @@ class IndicatorCsvGenerator(AbstractCsvGenerator):
         return CsvFile.TYPE_INDICATORS
 
     def csv_filename(self):
-        api_uri = KongApi.objects.get(name=self.api_name).uri
-        return "indicadores-{api_uri}.csv".format(api_uri=api_uri)
+        return "{name}-indicadores.csv".format(name=self.api_name)
 
     def get_csv_file(self, file_name):
         return CsvFile.objects.filter(api_name=self.api_name,
