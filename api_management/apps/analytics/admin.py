@@ -4,8 +4,10 @@ from django.utils import timezone
 from rest_framework.authtoken.admin import TokenAdmin
 from solo.admin import SingletonModelAdmin
 
-from .models import Query, CsvAnalyticsGeneratorTask, GoogleAnalyticsSettings, \
-    ApiSessionSettings, IndicatorCsvGeneratorTask, CsvCompressorAndRemoverTask, CsvCompressorTask
+from api_management.apps.analytics.google_analytics.google_analytics_settings import \
+    GoogleAnalyticsSettings
+from .models import Query, CsvAnalyticsGeneratorTask, IndicatorCsvGeneratorTask, \
+    CsvCompressorAndRemoverTask, CsvCompressorTask
 
 
 @admin.register(Query)
@@ -62,9 +64,4 @@ class CsvCompressorAndRemoverTaskAdmin(admin.ModelAdmin):
 
 @admin.register(GoogleAnalyticsSettings)
 class GoogleAnalyticsSettingsAdmin(SingletonModelAdmin):
-    list_display = ['ga_id']
-
-
-@admin.register(ApiSessionSettings)
-class ApiSessionSettingsAdmin(SingletonModelAdmin):
-    list_display = ['max_timeout']
+    list_display = ['ga_id', 'max_timeout']

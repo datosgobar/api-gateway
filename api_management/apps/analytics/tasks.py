@@ -12,15 +12,13 @@ from api_management.apps.analytics.csv_analytics.metrics_calculator \
 from api_management.apps.analytics.elastic_search.query_index import QueryIndex, index_query
 from api_management.apps.analytics.models import CsvAnalyticsGeneratorTask, \
     IndicatorCsvGeneratorTask, CsvCompressorTask, CsvFile, CsvCompressorAndRemoverTask, Query
-from api_management.apps.analytics.repositories.query_repository import QueryRepository
 from api_management.apps.api_registry.models import KongApi
 
 
 @job('create_model')
 def make_model_object(data, serializer_class):
     serializer = serializer_class(data=data)
-    query_repository = QueryRepository(serializer)
-    query_repository.save()
+    Query.objects.create_from_serializer(serializer)
 
 
 def generate_csv(generator, task_logger, api_name, analytics_date=None):
@@ -90,4 +88,5 @@ def index_all():
     client = connections.get_connection()
     client.indices.delete(index='query', ignore_unavailable=True)
     QueryIndex.init(index='query')
-    bulk(client=client, actions=(index_query(b) for b in Query.objects.all().iterator()))
+    bulk(client=client,
+         actions=(index_query(b) for b in Query.objects.all().iterator()))

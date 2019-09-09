@@ -5,7 +5,6 @@ from django.db.models import Q
 from api_management.apps.analytics.elastic_search.aggregations import Aggregations
 from api_management.apps.analytics.elastic_search.query_search import QuerySearch
 from api_management.apps.analytics.models import IndicatorMetricsRow, Query, next_day_of
-from api_management.apps.analytics.repositories.query_repository import QueryRepository
 
 
 class IndicatorMetricsCalculator:
@@ -14,7 +13,7 @@ class IndicatorMetricsCalculator:
         self.api_name = api_name
 
     def first_query_time(self):
-        query_time = Query.objects.filter(api_data__name=self.api_name)\
+        query_time = Query.objects.filter(api_data__name=self.api_name) \
             .order_by('start_time').first().start_time.date()
         last_row = IndicatorMetricsRow.objects.filter(api_name=self.api_name).last()
         if last_row is not None:
@@ -72,6 +71,6 @@ class IndicatorMetricsCalculator:
             query_time = next_day_of(query_time)
 
     def all_queries(self, query_time):
-        return QueryRepository.all_without_options().filter(api_data__name=self.api_name,
-                                                            start_time__gte=query_time,
-                                                            start_time__lt=next_day_of(query_time))
+        return Query.objects.all_without_options().filter(api_data__name=self.api_name,
+                                                          start_time__gte=query_time,
+                                                          start_time__lt=next_day_of(query_time))
