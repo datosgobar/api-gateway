@@ -69,3 +69,13 @@ Local: guarda la información en la memoria RAM, lo cual tiene un tiempo de acce
 **¿Cómo usar esta funcionalidad?**
 
 Una KongAPI tiene un campo `policy` el cual permite elegir entre las opciones disponibles.
+
+#### Borrado de analytics por día
+
+Si por alguna razón se quieren borrar analytics, por ejemplo después de un test de stress, se puede utilizar el comando de django `delete_analytics`. Éste acepta una fecha y el nombre de una API, y borra todos los registros asociados a esos dos parámetros.
+
+El nombre de la API es el `Name` con el que fue creado el modelo `KongApi` en el panel administrador.
+
+La fecha debe estar en formato YYYY-MM-DD (ISO8601)
+
+Ejemplo `./manage.py delete_analytics mi_api 2019-01-01`

@@ -16,10 +16,13 @@ def valid_date(s):
 
 
 class Command(BaseCommand):
+    help = '''
+    Borra todos los registros de queries asociados a una API y a una fecha (YYYY-MM-DD)
+    '''
 
     def add_arguments(self, parser):
-        parser.add_argument('api_name', type=str)
-        parser.add_argument('date', type=valid_date)
+        parser.add_argument('api_name', type=str, help='Nombre de la KongApi sobre la cual borrar registros')
+        parser.add_argument('date', type=valid_date, help='Fecha YYYY-MM-DD sobre la cual borrar registros')
         parser.add_argument('--confirm', default=False, action='store_true')
 
     def handle(self, *args, **options):
