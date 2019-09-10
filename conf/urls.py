@@ -13,12 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from des import urls as des_urls
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.urls import path, include
 from rest_framework.authtoken import views as authtoken_views
-from des import urls as des_urls
 
 admin.autodiscover()
 admin.site.index_template = "custom_index.html"
@@ -47,6 +47,7 @@ urls = [
          name='password_reset_complete'),
     path('admin/', include(('admin_honeypot.urls', 'honey'),
                            namespace='admin_honeypot')),
+    path('indicadores/', include('api_management.apps.analytics.indicators.urls'))
 ]
 
 if settings.URLS_PREFIX:
