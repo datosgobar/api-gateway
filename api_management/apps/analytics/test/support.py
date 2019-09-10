@@ -4,6 +4,8 @@ from faker import Faker
 
 from api_management.libs.providers.providers import CustomInfoProvider
 
+IP_ADDRESS = '192.168.254.254'
+
 
 def custom_faker():
     # Custom Fake

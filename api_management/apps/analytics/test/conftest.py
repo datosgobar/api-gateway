@@ -11,6 +11,7 @@ from api_management.apps.analytics.test.support import custom_faker
 from api_management.apps.api_registry.models import KongApi, KongApiHistoricHits
 from api_management.apps.api_registry.models import KongApiPluginHttpLog
 from api_management.apps.api_registry.test.support import generate_api_data
+from .support import IP_ADDRESS
 
 
 # pylint: disable=redefined-outer-name
@@ -43,7 +44,7 @@ def staff_user(user):  # pylint: disable=unused-argument, invalid-name
 def query_dict(faker_instance, api_data_pk, query_pk=None, start_time=None):
     query = {
 
-        "ip_address": "192.168.254.254",
+        "ip_address": IP_ADDRESS,
         "host": faker_instance.domain_name(),
         "uri": faker_instance.uri_path(),
         "querystring": "%s=%s" % (faker_instance.word(), faker_instance.word()),
