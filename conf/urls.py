@@ -47,6 +47,7 @@ urls = [
          name='password_reset_complete'),
     path('admin/', include(('admin_honeypot.urls', 'honey'),
                            namespace='admin_honeypot')),
+    path('indicadores/', include('api_management.apps.analytics.indicators.urls'))
 ]
 
 if settings.URLS_PREFIX:

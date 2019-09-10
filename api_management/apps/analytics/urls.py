@@ -2,7 +2,7 @@ from django.conf.urls import url
 from rest_framework import routers
 
 from .views import QueryViewSet, query_swagger_view, download_csv_view, \
-    download_indicators_csv_view, download_zip_view
+    download_zip_view
 
 router = routers.SimpleRouter()  # pylint: disable=invalid-name
 router.register(r'queries', QueryViewSet)
@@ -14,9 +14,6 @@ urlpatterns += [
     url(r'^(?P<api_name>[a-z]{1,30}.+)/analytics_(?P<date>\d{4}-\d{2}-\d{2}).csv$',
         download_csv_view,
         name='download-csv'),
-    url(r'^indicadores-(?P<api_endpoint>[a-z]{1,30}.+).csv$',
-        download_indicators_csv_view,
-        name='download-indicators-csv'),
     url(r'^(?P<api_name>[a-z]{1,30}.+)/analytics_(?P<date>\d{4}).zip$',
         download_zip_view,
         name='download-zip'),
