@@ -17,23 +17,23 @@ def valid_date(s):
 
 class Command(BaseCommand):
     help = '''
-    Borra todos los registros de queries asociados a una API y a una fecha (YYYY-MM-DD)
+    Borra todos los registros de queries asociados a dirección IP y a una fecha (YYYY-MM-DD)
     '''
 
     def add_arguments(self, parser):
-        parser.add_argument('api_name', type=str, help='Nombre de la KongApi sobre la cual borrar registros')
+        parser.add_argument('ip_address', type=str, help='Dirección IP sobre la cual borrar registros')
         parser.add_argument('date', type=valid_date, help='Fecha YYYY-MM-DD sobre la cual borrar registros')
         parser.add_argument('--confirm', default=False, action='store_true')
 
     def handle(self, *args, **options):
-        api_name = options['api_name']
+        ip_address = options['ip_address']
         query_datetime = self.parse_datetime(options)
         day_after = query_datetime + dateutil.relativedelta.relativedelta(days=1)
-        queries = Query.objects.filter(api_data__name=api_name,
+        queries = Query.objects.filter(ip_address=ip_address,
                                        start_time__lt=day_after,
                                        start_time__gte=query_datetime)
         self.stdout.write(f'Se van a borrar {queries.count()} queries, '
-                          f'de la api {api_name}, fecha {query_datetime.date()}')
+                          f'de la dirección {ip_address}, fecha {query_datetime.date()}')
 
         if not options['confirm']:
             resp = input('Confirmar [y/N]: ')
