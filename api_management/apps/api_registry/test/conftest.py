@@ -4,7 +4,7 @@ from django.conf import settings
 from kong.structures import ApiData, PluginData
 
 from api_management.apps.analytics.test.support import custom_faker
-from api_management.apps.api_registry.models import KongApiPluginCors
+from api_management.apps.api_registry.models import KongApiPluginCors, TokenRequest
 from api_management.apps.api_registry.test.support import generate_api_data
 
 
@@ -93,3 +93,12 @@ def cors_plugin(cfaker, api_data):
     cors_plugin.origins = cfaker.uri()
 
     return cors_plugin
+
+
+@pytest.fixture()
+def token_request(api_data):
+    api_data.save()
+    return TokenRequest(api=api_data, applicant="Test User",
+                        contact_email="test@user.com",
+                        consumer_application="My app",
+                        requests_per_day=100)

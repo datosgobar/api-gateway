@@ -98,10 +98,11 @@ class TokenRequestAdmin(admin.ModelAdmin):
         for token_request in queryset:
             try:
                 token_request.accept()
-            except ValidationError:
+            except ValidationError as exc:
                 self.message_user(request,
-                                  'solicitud de %s no puede ser aceptada'
-                                  % token_request.applicant,
+                                  'solicitud de %s no puede ser aceptada: %s'
+                                  % (token_request.applicant,
+                                     exc.message),
                                   messages.WARNING)
 
     def reject(self, request, queryset):
