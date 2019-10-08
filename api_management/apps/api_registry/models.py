@@ -343,16 +343,18 @@ class TokenRequest(models.Model):
 
     def accept(self):
         if not self.is_pending():
-            raise ValidationError('only pending requests can be accepted')
+            raise ValidationError('solo respuestas pendientes pueden ser aceptadas')
 
+        try:
+            self._create_consumer()
+        except NameError:
+            raise ValidationError('consumer para esta API con este nombre ya existente')
         self.state = ACCEPTED
         self.save()
 
-        self._create_consumer()
-
     def reject(self):
         if not self.is_pending():
-            raise ValidationError('only pending requests can be rejected')
+            raise ValidationError('solo respuestas pendientes pueden ser rechazadas')
 
         self.state = REJECTED
         self.save()
@@ -603,7 +605,7 @@ def manage_acl(instance, *_, **__):
 
 @receiver(post_save, sender=KongConsumer)
 def assign_acl_group(created, instance, *_, **__):
-    if created:
+    if created and instance.api.kongapipluginacl:
         instance.api.kongapipluginacl.group.add_consumer(kong_client_using_settings(), instance)
 
 
