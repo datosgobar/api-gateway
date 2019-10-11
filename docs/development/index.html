@@ -1,0 +1,994 @@
+
+
+
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Documentación de la API Gateway, la solución de administración de APIs REST de la Administración Pública Nacional de la República Argentina.">
+      
+      
+        <link rel="canonical" href="https://datosgobar.github.io/api-gateway/development/">
+      
+      
+        <meta name="author" content="Datos Argentina">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copiar al portapapeles">
+      
+        <meta name="lang:clipboard.copied" content="Copiado al portapapeles">
+      
+        <meta name="lang:search.language" content="es">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No se encontraron documentos">
+      
+        <meta name="lang:search.result.one" content="1 documento encontrado">
+      
+        <meta name="lang:search.result.other" content="# documentos encontrados">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+    
+    
+      
+        <title>Desarrollo - API Gateway</title>
+      
+    
+    
+	
+      <link rel="stylesheet" href="../assets/stylesheets/application.30686662.css">
+      
+      
+    
+	<link rel="stylesheet" href="../css/extra.css">
+
+    
+    
+      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+    
+    <script src="../js/extra.js"></script>
+
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-91435482-1", "https://datosgobar.github.io/api-gateway")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
+    viewBox="0 0 416 448" id="__github">
+  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
+        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
+        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
+        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
+        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
+        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
+        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
+        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
+        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
+        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
+        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
+        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
+        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
+        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
+        99.5z" />
+</svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#api-management" tabindex="1" class="md-skip">
+        Saltar a contenido
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://datosgobar.github.io/api-gateway" title="API Gateway" class="md-header-nav__button md-logo">
+          
+            <img src="../images/logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              API Gateway
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Desarrollo
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Escriba para comenzar la búsqueda
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/datosgobar/api-gateway/" title="Ir al repositorio" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <!--
+  Copyright (c) 2016-2018 Martin Donath <martin.donath@squidfunk.com>
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to
+  deal in the Software without restriction, including without limitation the
+  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+  sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+  IN THE SOFTWARE.
+-->
+
+<!-- Main navigation -->
+<nav class="md-nav md-nav--primary" data-md-level="0">
+
+        <!-- Site title -->
+        <label class="md-nav__title md-nav__title--site" for="__drawer">
+          <a href="https://datosgobar.github.io/api-gateway"
+              title="API Gateway" class="md-nav__button md-logo">
+            
+              <img src="../images/logo.svg" width="48" height="48" />
+            
+          </a>
+          API Gateway
+        </label>
+      
+        <!-- Repository containing source -->
+        
+          <div class="md-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/datosgobar/api-gateway/" title="Ir al repositorio" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+          </div>
+        
+      
+        <!-- Render item list -->
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+            
+            
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Inicio" class="md-nav__link">
+      Inicio
+    </a>
+  </li>
+
+            <hr/>
+          
+            
+            
+            
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Usuarios
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Usuarios
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/" title="Manual de uso" class="md-nav__link">
+      Manual de uso
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/apis/api_registration/" title="Registro de APIs" class="md-nav__link">
+      Registro de APIs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-3" type="checkbox" id="nav-2-3">
+    
+    <label class="md-nav__link" for="nav-2-3">
+      Plugins
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-3">
+        Plugins
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/apis/plugins/http_log/" title="HTTP Log" class="md-nav__link">
+      HTTP Log
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/apis/plugins/jwt/" title="JWT" class="md-nav__link">
+      JWT
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/apis/plugins/rate_limiting/" title="Rate Limiting" class="md-nav__link">
+      Rate Limiting
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-4" type="checkbox" id="nav-2-4">
+    
+    <label class="md-nav__link" for="nav-2-4">
+      Consumers
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
+      <label class="md-nav__title" for="nav-2-4">
+        Consumers
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/consumers/consumer_registration/" title="Registro de consumers" class="md-nav__link">
+      Registro de consumers
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/consumers/token_request/" title="Token Requests" class="md-nav__link">
+      Token Requests
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../usage/analytics/" title="Analytics" class="md-nav__link">
+      Analytics
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+            <hr/>
+          
+            
+            
+            
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Desarrolladores
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        Desarrolladores
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Desarrollo
+      </label>
+    
+    <a href="./" title="Desarrollo" class="md-nav__link md-nav__link--active">
+      Desarrollo
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Contenidos de la sección</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requerimientos" class="md-nav__link">
+    Requerimientos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-previo" class="md-nav__link">
+    Paso previo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-de-docker" class="md-nav__link">
+    Setup de docker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-local" class="md-nav__link">
+    Configuracion Local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugins" class="md-nav__link">
+    Plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correr-la-aplicacion" class="md-nav__link">
+    Correr la aplicación
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workers" class="md-nav__link">
+    Workers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migraciones-de-la-api-de-kong" class="md-nav__link">
+    Migraciones de la API de Kong
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-hooks" class="md-nav__link">
+    Git hooks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips" class="md-nav__link">
+    Tips:
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#server-para-desarrollo" class="md-nav__link">
+    Server para desarrollo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consola-de-django" class="md-nav__link">
+    Consola de django
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correr-lintstylecpd" class="md-nav__link">
+    Correr Lint/Style/CPD
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+            <hr/>
+          
+        </ul>
+      </nav>
+      
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Contenidos de la sección</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requerimientos" class="md-nav__link">
+    Requerimientos
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    Settings
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-previo" class="md-nav__link">
+    Paso previo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-de-docker" class="md-nav__link">
+    Setup de docker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-local" class="md-nav__link">
+    Configuracion Local
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugins" class="md-nav__link">
+    Plugins
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correr-la-aplicacion" class="md-nav__link">
+    Correr la aplicación
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workers" class="md-nav__link">
+    Workers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#migraciones-de-la-api-de-kong" class="md-nav__link">
+    Migraciones de la API de Kong
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-hooks" class="md-nav__link">
+    Git hooks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips" class="md-nav__link">
+    Tips:
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#server-para-desarrollo" class="md-nav__link">
+    Server para desarrollo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consola-de-django" class="md-nav__link">
+    Consola de django
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correr-lintstylecpd" class="md-nav__link">
+    Correr Lint/Style/CPD
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/datosgobar/api-gateway/edit/master/docs/development.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="api-management">API Management</h1>
+<h2 id="setup">Setup</h2>
+<h3 id="requerimientos">Requerimientos</h3>
+<p>El sistema está pensado para correr bajo entornos *nix, en particular Ubuntu 16.04.</p>
+<p>Este proyecto require python 3.6.
+Python 3 puede ser instalado con <a href="https://github.com/pyenv/pyenv">pyenv</a>.</p>
+<ol>
+<li>Usar <a href="https://github.com/pyenv/pyenv-installer">pyenv-installer</a> para instalar pyenv</li>
+<li>Ver las versiones de python disponibles: <code>pyenv install --list</code></li>
+<li>Instalar python 3. Ejemplo: <code>pyenv install 3.6.6</code> (3.6.6 o mayor)</li>
+</ol>
+<p>Tambien <a href="https://nodejs.org/en/">nodejs</a> es necesario para usar <code>eslint</code> y <code>jscpd</code>.</p>
+<ol>
+<li>Instalar <code>nodejs</code>, esto se puede llevar a cabo mediante <a href="https://github.com/creationix/nvm">nvm</a>.</li>
+<li>Instalar la version <code>7</code> de <code>nodejs</code></li>
+<li>Usar <code>npm</code> para instalar las dependencias: <code>npm install</code></li>
+</ol>
+<p>Las dependencias de la aplicación (Elasticsearch, Postgres, Redis, Kong) se manejan a través de Docker y docker-compose.</p>
+<h3 id="settings">Settings</h3>
+<p>Este proyecto adopta <a href="https://12factor.net/">The 12 factor methodology</a>.
+Esto significa que todas las configuraciones deberian hacerse por variables de entorno. <a href="https://12factor.net/config">(Factor III)</a>.</p>
+<h3 id="paso-previo">Paso previo</h3>
+<p>Decidir un puerto bajo el cual correr la aplicación Django. Tanto Django como Kong usan como default el puerto 8000, por lo tanto Django debe correr bajo <strong>otro</strong> puerto arbitrario.</p>
+<p><strong>La aplicación debe correr bajo la red interna obligatoriamente, para que el contenedor de Kong pueda llegar a la aplicación Django local</strong>. Por ejemplo, se puede correr Django como<code>./manage.py runserver 192.168.1.181 7999</code>.</p>
+<p>Para correr los próximos pasos, setear una variable <code>DJANGO_URL</code> con la URL (con schema) bajo la cual correrá la aplicación Django. Por ejemplo:</p>
+<p><code>DJANGO_URL=http://192.168.1.181:7999/</code></p>
+<p>La IP de la red interna se puede obtener a través de utilidades del sistema como <code>ip</code> o <code>ifconfig</code>, suele ser <code>192.168.*.*</code>.</p>
+<h3 id="setup-de-docker">Setup de docker</h3>
+<ol>
+<li>Build: <code>docker-compose build</code></li>
+<li>Iniciar los servicios: <code>docker-compose up -d</code></li>
+<li>Migrar la base de datos de kong: <code>docker-compose run --rm kong kong migrations up</code></li>
+<li>Reiniciar kong: <code>docker-compose restart kong</code></li>
+<li>Agregar ruta de api management a kong <code>curl -X POST localhost:8001/apis -d name=management -d upstream_url=$DJANGO_URL -d uris=/management -d strip_uri=false</code></li>
+</ol>
+<h3 id="configuracion-local">Configuracion Local</h3>
+<ol>
+<li>Crear un "virtualenv" con un nombre descriptivo: <code>pyenv virtualenv 3.6.6 my_virtualenv</code></li>
+<li>Crear un archivo <code>.python-version</code>: <code>echo "my_virtualenv" &gt; .python-version</code></li>
+<li>Instalar los requerimientos: <code>pip install -r requirements/local.txt</code></li>
+<li>Copiar el archivo <code>conf/settings/.env.local</code> a <code>conf/settings/.env</code> (y reemplazar las variables de ser necesario)</li>
+<li>Migrar la base de datos: <code>./manage.py migrate</code></li>
+<li>Crear un super usuario: <code>./manage.py createsuperuser</code></li>
+</ol>
+<h3 id="plugins">Plugins</h3>
+<p>Para mapear plugins a una serie se puede hacer desde la configuracion de la misma desde el Admin. En ella se encuentra la configuracion para cada plugin disponible, por ejemplo para activar Analytics a una serie se hace activando "Kong Api plugin http log" agregandole, en el campo "Api Key", el Token de acceso.</p>
+<h3 id="correr-la-aplicacion">Correr la aplicación</h3>
+<p>Finalmente, se puede correr la aplicación con <code>./manage.py runserver &lt;IP RED INTERNA&gt; &lt;PUERTO&gt;</code>, y acceder a través de kong en <code>http://localhost:8000/management/ingresar</code>.</p>
+<h3 id="workers">Workers</h3>
+<p>Por defecto la configuración local no utiliza workers asincrónicos, pero pueden ser activados seteando <code>queue['ASYNC'] = True</code> en el ciclo <code>for</code> dentro de <code>conf/settings/local.py</code>.</p>
+<h3 id="migraciones-de-la-api-de-kong">Migraciones de la API de Kong</h3>
+<p>Casi todos los modelos de la aplicación <code>api_registry</code> requieren hacer una migración de las APIs de Kong (con actualizar una API es suficiente). A continuación se listan los encontrados hasta la fecha:</p>
+<p><code>KongObject</code>, <code>KongApi</code>, <code>KongApiPlugin</code>, <code>KongPlugin</code>, <code>KongConsumerManager</code>, <code>KongConsumer</code>, <code>JwtCredentialManager</code>, <code>JwtCredential</code>, <code>TokenRequest</code>, <code>KongPluginRateLimiting</code>, <code>KongApiPluginRateLimiting</code>, <code>KongApiPluginHttpLog</code>, <code>KongApiPluginJwt</code>, <code>KongApiPluginAcl</code>, <code>AclGroup</code>, <code>KongConsumerPlugin</code>, <code>KongConsumerPluginRateLimiting</code>, <code>KongApiPluginCors</code>, <code>RootKongApi</code>, </p>
+<h3 id="git-hooks">Git hooks</h3>
+<ul>
+<li>Instalar <a href="https://github.com/git-hooks/git-hooks/">git-hooks</a>.</li>
+<li>Instalar los hooks de git: <code>git hooks install</code></li>
+</ul>
+<h2 id="tips">Tips:</h2>
+<h4 id="server-para-desarrollo">Server para desarrollo</h4>
+<ul>
+<li><code>./manage.py runserver</code></li>
+</ul>
+<h4 id="consola-de-django">Consola de django</h4>
+<ul>
+<li>
+<p><code>./manage.py shell</code></p>
+</li>
+<li>
+<p>Con Docker: <code>docker-compose run django python3 manage.py migrate</code></p>
+</li>
+</ul>
+<h4 id="tests">Tests</h4>
+<ul>
+<li><code>python manage.py test</code></li>
+</ul>
+<h4 id="correr-lintstylecpd">Correr Lint/Style/CPD</h4>
+<ul>
+<li><a href="http://flake8.pycqa.org/en/latest/index.html">Flake8</a>: <code>scripts/flake8.sh</code></li>
+<li><a href="https://pylint.readthedocs.io/en/latest/">Pylint</a>: <code>scripts/pylint.sh</code></li>
+<li><a href="https://github.com/kucherenko/jscpd">Jscpd</a>: <code>scripts/jscpd.sh</code></li>
+<li><a href="https://eslint.org/">Eslint</a>: <code>scripts/eslint.sh</code></li>
+</ul>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../usage/analytics/" title="Analytics" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Anterior
+                </span>
+                Analytics
+              </span>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.ac79c3b0.js"></script>
+      
+        
+        
+          
+          <script src="../assets/javascripts/lunr/lunr.stemmer.support.js"></script>
+          
+            
+              
+              
+                <script src="../assets/javascripts/lunr/lunr.es.js"></script>
+              
+            
+          
+          
+        
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+    
+  </body>
+</html>
