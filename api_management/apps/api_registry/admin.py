@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.core.checks import messages
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from solo.admin import SingletonModelAdmin
 
@@ -152,7 +152,13 @@ class KongConsumerAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.enabled = True
-        super(KongConsumerAdmin, self).save_model(request, obj, form, change)
+        try:
+            super(KongConsumerAdmin, self).save_model(request, obj, form, change)
+        except NameError:
+            storage = messages.get_messages(request)
+            storage.used = True
+            # Si, esto se muestra abajo de un OK. Sacar ese OK es muy complicado.
+            messages.warning(request, "Ya existe un consumer para esa API con ese nombre")
 
 
 class RootKongAdmin(SingletonModelAdmin):
