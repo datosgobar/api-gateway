@@ -49,3 +49,17 @@ Para mas informacion de autenticacion leer [JWT](jwt.md)
 - De proveer un token invalido: se rechaza la conexión.
 - De no proveer un token: se le asigna el consumer anónimo correspondiente.
 - De no estar activada la configuración **free tier** se rechaza la conexion.
+
+#### Kong API: rate limiting
+
+Hay 2 opciones para guardar los _rate limits_ de una API de Kong usados por el plugin KongPluginRateLimiting:
+- cluster
+- local
+
+Cluster: guarda la información en la base de datos y nunca las borra. Es por ello que diseñamos un proceso que corre periódicamente para borrar los datos de _n_ días de antigüedad.
+
+Local: guarda la información en la memoria RAM, lo cual tiene un tiempo de acceso más rápido y no nos tenemos que preocupar por el borrado.
+
+**¿Cómo usar esta funcionalidad?**
+
+Una KongAPI tiene un campo `policy` el cual permite elegir entre las opciones disponibles.

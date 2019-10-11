@@ -17,8 +17,6 @@ y usando la acción *ACCEPT*.
 
 Esto nos creara un nuevo **Kong Consumer**.
 
-**NOTA:** Nunca cree un **kong consumer** directamente, solo mediante los **token request**.
-
 En el nuevo **kong consumer** podemos ver una sección "JWT CREDENTIALS".
 La misma contiene el par *key*/*secret* para las llamada que el cliente necesita hacer.
 

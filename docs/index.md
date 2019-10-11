@@ -1,4 +1,4 @@
-# Arquitectura de API Gateway
+# Documentación de API Gateway
 
 ## Introducción
 
@@ -12,7 +12,7 @@ La aplicación API Gateway es un conjunto de servicios orientados a estandarizar
 
 La herramienta permite exponer APIs desarrolladas por distintos equipos de la APN, pudiendo ser estas APIs implementadas en distintas tecnologías y plataformas.
 
-## Componentes de la arquitectura
+### Componentes de la arquitectura
 
 ![Diagrama de alto nivel de la arquitectura de API Gateway](https://raw.githubusercontent.com/datosgobar/api-gateway/master/docs/arquitectura-api-gateway.png)
 
@@ -32,4 +32,5 @@ Adicionalmente esta aplicación funciona como repositorio de las APIs configurad
 
 ![Diagrama de secuencia API Gateway](https://raw.githubusercontent.com/datosgobar/api-gateway/master/docs/secuencia-api-gateway.png)
 
+El grueso de las funcionalidades de API Gateway se utilizan y configuran a través de API Management. El backoffice (admin de Django) se puede acceder en `/management/ingresar`. Ver - Documentación de uso [aquí](./usage.md)
 

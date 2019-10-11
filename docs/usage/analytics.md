@@ -1,11 +1,10 @@
-## Detalles técnicos de uso
+# Analytics
 
-
-#### Analytics
+## Endpoint
 
 Los analytics de las apis con logs activados se obtienen haciendo GET `/management/api/analytics/queries/`.
 
-Este endpoint requiere autenticacion por token.
+Este endpoint requiere autenticacion por token, interno de Kong. No es posible generarlo a través de la interfaz de API Management.
 
 Se puede obtener un token con `curl -X POST <kong>/management/api/token/ -d username=<username> -d password=<password>`
 
@@ -55,20 +54,6 @@ Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.
 
 Todos los días, en el ambiente de deploy, se ejecuta el comando `python manage.py generate_indicators` para generar un archivo .csv el cual contiene la información de los indicadores por APIs. Cada row representa un día. Es un proceso asincrónico, por lo tanto, va a correr cuando los workers estén disponibles más allá de ver el mensaje en pantalla "Generando csv....". Este CSV puede accederse en el endpoint `/management/api/analytics/<kong_api_name>_indicadores.csv`, por ejemplo: `/management/api/analytics/series-tiempo-indicadores.csv`
 
-
-#### Kong API: rate limiting
-
-Hay 2 opciones para guardar los _rate limits_ de una API de Kong usados por el plugin KongPluginRateLimiting:
-- cluster
-- local
-
-Cluster: guarda la información en la base de datos y nunca las borra. Es por ello que diseñamos un proceso que corre periódicamente para borrar los datos de _n_ días de antigüedad.
-
-Local: guarda la información en la memoria RAM, lo cual tiene un tiempo de acceso más rápido y no nos tenemos que preocupar por el borrado.
-
-**¿Cómo usar esta funcionalidad?**
-
-Una KongAPI tiene un campo `policy` el cual permite elegir entre las opciones disponibles.
 
 #### Borrado de analytics por día
 
