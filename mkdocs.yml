@@ -1,0 +1,26 @@
+site_name: API Gateway
+site_url: https://datosgobar.github.io/api-gateway
+site_description: Documentación de la API Gateway, la solución de administración de APIs REST de la Administración Pública Nacional de la República Argentina.
+site_author: Datos Argentina
+repo_url: https://github.com/datosgobar/api-gateway/
+
+nav:
+  - Inicio: 'index.md'
+  - Usuarios:
+    - Manual de uso: 'usage.md'
+    - Plugins:
+        - HTTP Log: 'usage/apis/plugins/http_log.md'
+        - JWT: 'usage/apis/plugins/jwt.md'
+        - Rate Limiting: 'usage/apis/plugins/rate_limiting.md'
+    - Consumers:
+        - Registro de consumers: 'usage/consumers/consumer_registration.md'
+        - Token Requests: 'usage/consumers/token_request.md'
+    - Analytics: 'usage/analytics.md'
+  - Desarrolladores:
+    - Desarrollo: 'development.md'
+
+theme: datosgobar_docs
+
+markdown_extensions: [fenced_code, codehilite, admonition]
+
+google_analytics: ['UA-91435482-1', "https://datosgobar.github.io/api-gateway"]
