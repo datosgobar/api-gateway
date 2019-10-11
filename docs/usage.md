@@ -54,9 +54,9 @@ la [documentación de kong](https://docs.konghq.com/0.12.x/proxy/#the-preserve_h
 
 A cada API se le peuden configurar varios plugins adicionales. 
 
-- [HttpLog](plugins/http_log.md)
-- [Rate-Limiting](plugins/rate_limiting.md)
-- [JWT](plugins/jwt.md)
+- [HttpLog](./usage/apis/plugins/http_log.md)
+- [Rate-Limiting](./usage/apis/plugins/rate_limiting.md)
+- [JWT](./usage/apis/plugins/jwt.md)
 
 ## Analytics de uso
 
