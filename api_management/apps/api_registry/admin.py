@@ -154,6 +154,7 @@ class KongConsumerAdmin(admin.ModelAdmin):
             obj.enabled = True
         try:
             super(KongConsumerAdmin, self).save_model(request, obj, form, change)
+            JwtCredential.objects.create_for_consumer(obj)
         except NameError:
             storage = messages.get_messages(request)
             storage.used = True
