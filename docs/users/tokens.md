@@ -51,3 +51,44 @@ curl "$url" -H "Authorization: Bearer $token";
 
 
 
+## Consumers
+
+Para APIs protegidas bajo autenticación (es decir, con el plugin JWT activado), es necesario crear _consumidores_ de APIs. Estos consumers tendrán asociados un token [JWT](https://jwt.io/) que, a través de headers HTTP, podrán ser usados para autenticarse contra el backend. 
+
+### Registrar un Consumer
+
+Una opción para registrar consumidores es a través de [token requests](token_request.md), y luego aceptándose. 
+
+Otra opción es crear consumidores directamente, instanciando nuevos modelos de Kong Consumers en el API Registry. 
+
+Luego de cualquiera de estos dos pasos, el token JWT de la API asociado al usuario se encuentra bajo el modelo Kong Consumer creado por cualquiera de las dos acciones (en `/management/ingresar/api_registry/kongconsumer/`)
+
+Un consumer está identificado por su dirección de correo electrónico y la API a la cual se asocia el JWT. No es posible crear tokens adicionales para esa combinación de usuario + API, ni usar el token generado para otras APIs. 
+
+
+## Token Request
+
+**api**: La api a la cual el consumer creado se subscribe.<br>
+**applicant**: Nombre de solicitante, se usa para identificarlo.<br>
+**contact email**: Email de contacto con el solicitante,
+solo para uso administrativo.<br>
+**consumer application**: Nombre de la aplicación que consume
+la api en solicitud, sólo para uso administrativo.<br>
+**requests per day**: Cantidad de requests estimados a la api por dia,
+solo para uso administrativo.<br>
+**state**: Estado del token request (`Aceptada` | `Rechazada` | `Pendiente`).<br>
+
+### Cliente
+
+Como cliente de la app, si quiero obtener un token para una api con
+autenticación por [JWT](../apis/plugins/jwt.md), tengo que realizar una
+peticion en la landing de dicha api, sea `/georef/` `/series/`
+
+### Admin
+
+Cómo admin puedo generar el token request desde el admin de api-mgmt.
+
+## Aceptar o Rechazar Token Requests
+
+Los tokens requests se aceptan o rechazan a traves
+de acciones de django, en el admin.

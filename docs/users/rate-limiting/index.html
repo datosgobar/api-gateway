@@ -13,7 +13,7 @@
         <meta name="description" content="Documentación de la API Gateway, la solución de administración de APIs REST de la Administración Pública Nacional de la República Argentina.">
       
       
-        <link rel="canonical" href="https://datosgobar.github.io/api-gateway/">
+        <link rel="canonical" href="https://datosgobar.github.io/api-gateway/users/rate-limiting/">
       
       
         <meta name="author" content="Datos Argentina">
@@ -37,27 +37,27 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
-        <title>API Gateway</title>
+        <title>Administrar cuotas - API Gateway</title>
       
     
     
 	
-      <link rel="stylesheet" href="assets/stylesheets/application.3020aac5.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
       
       
     
-	<link rel="stylesheet" href="css/extra.css">
+	<link rel="stylesheet" href="../../css/extra.css">
 
     
     
-      <script src="assets/javascripts/modernizr.01ccdecf.js"></script>
+      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
     
-    <script src="js/extra.js"></script>
+    <script src="../../js/extra.js"></script>
 
     
       
@@ -66,7 +66,7 @@
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
     
     
@@ -131,7 +131,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#api-gateway" tabindex="1" class="md-skip">
+      <a href="#rate-limiting" tabindex="1" class="md-skip">
         Saltar a contenido
       </a>
     
@@ -142,7 +142,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="https://datosgobar.github.io/api-gateway" title="API Gateway" class="md-header-nav__button md-logo">
           
-            <img src="images/logo.svg" width="24" height="24">
+            <img src="../../images/logo.svg" width="24" height="24">
           
         </a>
       </div>
@@ -156,7 +156,7 @@
               API Gateway
             </span>
             <span class="md-header-nav__topic">
-              Inicio
+              Administrar cuotas
             </span>
           
         </div>
@@ -258,7 +258,7 @@
           <a href="https://datosgobar.github.io/api-gateway"
               title="API Gateway" class="md-nav__button md-logo">
             
-              <img src="images/logo.svg" width="48" height="48" />
+              <img src="../../images/logo.svg" width="48" height="48" />
             
           </a>
           API Gateway
@@ -294,20 +294,11 @@
             
             
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-    <a href="." title="Inicio" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../.." title="Inicio" class="md-nav__link">
       Inicio
     </a>
-    
   </li>
 
             <hr/>
@@ -316,10 +307,12 @@
             
             
 
+  
 
-  <li class="md-nav__item md-nav__item--nested">
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
     
     <label class="md-nav__link" for="nav-2">
       Usuarios
@@ -337,7 +330,7 @@
 
 
   <li class="md-nav__item">
-    <a href="users/quick-start/" title="Comenzar a usar API Gateway" class="md-nav__link">
+    <a href="../quick-start/" title="Comenzar a usar API Gateway" class="md-nav__link">
       Comenzar a usar API Gateway
     </a>
   </li>
@@ -349,7 +342,7 @@
 
 
   <li class="md-nav__item">
-    <a href="users/publish-apis/" title="Publicar APIs" class="md-nav__link">
+    <a href="../publish-apis/" title="Publicar APIs" class="md-nav__link">
       Publicar APIs
     </a>
   </li>
@@ -361,7 +354,7 @@
 
 
   <li class="md-nav__item">
-    <a href="users/apis-docs/" title="Compilar documentación" class="md-nav__link">
+    <a href="../apis-docs/" title="Compilar documentación" class="md-nav__link">
       Compilar documentación
     </a>
   </li>
@@ -371,11 +364,111 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="users/rate-limiting/" title="Administrar cuotas" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Administrar cuotas
+      </label>
+    
+    <a href="./" title="Administrar cuotas" class="md-nav__link md-nav__link--active">
       Administrar cuotas
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">Contenidos de la sección</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-nivel-api" title="A nivel API" class="md-nav__link">
+    A nivel API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-nivel-consumer" title="A nivel Consumer" class="md-nav__link">
+    A nivel Consumer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#politicas" title="Politicas" class="md-nav__link">
+    Politicas
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#siempre-tiene-prioridad-el-rate-limiting-mas-especifico" title="Siempre tiene prioridad el rate limiting mas especifico" class="md-nav__link">
+    Siempre tiene prioridad el rate limiting mas especifico
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-de-una-api-es-individual-por-cliente" title="Rate limiting de una api es individual por cliente" class="md-nav__link">
+    Rate limiting de una api es individual por cliente
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#todas-las-conexiones-de-un-consumer-comparten-una-cuota" title="Todas las conexiones de un consumer comparten una cuota" class="md-nav__link">
+    Todas las conexiones de un consumer comparten una cuota
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumers-anonimos-no-tienen-trato-especial" title="Consumers anónimos no tienen trato especial" class="md-nav__link">
+    Consumers anónimos no tienen trato especial
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conexiones-anonimas-comparten-un-mismo-consumer-anonimo" title="Conexiones anónimas comparten un mismo consumer anónimo" class="md-nav__link">
+    Conexiones anónimas comparten un mismo consumer anónimo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kong-api-rate-limiting" title="Kong API: rate limiting" class="md-nav__link">
+    Kong API: rate limiting
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -385,7 +478,7 @@
 
 
   <li class="md-nav__item">
-    <a href="users/tokens/" title="Administrar usuarios de las APIs" class="md-nav__link">
+    <a href="../tokens/" title="Administrar usuarios de las APIs" class="md-nav__link">
       Administrar usuarios de las APIs
     </a>
   </li>
@@ -397,7 +490,7 @@
 
 
   <li class="md-nav__item">
-    <a href="users/analytics/" title="Recolectar analytics" class="md-nav__link">
+    <a href="../analytics/" title="Recolectar analytics" class="md-nav__link">
       Recolectar analytics
     </a>
   </li>
@@ -409,7 +502,7 @@
 
 
   <li class="md-nav__item">
-    <a href="architecture/" title="Arquitectura de API Gateway" class="md-nav__link">
+    <a href="../../architecture/" title="Arquitectura de API Gateway" class="md-nav__link">
       Arquitectura de API Gateway
     </a>
   </li>
@@ -427,7 +520,7 @@
 
 
   <li class="md-nav__item">
-    <a href="admin/" title="Administradores" class="md-nav__link">
+    <a href="../../admin/" title="Administradores" class="md-nav__link">
       Administradores
     </a>
   </li>
@@ -440,7 +533,7 @@
 
 
   <li class="md-nav__item">
-    <a href="development/" title="Desarrolladores" class="md-nav__link">
+    <a href="../../development/" title="Desarrolladores" class="md-nav__link">
       Desarrolladores
     </a>
   </li>
@@ -465,6 +558,84 @@
     
   
   
+    <label class="md-nav__title" for="__toc">Contenidos de la sección</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-nivel-api" title="A nivel API" class="md-nav__link">
+    A nivel API
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-nivel-consumer" title="A nivel Consumer" class="md-nav__link">
+    A nivel Consumer
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#politicas" title="Politicas" class="md-nav__link">
+    Politicas
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#siempre-tiene-prioridad-el-rate-limiting-mas-especifico" title="Siempre tiene prioridad el rate limiting mas especifico" class="md-nav__link">
+    Siempre tiene prioridad el rate limiting mas especifico
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-de-una-api-es-individual-por-cliente" title="Rate limiting de una api es individual por cliente" class="md-nav__link">
+    Rate limiting de una api es individual por cliente
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#todas-las-conexiones-de-un-consumer-comparten-una-cuota" title="Todas las conexiones de un consumer comparten una cuota" class="md-nav__link">
+    Todas las conexiones de un consumer comparten una cuota
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumers-anonimos-no-tienen-trato-especial" title="Consumers anónimos no tienen trato especial" class="md-nav__link">
+    Consumers anónimos no tienen trato especial
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conexiones-anonimas-comparten-un-mismo-consumer-anonimo" title="Conexiones anónimas comparten un mismo consumer anónimo" class="md-nav__link">
+    Conexiones anónimas comparten un mismo consumer anónimo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kong-api-rate-limiting" title="Kong API: rate limiting" class="md-nav__link">
+    Kong API: rate limiting
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -475,32 +646,57 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/datosgobar/api-gateway/edit/master/docs/index.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/datosgobar/api-gateway/edit/master/docs/users/rate-limiting.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="api-gateway">API Gateway</h1>
-<p><strong>Versión</strong>: 0.15.0</p>
-<p>API Gateway es una aplicación para administrar, ordenar y facilitar la publicación de APIs de datos de la Administración Pública Nacional. Con API Gateway se puede:</p>
+                <h1 id="rate-limiting">Rate limiting</h1>
+<h3 id="a-nivel-api">A nivel API</h3>
+<p>Es posible configurar un límite de llamadas (a.k.a. "rate limit") a la API por IP.
+En el panel "Kong plugin rate limiting" podemos ver como hacerlo,
+en el panel "KONG API PLUGIN RATE LIMITINGS".
+Luego de <em>tildar</em> <strong>enabled</strong>, debemos configurar cuales son los limites de llamadas.
+Los posibles valores configurables son:</p>
 <ul>
-<li><strong>Publicar APIs bajo un dominio común</strong>: distintas ubicaciones (IPs o URIs) en la web bajo el mismo dominio. Permite administrar rutas y ambientes y dar de alta/baja APIs/ambientes con distintas rutas (/series, /georef), así como re-direccionar rápidamente.<ul>
-<li>Ej.: apis.datos.gob.ar<ul>
-<li>apis.datos.gob.ar/series</li>
-<li>apis.datos.gob.ar/georef</li>
+<li><strong>second</strong>: Llamadas por segundo</li>
+<li><strong>minutes</strong>: Llamadas por minuto</li>
+<li><strong>hour</strong>: Llamadas por hora</li>
+<li><strong>day</strong>: Llamadas por día</li>
 </ul>
-</li>
-</ul>
-</li>
-<li><strong>Compilar documentación</strong>: generar documentación de una API compatible con Open API o re-direccionar a la URI donde esta se aloje.</li>
-<li><strong>Administrar cuotas</strong>: por IP o por usuario con token.</li>
-<li><strong>Autenticar usuarios</strong>: con token propio.</li>
-<li><strong>Recolectar <em>analytics</em></strong>: envío a Google Analytics, generación de CSVs bajo autenticación y disponibilidad por API.</li>
-</ul>
-<p>Esta documentación apunta a 3 públicos distintos:</p>
-<ul>
-<li><strong>Usuarios</strong>: son los desarrolladores o administradores de alguna API, que desean darla de alta en API Gateway y usar sus servicios para administrarla.</li>
-<li><strong>Administradores</strong>: son los administradores de API Gateway, y crean los usuarios para desarrolladores o administradores de alguna API que deseen usar la aplicación.</li>
-<li><strong>Desarrolladores</strong>: son desarrolladores que quieren instalar y utilizar API Gateway en sus propios servidores.</li>
-</ul>
+<h3 id="a-nivel-consumer">A nivel Consumer</h3>
+<p>Si estamos usando el plugin de autenticación por <em>JWT</em>, es posible establecer un
+límite basado <em>en cada consumidor</em>. Este limite su puede configurar en al editar un
+<strong>Kong Consumer</strong>. Además si la opción <strong>Free tier</strong> esta activada, es posible establecer
+un limite único para todos los usuarios anónimos en conjunto.
+Este limite se establece en el <strong>kong consumer</strong> que se crea automáticamente,
+cuyo <em>applicant</em> es <em>anonymous</em>.</p>
+<h2 id="politicas">Politicas</h2>
+<h5 id="siempre-tiene-prioridad-el-rate-limiting-mas-especifico">Siempre tiene prioridad el rate limiting mas especifico</h5>
+<p>Si se activa tanto rate limiting en la api con en su consumer solo se aplica
+la cuota del consumer.</p>
+<h5 id="rate-limiting-de-una-api-es-individual-por-cliente">Rate limiting de una api es individual por cliente</h5>
+<p>De aplicarse rate limiting de una api a un cliente este tendrá su propia cuota,
+ sin importar otras conexiones.</p>
+<h4 id="todas-las-conexiones-de-un-consumer-comparten-una-cuota">Todas las conexiones de un consumer comparten una cuota</h4>
+<p>Sin importar cuantas conexión se abran a una api, si estas se identifican
+con un consumer en común entonces compartirán una quota de requests.</p>
+<h4 id="consumers-anonimos-no-tienen-trato-especial">Consumers anónimos no tienen trato especial</h4>
+<p>Los consumers anónimos son consumers igual que cualquiera. Por lo cual
+aplican las mismas políticas para ellos como para consumers no anónimos.</p>
+<h4 id="conexiones-anonimas-comparten-un-mismo-consumer-anonimo">Conexiones anónimas comparten un mismo consumer anónimo</h4>
+<p>A cada conexión se le asigna un consumer en base al token provisto.
+Para mas informacion de autenticacion leer <a href="jwt.md">JWT</a>
+- De proveer un token válido: se le asigna el consumer correspondiente.
+- De proveer un token invalido: se rechaza la conexión.
+- De no proveer un token: se le asigna el consumer anónimo correspondiente.
+- De no estar activada la configuración <strong>free tier</strong> se rechaza la conexion.</p>
+<h4 id="kong-api-rate-limiting">Kong API: rate limiting</h4>
+<p>Hay 2 opciones para guardar los <em>rate limits</em> de una API de Kong usados por el plugin KongPluginRateLimiting:
+- cluster
+- local</p>
+<p>Cluster: guarda la información en la base de datos y nunca las borra. Es por ello que diseñamos un proceso que corre periódicamente para borrar los datos de <em>n</em> días de antigüedad.</p>
+<p>Local: guarda la información en la memoria RAM, lo cual tiene un tiempo de acceso más rápido y no nos tenemos que preocupar por el borrado.</p>
+<p><strong>¿Cómo usar esta funcionalidad?</strong></p>
+<p>Una KongAPI tiene un campo <code>policy</code> el cual permite elegir entre las opciones disponibles.</p>
                 
                   
                 
@@ -521,14 +717,28 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
+          <a href="../apis-docs/" title="Compilar documentación" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Anterior
+                </span>
+                Compilar documentación
+              </span>
+            </div>
+          </a>
         
-          <a href="users/quick-start/" title="Comenzar a usar API Gateway" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+        
+          <a href="../tokens/" title="Administrar usuarios de las APIs" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Siguiente
                 </span>
-                Comenzar a usar API Gateway
+                Administrar usuarios de las APIs
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -556,24 +766,24 @@
       
     </div>
     
-      <script src="assets/javascripts/application.dc02f8ce.js"></script>
+      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
       
         
         
           
-          <script src="assets/javascripts/lunr/lunr.stemmer.support.js"></script>
+          <script src="../../assets/javascripts/lunr/lunr.stemmer.support.js"></script>
           
             
               
               
-                <script src="assets/javascripts/lunr/lunr.es.js"></script>
+                <script src="../../assets/javascripts/lunr/lunr.es.js"></script>
               
             
           
           
         
       
-      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
   </body>

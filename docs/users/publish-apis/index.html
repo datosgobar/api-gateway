@@ -13,7 +13,7 @@
         <meta name="description" content="Documentación de la API Gateway, la solución de administración de APIs REST de la Administración Pública Nacional de la República Argentina.">
       
       
-        <link rel="canonical" href="https://datosgobar.github.io/api-gateway/usage/consumers/token_request/">
+        <link rel="canonical" href="https://datosgobar.github.io/api-gateway/users/publish-apis/">
       
       
         <meta name="author" content="Datos Argentina">
@@ -37,36 +37,36 @@
       
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
-      <link rel="shortcut icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.3">
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.1.1">
     
     
       
-        <title>Token Requests - API Gateway</title>
+        <title>Publicar APIs - API Gateway</title>
       
     
     
 	
-      <link rel="stylesheet" href="../../../assets/stylesheets/application.30686662.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.3020aac5.css">
       
       
     
-	<link rel="stylesheet" href="../../../css/extra.css">
+	<link rel="stylesheet" href="../../css/extra.css">
 
     
     
-      <script src="../../../assets/javascripts/modernizr.74668098.js"></script>
+      <script src="../../assets/javascripts/modernizr.01ccdecf.js"></script>
     
-    <script src="../../../js/extra.js"></script>
+    <script src="../../js/extra.js"></script>
 
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
-    <link rel="stylesheet" href="../../../assets/fonts/material-icons.css">
+    <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
     
     
@@ -131,7 +131,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#guia-de-uso" tabindex="1" class="md-skip">
+      <a href="#publicar-apis-bajo-un-dominio-comun" tabindex="1" class="md-skip">
         Saltar a contenido
       </a>
     
@@ -142,7 +142,7 @@
       <div class="md-flex__cell md-flex__cell--shrink">
         <a href="https://datosgobar.github.io/api-gateway" title="API Gateway" class="md-header-nav__button md-logo">
           
-            <img src="../../../images/logo.svg" width="24" height="24">
+            <img src="../../images/logo.svg" width="24" height="24">
           
         </a>
       </div>
@@ -156,9 +156,7 @@
               API Gateway
             </span>
             <span class="md-header-nav__topic">
-              
-                Token Requests
-              
+              Publicar APIs
             </span>
           
         </div>
@@ -223,7 +221,7 @@
         
       
       
-      <main class="md-main" role="main">
+      <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
             
@@ -260,7 +258,7 @@
           <a href="https://datosgobar.github.io/api-gateway"
               title="API Gateway" class="md-nav__button md-logo">
             
-              <img src="../../../images/logo.svg" width="48" height="48" />
+              <img src="../../images/logo.svg" width="48" height="48" />
             
           </a>
           API Gateway
@@ -298,7 +296,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../.." title="Inicio" class="md-nav__link">
+    <a href="../.." title="Inicio" class="md-nav__link">
       Inicio
     </a>
   </li>
@@ -332,101 +330,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../../" title="Manual de uso" class="md-nav__link">
-      Manual de uso
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-2" type="checkbox" id="nav-2-2">
-    
-    <label class="md-nav__link" for="nav-2-2">
-      Plugins
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-2-2">
-        Plugins
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../apis/plugins/http_log/" title="HTTP Log" class="md-nav__link">
-      HTTP Log
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../apis/plugins/jwt/" title="JWT" class="md-nav__link">
-      JWT
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../../apis/plugins/rate_limiting/" title="Rate Limiting" class="md-nav__link">
-      Rate Limiting
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-        
-          
-          
-          
-
-  
-
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2-3" type="checkbox" id="nav-2-3" checked>
-    
-    <label class="md-nav__link" for="nav-2-3">
-      Consumers
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="2">
-      <label class="md-nav__title" for="nav-2-3">
-        Consumers
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../consumer_registration/" title="Registro de consumers" class="md-nav__link">
-      Registro de consumers
+    <a href="../quick-start/" title="Comenzar a usar API Gateway" class="md-nav__link">
+      Comenzar a usar API Gateway
     </a>
   </li>
 
@@ -446,11 +351,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Token Requests
+        Publicar APIs
       </label>
     
-    <a href="./" title="Token Requests" class="md-nav__link md-nav__link--active">
-      Token Requests
+    <a href="./" title="Publicar APIs" class="md-nav__link md-nav__link--active">
+      Publicar APIs
     </a>
     
       
@@ -464,23 +369,31 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#token-request" class="md-nav__link">
-    Token Request
+  <a href="#dar-de-alta-una-api" title="Dar de alta una API" class="md-nav__link">
+    Dar de alta una API
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cliente" class="md-nav__link">
-    Cliente
+  <a href="#modificaciones-sobre-la-llamada" title="Modificaciones sobre la llamada" class="md-nav__link">
+    Modificaciones sobre la llamada
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strip_uri" title="strip_uri" class="md-nav__link">
+    strip_uri
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#admin" class="md-nav__link">
-    Admin
+  <a href="#preserve_host" title="preserve_host" class="md-nav__link">
+    preserve_host
   </a>
   
 </li>
@@ -489,11 +402,9 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#aceptar-o-rechazar-token-requests" class="md-nav__link">
-    Aceptar o Rechazar Token Requests
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -508,8 +419,15 @@
   </li>
 
         
-      </ul>
-    </nav>
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../apis-docs/" title="Compilar documentación" class="md-nav__link">
+      Compilar documentación
+    </a>
   </li>
 
         
@@ -519,8 +437,44 @@
 
 
   <li class="md-nav__item">
-    <a href="../../analytics/" title="Analytics" class="md-nav__link">
-      Analytics
+    <a href="../rate-limiting/" title="Administrar cuotas" class="md-nav__link">
+      Administrar cuotas
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../tokens/" title="Administrar usuarios de las APIs" class="md-nav__link">
+      Administrar usuarios de las APIs
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../analytics/" title="Recolectar analytics" class="md-nav__link">
+      Recolectar analytics
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../architecture/" title="Arquitectura de API Gateway" class="md-nav__link">
+      Arquitectura de API Gateway
     </a>
   </li>
 
@@ -536,34 +490,23 @@
             
 
 
-  <li class="md-nav__item md-nav__item--nested">
-    
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
-    
-    <label class="md-nav__link" for="nav-3">
-      Desarrolladores
-    </label>
-    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
-      <label class="md-nav__title" for="nav-3">
-        Desarrolladores
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
-        
-        
-          
-          
-          
-
-
   <li class="md-nav__item">
-    <a href="../../../development/" title="Desarrollo" class="md-nav__link">
-      Desarrollo
+    <a href="../../admin/" title="Administradores" class="md-nav__link">
+      Administradores
     </a>
   </li>
 
-        
-      </ul>
-    </nav>
+            <hr/>
+          
+            
+            
+            
+
+
+  <li class="md-nav__item">
+    <a href="../../development/" title="Desarrolladores" class="md-nav__link">
+      Desarrolladores
+    </a>
   </li>
 
             <hr/>
@@ -590,23 +533,31 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#token-request" class="md-nav__link">
-    Token Request
+  <a href="#dar-de-alta-una-api" title="Dar de alta una API" class="md-nav__link">
+    Dar de alta una API
   </a>
   
     <nav class="md-nav">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cliente" class="md-nav__link">
-    Cliente
+  <a href="#modificaciones-sobre-la-llamada" title="Modificaciones sobre la llamada" class="md-nav__link">
+    Modificaciones sobre la llamada
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strip_uri" title="strip_uri" class="md-nav__link">
+    strip_uri
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#admin" class="md-nav__link">
-    Admin
+  <a href="#preserve_host" title="preserve_host" class="md-nav__link">
+    preserve_host
   </a>
   
 </li>
@@ -615,11 +566,9 @@
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#aceptar-o-rechazar-token-requests" class="md-nav__link">
-    Aceptar o Rechazar Token Requests
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -639,29 +588,33 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/datosgobar/api-gateway/edit/master/docs/usage/consumers/token_request.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/datosgobar/api-gateway/edit/master/docs/users/publish-apis.md" title="Editar esta página" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="guia-de-uso">Guía de uso</h1>
-<h2 id="token-request">Token Request</h2>
-<p><strong>api</strong>: La api a la cual el consumer creado se subscribe.<br>
-<strong>applicant</strong>: Nombre de solicitante, se usa para identificarlo.<br>
-<strong>contact email</strong>: Email de contacto con el solicitante,
-solo para uso administrativo.<br>
-<strong>consumer application</strong>: Nombre de la aplicación que consume
-la api en solicitud, sólo para uso administrativo.<br>
-<strong>requests per day</strong>: Cantidad de requests estimados a la api por dia,
-solo para uso administrativo.<br>
-<strong>state</strong>: Estado del token request (<code>Aceptada</code> | <code>Rechazada</code> | <code>Pendiente</code>).<br></p>
-<h3 id="cliente">Cliente</h3>
-<p>Como cliente de la app, si quiero obtener un token para una api con
-autenticación por <a href="../../apis/plugins/jwt/">JWT</a>, tengo que realizar una
-peticion en la landing de dicha api, sea <code>/georef/</code> <code>/series/</code></p>
-<h3 id="admin">Admin</h3>
-<p>Cómo admin puedo generar el token request desde el admin de api-mgmt.</p>
-<h2 id="aceptar-o-rechazar-token-requests">Aceptar o Rechazar Token Requests</h2>
-<p>Los tokens requests se aceptan o rechazan a traves
-de acciones de django, en el admin.</p>
+                <h1 id="publicar-apis-bajo-un-dominio-comun">Publicar APIs bajo un dominio común</h1>
+<h2 id="dar-de-alta-una-api">Dar de alta una API</h2>
+<p>Luego de iniciar sesión como administradores, debemos ir a la página de creación de <code>KongApi</code>s.
+Al acceder al formulario, sólo tres campos serán requeridos.</p>
+<p><strong>name</strong>: Nombre que le daremos a la API internamente. Será único en el sistema y no podrá cambiarse luego de ingresado.
+Debe ser un valor alfanumérico y solo acepta estos <code>- _ ~</code> caracteres especiales.
+Ejemplo: <code>series-tiempo-testing</code></p>
+<p><strong>upstream url</strong>: Debe ser el upstream a donde se redireccionarán las llamadas. Debe incluir el protocolo.
+Puede ser una dominio o una IP interna o externa.
+Puede incluir el "path", pero no es lo más común.
+Ejemplo: <code>http://192.168.65.4</code>.</p>
+<p><strong>URI</strong>: "Path" que servirá para verificar si una llamada debe ser redireccionada al "upstream url".
+Debe empezar con <code>/</code> y no debe terminar con <code>/</code>.
+Ejemplos: <code>/series</code>, <code>/georef</code></p>
+<p><strong>enabled</strong>: Define si una API está activada o no.</p>
+<h3 id="modificaciones-sobre-la-llamada">Modificaciones sobre la llamada</h3>
+<h4 id="strip_uri">strip_uri</h4>
+<p>Es posible evitar que el la <strong>URI</strong> que definimos no llegue como parte de la llamada al <strong>upstream url</strong>.
+Por ejemplo, pudiéramos querer definir una <strong>URI</strong> del estilo <code>/miapi1</code>, pero que al servidor solo le llegue lo que
+este después de ese "path". Esto es posible lograrlo al <em>tildar</em> el campo <strong>strip uri</strong> en el panel "advanced".</p>
+<h4 id="preserve_host">preserve_host</h4>
+<p>Se puede forzar que la api reciba en el header host, el valor recibido en api management.
+Por default, se envía el host con el cual api management conoce a su api. Para mas informacion consultar
+la <a href="https://docs.konghq.com/0.12.x/proxy/#the-preserve_host-property">documentación de kong</a> al respecto.</p>
                 
                   
                 
@@ -682,7 +635,7 @@ de acciones de django, en el admin.</p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../consumer_registration/" title="Registro de consumers" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../quick-start/" title="Comenzar a usar API Gateway" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -691,19 +644,19 @@ de acciones de django, en el admin.</p>
                 <span class="md-footer-nav__direction">
                   Anterior
                 </span>
-                Registro de consumers
+                Comenzar a usar API Gateway
               </span>
             </div>
           </a>
         
         
-          <a href="../../analytics/" title="Analytics" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../apis-docs/" title="Compilar documentación" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Siguiente
                 </span>
-                Analytics
+                Compilar documentación
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
@@ -731,24 +684,24 @@ de acciones de django, en el admin.</p>
       
     </div>
     
-      <script src="../../../assets/javascripts/application.ac79c3b0.js"></script>
+      <script src="../../assets/javascripts/application.dc02f8ce.js"></script>
       
         
         
           
-          <script src="../../../assets/javascripts/lunr/lunr.stemmer.support.js"></script>
+          <script src="../../assets/javascripts/lunr/lunr.stemmer.support.js"></script>
           
             
               
               
-                <script src="../../../assets/javascripts/lunr/lunr.es.js"></script>
+                <script src="../../assets/javascripts/lunr/lunr.es.js"></script>
               
             
           
           
         
       
-      <script>app.initialize({version:"1.0.4",url:{base:"../../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
     
   </body>
