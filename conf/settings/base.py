@@ -235,3 +235,5 @@ EMAIL_BACKEND = 'des.backends.ConfiguredEmailBackend'
 
 LOGIN_URL = 'admin:login'
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='webmaster@localhost.com')
+
+OLD_ANALYTICS_DELETE_IN_DAYS = 2 * 365

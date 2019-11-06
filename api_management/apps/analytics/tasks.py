@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.utils import timezone
 from django_rq import job
 from elasticsearch.helpers import bulk
@@ -68,7 +69,7 @@ def perform_compress_and_remove(force, api_name, task_logger, local_time):
 def delete_zipped_files(csv_compressor, api_name, local_time):
     task_logger = CsvCompressorAndRemoverTask(created_at=timezone.now())
     try:
-        csv_compressor.delete_zipped_files(365*2)
+        csv_compressor.delete_zipped_files(settings.OLD_ANALYTICS_DELETE_IN_DAYS)
         task_logger.log_success(api_name, local_time)
     except Exception as exception:
         task_logger.log_error(api_name, local_time, exception)
