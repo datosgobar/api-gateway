@@ -1,6 +1,4 @@
-# Guía de uso
-
-## Rate limiting
+# Rate limiting
 
 ### A nivel API
 

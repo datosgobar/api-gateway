@@ -7,17 +7,15 @@ repo_url: https://github.com/datosgobar/api-gateway/
 nav:
   - Inicio: 'index.md'
   - Usuarios:
-    - Manual de uso: 'usage.md'
-    - Plugins:
-        - HTTP Log: 'usage/apis/plugins/http_log.md'
-        - JWT: 'usage/apis/plugins/jwt.md'
-        - Rate Limiting: 'usage/apis/plugins/rate_limiting.md'
-    - Consumers:
-        - Registro de consumers: 'usage/consumers/consumer_registration.md'
-        - Token Requests: 'usage/consumers/token_request.md'
-    - Analytics: 'usage/analytics.md'
-  - Desarrolladores:
-    - Desarrollo: 'development.md'
+    - Comenzar a usar API Gateway: 'users/quick-start.md'
+    - Publicar APIs: 'users/publish-apis.md'
+    - Compilar documentación: 'users/apis-docs.md'
+    - Administrar cuotas: 'users/rate-limiting.md'
+    - Administrar usuarios de las APIs: 'users/tokens.md'
+    - Recolectar analytics: 'users/analytics.md'
+    - Arquitectura de API Gateway: 'architecture.md'
+  - Administradores: 'admin.md'
+  - Desarrolladores: 'development.md'
 
 theme: datosgobar_docs
 

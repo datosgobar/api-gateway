@@ -2,47 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://datosgobar.github.io/api-gateway/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/users/quick-start/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/apis/plugins/http_log/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/users/publish-apis/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/apis/plugins/jwt/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/users/apis-docs/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/apis/plugins/rate_limiting/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/users/rate-limiting/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/consumers/consumer_registration/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/users/tokens/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/consumers/token_request/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/users/analytics/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://datosgobar.github.io/api-gateway/usage/analytics/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <loc>https://datosgobar.github.io/api-gateway/architecture/</loc>
+     <lastmod>2019-11-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://datosgobar.github.io/api-gateway/admin/</loc>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://datosgobar.github.io/api-gateway/development/</loc>
-     <lastmod>2019-10-16</lastmod>
+     <lastmod>2019-11-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

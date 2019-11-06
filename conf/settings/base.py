@@ -261,3 +261,5 @@ ADMIN_SHORTCUTS_SETTINGS = {
     'hide_app_list': False,
     'open_new_window': False,
 }
+
+OLD_ANALYTICS_DELETE_IN_DAYS = 2 * 365
