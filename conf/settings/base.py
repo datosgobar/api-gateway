@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import environ
 from elasticsearch_dsl.connections import connections
 
-env = environ.Env(DEBUG=(bool, False),) # set default values and casting
+env = environ.Env(DEBUG=(bool, False), )  # set default values and casting
 
 # SETTINGS_DIR = /conf/settings
 SETTINGS_DIR = environ.Path(__file__) - 1
@@ -23,7 +23,6 @@ environ.Env.read_env(SETTINGS_DIR('.env'))
 # ROOT_DIR = /
 BASE_DIR = SETTINGS_DIR - 2
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -31,15 +30,15 @@ BASE_DIR = SETTINGS_DIR - 2
 SECRET_KEY = 'tihf+p+1gxjd)z&sq(v)h2=nm1)%6e(jl%&wpfo(oc^@nx@m4r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG') # False if not in os.environ
+DEBUG = env('DEBUG')  # False if not in os.environ
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_shortcuts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -109,7 +108,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'conf.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -119,7 +117,6 @@ DATABASES = {
         'NAME': BASE_DIR('db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -139,7 +136,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -152,7 +148,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -235,3 +230,34 @@ EMAIL_BACKEND = 'des.backends.ConfiguredEmailBackend'
 
 LOGIN_URL = 'admin:login'
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='webmaster@localhost.com')
+
+ADMIN_SHORTCUTS = [
+    {
+        'shortcuts': [
+            {
+                'title': 'Home',
+                'url_name': 'admin:index',
+            },
+            {
+                'title': 'Usuarios',
+                'url_name': 'admin:auth_user_changelist',
+            },
+            {
+                'title': 'APIs',
+                'url_name': 'admin:api_registry_kongapi_changelist',
+                'icon': 'database',
+            },
+            {
+                'title': 'Usuarios de APIs',
+                'url_name': 'admin:api_registry_kongconsumer_changelist',
+                'icon': 'file-alt',
+            },
+        ]
+    }
+]
+
+ADMIN_SHORTCUTS_SETTINGS = {
+    'show_on_all_pages': True,
+    'hide_app_list': False,
+    'open_new_window': False,
+}
