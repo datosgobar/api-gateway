@@ -17,4 +17,4 @@ Para el versionado usamos [semver](https://semver.org/).
 
 ### Contacto
 Te invitamos a [crearnos un issue](https://github.com/datosgobar/api-gateway/issues/new?title=Encontre-un-bug-en-api-gateway)
-en caso de que encuentres algún bug o tengas comentarios de alguna parte de `api-gateway`. Para todo lo demás, podés mandarnos tu sugerencia o consulta a [datos@modernizacion.gob.ar](mailto:datos@modernizacion.gob.ar).
+en caso de que encuentres algún bug o tengas comentarios de alguna parte de `api-gateway`. Para todo lo demás, podés mandarnos tu sugerencia o consulta a [datosargentina@jefatura.gob.ar](mailto:datosargentina@jefatura.gob.ar).
